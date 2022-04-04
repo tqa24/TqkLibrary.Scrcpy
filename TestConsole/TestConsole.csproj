@@ -2,10 +2,11 @@
 
 	<PropertyGroup>
 		<OutputType>Exe</OutputType>
-		<TargetFrameworks>net462;net5.0-windows;net6.0-windows</TargetFrameworks>
+		<TargetFrameworks>net462</TargetFrameworks>
 		<LangVersion>10.0</LangVersion>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<PathMap>$(MSBuildProjectDirectory)=$(MSBuildProjectName)</PathMap>
+		<Platforms>x64</Platforms>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -33,16 +34,26 @@
 		<None Include="..\..\..\..\..\..\lib\FFmpeg\ffmpeg-n5.0-latest-win64-gpl-shared-5.0_2022-03-31\bin\swscale-6.dll" Link="swscale-6.dll">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</None>
+		<None Include="..\..\..\..\..\..\lib\Scrcpy\scrcpy-win64-v1.19\scrcpy-server" Link="scrcpy-server">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+
 	</ItemGroup>
 
 	<ItemGroup Condition="'$(Configuration)' == 'Debug'">
 		<None Include="..\x64\Debug\TqkLibrary.ScrcpyNative.dll" Link="TqkLibrary.ScrcpyNative.dll">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+		<None Include="..\x64\Debug\TqkLibrary.ScrcpyNative.pdb" Link="TqkLibrary.ScrcpyNative.pdb">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</None>
 	</ItemGroup>
 	<ItemGroup Condition="'$(Configuration)' == 'Release'">
 		<None Include="..\x64\Release\TqkLibrary.ScrcpyNative.dll" Link="TqkLibrary.ScrcpyNative.dll">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+		<None Include="..\x64\Release\TqkLibrary.ScrcpyNative.pdb" Link="TqkLibrary.ScrcpyNative.pdb">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</None>
 	</ItemGroup>
 	<ItemGroup>

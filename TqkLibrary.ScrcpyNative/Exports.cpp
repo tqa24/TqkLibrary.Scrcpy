@@ -9,26 +9,25 @@ Scrcpy* ScrcpyAlloc(LPCWSTR deviceId) {
 	return new Scrcpy(deviceId);
 }
 
-void ScrcpyFree(const Scrcpy* scrcpy) {
+void ScrcpyFree(Scrcpy* scrcpy) {
 	delete scrcpy;
 }
+bool ScrcpyConnect(Scrcpy* scrcpy, LPCWSTR config, const ScrcpyNativeConfig* nativeConfig) {
+	return scrcpy->Connect(config, nativeConfig);
+}
 
-bool ScrcpyConnect(const Scrcpy* scrcpy, LPCWSTR config, const ScrcpyNativeConfig nativeConfig) {
+bool ScrcpyGetScreenSize(Scrcpy* scrcpy, int& w, int& y) {
 	return true;
 }
 
-bool ScrcpyGetScreenSize(const Scrcpy* scrcpy, int& w, int& y) {
+bool ScrcpyControl(Scrcpy* scrcpy, const BYTE* command, const int sizeInByte) {
 	return true;
 }
 
-bool ScrcpyControl(const Scrcpy* scrcpy, const BYTE* command, const int sizeInByte) {
-	return true;
-}
-
-int ScrcpyGetScreenShot(const Scrcpy* scrcpy, BYTE* buffer, const int sizeInByte) {
+int ScrcpyGetScreenShot(Scrcpy* scrcpy, BYTE* buffer, const int sizeInByte) {
 	return 0;
 }
 
-int ScrcpyGetScreenBufferSize(const Scrcpy* scrcpy) {
+int ScrcpyGetScreenBufferSize(Scrcpy* scrcpy) {
 	return 0;
 }

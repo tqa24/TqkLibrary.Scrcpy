@@ -120,6 +120,7 @@ namespace TqkLibrary.Scrcpy
                 HwType = this.HwType,
                 PacketBufferLength = this.PacketBufferLength,
                 ForceAdbForward = this.ForceAdbForward,
+                IsControl = this.IsControl
             };
         }
     }

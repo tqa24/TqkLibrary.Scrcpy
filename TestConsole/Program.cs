@@ -2,7 +2,7 @@
 using TqkLibrary.Scrcpy;
 
 Console.WriteLine("Hello, World!");
-using (Scrcpy scrcpy = new Scrcpy("abcdef"))
+using (Scrcpy scrcpy = new Scrcpy("5793d2f39905"))
 {
     scrcpy.Connect();
 }

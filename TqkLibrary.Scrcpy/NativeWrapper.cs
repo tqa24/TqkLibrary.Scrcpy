@@ -22,7 +22,7 @@ namespace TqkLibrary.Scrcpy
 
 
         [DllImport("TqkLibrary.ScrcpyNative.dll", CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
-        internal static extern bool ScrcpyConnect(IntPtr intPtr, string config, ScrcpyNativeConfig nativeConfig);
+        internal static extern bool ScrcpyConnect(IntPtr intPtr, string config, ref ScrcpyNativeConfig nativeConfig);
 
 
         [DllImport("TqkLibrary.ScrcpyNative.dll", CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
@@ -31,9 +31,11 @@ namespace TqkLibrary.Scrcpy
 
         [DllImport("TqkLibrary.ScrcpyNative.dll", CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
         internal static extern bool ScrcpyControl(IntPtr intPtr, byte[] command, int sizeInByte);
+        
 
         [DllImport("TqkLibrary.ScrcpyNative.dll", CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
         internal static extern int ScrcpyGetScreenShot(IntPtr intPtr, byte[] buffers, int sizeInByte);
+        
 
         [DllImport("TqkLibrary.ScrcpyNative.dll", CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
         internal static extern int ScrcpyGetScreenBufferSize(IntPtr intPtr);

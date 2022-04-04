@@ -62,7 +62,9 @@ namespace TqkLibrary.Scrcpy
         public void Connect(ScrcpyConfig config = null)
         {
             if (config == null) config = new ScrcpyConfig();
-            NativeWrapper.ScrcpyConnect(Handle, config.ToString(), config.NativeConfig());
+            string config_str = config.ToString();
+            ScrcpyNativeConfig nativeConfig = config.NativeConfig();
+            NativeWrapper.ScrcpyConnect(Handle, config_str, ref nativeConfig);
         }
 
         /// <summary>
@@ -73,7 +75,7 @@ namespace TqkLibrary.Scrcpy
         {
             int length = NativeWrapper.ScrcpyGetScreenBufferSize(Handle);
             if (length <= 0) return null;
-            
+
             byte[] buffer = new byte[length];
             if (NativeWrapper.ScrcpyGetScreenShot(Handle, buffer, length) == length)
             {

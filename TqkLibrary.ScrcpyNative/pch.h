@@ -16,6 +16,7 @@ typedef struct ScrcpyNativeConfig;
 #ifdef TQKLIBRARYSCRCPYNATIVE_EXPORTS
 #include <windows.h>
 #include <string>
+#include <winsock2.h>
 #include <assert.h>
 #include <stdlib.h>
 #include <d3d11.h>
@@ -36,10 +37,11 @@ struct ScrcpyNativeConfig {
 	AVHWDeviceType HwType;//int
 	int PacketBufferLength;
 	bool ForceAdbForward;
-
+	bool IsControl;
 };
 
-
+#include "ProcessWrapper.h"
+#include "SocketWrapper.h"
 #include "Utils.h"
 #include "Scrcpy.h"
 #endif //TQKLIBRARYSCRCPYNATIVE_EXPORTS
