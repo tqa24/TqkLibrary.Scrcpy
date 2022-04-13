@@ -99,6 +99,7 @@
     <ClInclude Include="opengl.h" />
     <ClInclude Include="ParsePacket.h" />
     <ClInclude Include="pch.h" />
+    <ClInclude Include="PixelShader.h" />
     <ClInclude Include="ProcessWrapper.h" />
     <ClInclude Include="Scrcpy.h" />
     <ClInclude Include="ScrcpyWorking.h" />
@@ -123,6 +124,13 @@
     <ClCompile Include="ScrcpyWorking.cpp" />
     <ClCompile Include="SocketWrapper.cpp" />
     <ClCompile Include="Video.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="PixelShader.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <FileType>Document</FileType>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </None>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -51,9 +51,12 @@ bool MediaDecoder::Init() {
 		{
 		case AVHWDeviceType::AV_HWDEVICE_TYPE_D3D11VA:
 		{
-			AVHWDeviceContext* hw_device_ctx = (AVHWDeviceContext*)this->_codec_ctx->hw_device_ctx->data;
+			AVHWDeviceContext* hw_device_ctx = reinterpret_cast<AVHWDeviceContext*>(this->_codec_ctx->hw_device_ctx->data);
 			this->_d3d11_shader = new NV12ToRgbShader(hw_device_ctx);
 			if (this->_d3d11_shader == nullptr)
+				return false;
+
+			if (!this->_d3d11_shader->Init())
 				return false;
 		}
 		default:

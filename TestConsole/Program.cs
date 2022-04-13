@@ -1,7 +1,11 @@
 ﻿using System.Drawing;
 using TqkLibrary.Scrcpy;
+using TqkLibrary.AdbDotNet;
 
-string deviceId = "a29bc285";
+var devices = Adb.Devices(DeviceState.Device).ToList();
+
+string deviceId = devices.First();
+//string deviceId = "a29bc285";
 //string deviceId = "5793d2f39905";
 
 
@@ -19,7 +23,7 @@ while (true)
         scrcpy.Connect(config);
         Console.WriteLine($"{DateTime.Now:mm:ss.fff} Connected");
         await Task.Delay(3000);
-        
+
         while (true) await Task.Delay(3000);
 
         Console.WriteLine($"{DateTime.Now:mm:ss.fff} GetScreenShot");
