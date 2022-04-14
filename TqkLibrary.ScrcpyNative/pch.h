@@ -35,9 +35,9 @@ typedef class NV12ToRgbShader;
 #include <directxmath.h>
 #include <wrl/client.h>
 #include "libav.h"
-#include "ws2tcpip.h"
+#include <ws2tcpip.h>
 #pragma comment(lib,"ws2_32.lib")
-using namespace Microsoft::WRL;
+
 enum Orientations : int
 {
 	Auto = -1,
