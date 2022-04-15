@@ -2,6 +2,10 @@
 using TqkLibrary.Scrcpy;
 using TqkLibrary.AdbDotNet;
 
+Directory.GetFiles(Directory.GetCurrentDirectory(), "*.png")
+    .ToList()
+    .ForEach(File.Delete);
+
 var devices = Adb.Devices(DeviceState.Device).ToList();
 
 string deviceId = devices.First();
@@ -24,20 +28,20 @@ while (true)
         Console.WriteLine($"{DateTime.Now:mm:ss.fff} Connected");
         await Task.Delay(3000);
 
-        while (true) await Task.Delay(3000);
+        //while (true) await Task.Delay(3000);
 
         Console.WriteLine($"{DateTime.Now:mm:ss.fff} GetScreenShot");
-        using Bitmap bitmap = scrcpy.GetScreenShot();
-        if (bitmap != null)
+        while (true)
         {
+            using Bitmap bitmap = scrcpy.GetScreenShot();
             Console.WriteLine($"{DateTime.Now:mm:ss.fff} GetScreenShoted");
             bitmap.Save($"{i++:0000}.png");
-        }
-        else
-        {
-
+            await Task.Delay(200);
+            //break;
         }
         await Task.Delay(3000);
+
+        while (true) await Task.Delay(3000);
 
         Console.WriteLine($"{DateTime.Now:mm:ss.fff} Stop");
         scrcpy.Stop();

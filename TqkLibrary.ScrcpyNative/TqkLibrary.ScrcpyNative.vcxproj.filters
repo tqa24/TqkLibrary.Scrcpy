@@ -61,7 +61,10 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="PixelShader.h">
-      <Filter>Header Files</Filter>
+      <Filter>Resource Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\..\Github\balapradeepswork\D3D11NV12Rendering\D3D11NV12Rendering\VertexShader.h">
+      <Filter>Resource Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -107,6 +110,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="PixelShader.hlsl">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\..\..\..\..\..\Github\balapradeepswork\D3D11NV12Rendering\D3D11NV12Rendering\VertexShader.hlsl">
       <Filter>Resource Files</Filter>
     </None>
   </ItemGroup>

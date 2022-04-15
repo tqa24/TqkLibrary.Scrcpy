@@ -56,8 +56,8 @@ bool MediaDecoder::Init() {
 			if (this->_d3d11_shader == nullptr)
 				return false;
 
-			/*if (!this->_d3d11_shader->Init())
-				return false;*/
+			if (!this->_d3d11_shader->Init())
+				return false;
 		}
 		default:
 			break;
