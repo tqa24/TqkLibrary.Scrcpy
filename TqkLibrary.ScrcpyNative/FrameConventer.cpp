@@ -3,12 +3,12 @@
 #include "Utils.h"
 
 FrameConventer::FrameConventer() {
-	
+
 }
 FrameConventer::~FrameConventer() {
 
 }
-bool FrameConventer::Convert(AVFrame* frame, BYTE* buff, const int sizeInByte, int w, int h, int lineSize) {
+bool FrameConventer::Convert(AVFrame* frame, BYTE* buff, const int sizeInByte, const int w, const int h, const int lineSize) {
 	if (frame == nullptr || buff == nullptr || sizeInByte <= 0)
 		return false;
 
@@ -16,7 +16,7 @@ bool FrameConventer::Convert(AVFrame* frame, BYTE* buff, const int sizeInByte, i
 		return false;
 	}
 	int err = 0;
-	
+
 	switch (frame->format)
 	{
 	case AV_PIX_FMT_BGRA:
@@ -39,9 +39,9 @@ bool FrameConventer::Convert(AVFrame* frame, BYTE* buff, const int sizeInByte, i
 		if (!avcheck(av_image_fill_linesizes(linesizes, AV_PIX_FMT_BGRA, w))) {
 			return false;
 		}
-		
+
 		if (IsCudaSupport) {
-			
+
 		}
 
 
@@ -54,9 +54,9 @@ bool FrameConventer::Convert(AVFrame* frame, BYTE* buff, const int sizeInByte, i
 			return false;
 
 		bool result = avcheck(sws_scale(sws, frame->data, frame->linesize, 0, frame->height, arr, linesizes));
-		
+
 		sws_freeContext(sws);
-		
+
 		return result;
 	}
 	}

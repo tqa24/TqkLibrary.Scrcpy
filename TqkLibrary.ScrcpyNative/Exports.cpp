@@ -27,6 +27,6 @@ bool ScrcpyControlCommand(Scrcpy* scrcpy, const BYTE* command, const int sizeInB
 	return scrcpy->ControlCommand(command, sizeInByte);
 }
 
-bool ScrcpyGetScreenShot(Scrcpy* scrcpy, BYTE* buffer, const int sizeInByte, int w, int h, int lineSize) {
+bool ScrcpyGetScreenShot(Scrcpy* scrcpy, BYTE* buffer, const int sizeInByte, const int w, const int h, const int lineSize) {
 	return scrcpy->GetScreenShot(buffer, sizeInByte, w, h, lineSize);
 }

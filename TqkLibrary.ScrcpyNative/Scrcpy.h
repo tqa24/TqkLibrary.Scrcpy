@@ -10,13 +10,13 @@ public:
 	void Stop();
 
 	bool ControlCommand(const BYTE* command, const int sizeInByte);
-	bool GetScreenShot(BYTE* buffer, const int sizeInByte, int w, int h, int lineSize);
+	bool GetScreenShot(BYTE* buffer, const int sizeInByte, const int w, const int h, const int lineSize);
 	bool GetScreenSize(int& w, int& h);
 private:
 	//const
 	std::wstring _deviceId;
 	std::mutex _mutex;
-	
+
 
 	//need release
 	ScrcpyWorking* _scrcpyWorking{ nullptr };
