@@ -103,28 +103,12 @@ bool NV12ToRgbShader::Init() {
 	if (FAILED(hr))
 		return false;
 
-	/*constexpr std::array<D3D11_INPUT_ELEMENT_DESC, 2> Layout =
+	constexpr std::array<D3D11_INPUT_ELEMENT_DESC, 2> Layout =
 	{ {
 		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 		{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT,    0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-	} };*/
-	std::array<D3D11_INPUT_ELEMENT_DESC, 2> Layout;
-	Layout[0].SemanticName = "POSITION";
-	Layout[0].SemanticIndex = 0;
-	Layout[0].Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-	Layout[0].InputSlot = 0;
-	Layout[0].AlignedByteOffset = 0;
-	Layout[0].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
-	Layout[0].InstanceDataStepRate = 0;	
-	
-	Layout[1].SemanticName = "TEXCOORD";
-	Layout[1].SemanticIndex = 0;
-	Layout[1].Format = DXGI_FORMAT_R32G32_FLOAT;
-	Layout[1].InputSlot = 0;
-	Layout[1].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
-	Layout[1].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
-	Layout[1].InstanceDataStepRate = 0;
-	
+	} };
+
 	hr = this->_d3d11_device->CreateInputLayout(Layout.data(), Layout.size(), g_VS, Size, &this->_d3d11_inputLayout);
 	if (FAILED(hr))
 		return false;
@@ -163,6 +147,20 @@ bool NV12ToRgbShader::CreateSharedSurf(int width, int height) {
 	if (FAILED(hr))
 		return false;
 
+	//
+	D3D11_SHADER_RESOURCE_VIEW_DESC const luminancePlaneDesc
+		= CD3D11_SHADER_RESOURCE_VIEW_DESC(this->_texture_nv12, D3D11_SRV_DIMENSION_TEXTURE2D, DXGI_FORMAT_R8_UNORM);
+	hr = this->_d3d11_device->CreateShaderResourceView(this->_texture_nv12, &luminancePlaneDesc, &this->_luminanceView);
+	if (FAILED(hr))
+		return false;
+
+	//
+	D3D11_SHADER_RESOURCE_VIEW_DESC const chrominancePlaneDesc
+		= CD3D11_SHADER_RESOURCE_VIEW_DESC(this->_texture_nv12, D3D11_SRV_DIMENSION_TEXTURE2D, DXGI_FORMAT_R8G8_UNORM);
+	hr = this->_d3d11_device->CreateShaderResourceView(this->_texture_nv12, &chrominancePlaneDesc, &this->_chrominanceView);
+	if (FAILED(hr))
+		return false;
+
 
 	D3D11_TEXTURE2D_DESC texDesc_rgba;
 	ZeroMemory(&texDesc_rgba, sizeof(texDesc_rgba));
@@ -189,20 +187,16 @@ bool NV12ToRgbShader::CreateSharedSurf(int width, int height) {
 	hr = this->_d3d11_device->CreateRenderTargetView(this->_texture_rgba_target, &rtvDesc, &this->_renderTargetView);
 	if (FAILED(hr))
 		return false;
+	this->_d3d11_deviceCtx->OMSetRenderTargets(1, &this->_renderTargetView, nullptr);
 
-	//
-	D3D11_SHADER_RESOURCE_VIEW_DESC const luminancePlaneDesc
-		= CD3D11_SHADER_RESOURCE_VIEW_DESC(this->_texture_nv12, D3D11_SRV_DIMENSION_TEXTURE2D, DXGI_FORMAT_R8_UNORM);
-	hr = this->_d3d11_device->CreateShaderResourceView(this->_texture_nv12, &luminancePlaneDesc, &this->_luminanceView);
-	if (FAILED(hr))
-		return false;
-
-	//
-	D3D11_SHADER_RESOURCE_VIEW_DESC const chrominancePlaneDesc
-		= CD3D11_SHADER_RESOURCE_VIEW_DESC(this->_texture_nv12, D3D11_SRV_DIMENSION_TEXTURE2D, DXGI_FORMAT_R8G8_UNORM);
-	hr = this->_d3d11_device->CreateShaderResourceView(this->_texture_nv12, &chrominancePlaneDesc, &this->_chrominanceView);
-	if (FAILED(hr))
-		return false;
+	D3D11_VIEWPORT VP;
+	VP.Width = static_cast<FLOAT>(width);
+	VP.Height = static_cast<FLOAT>(height);
+	VP.MinDepth = 0.0f;
+	VP.MaxDepth = 1.0f;
+	VP.TopLeftX = 0;
+	VP.TopLeftY = 0;
+	this->_d3d11_deviceCtx->RSSetViewports(1, &VP);
 
 	this->_width = width;
 	this->_height = height;
@@ -251,22 +245,28 @@ bool NV12ToRgbShader::Convert(const AVFrame* source, AVFrame** received) {
 		if (!Init())
 			return false;
 	}
+
+	ComPtr<ID3D11Texture2D> texture = (ID3D11Texture2D*)source->data[0];
+	const int texture_index = (int)source->data[1];
+	D3D11_TEXTURE2D_DESC sourceDesc;
+	texture->GetDesc(&sourceDesc);
+
 	//init/reinit shader surface
 	if (this->_width != source->width || this->_height != source->height) {
 		this->ReleaseSharedSurf();
 		if (!this->CreateSharedSurf(source->width, source->height))
 			return false;
 	}
-
+	/*if (this->_width != sourceDesc.Width || this->_height != sourceDesc.Height) {
+		this->ReleaseSharedSurf();
+		if (!this->CreateSharedSurf(sourceDesc.Width, sourceDesc.Height))
+			return false;
+	}*/
 	//bind/copy ffmpeg hw texture -> local d3d11 texture
-	ComPtr<ID3D11Texture2D> texture = (ID3D11Texture2D*)source->data[0];
-	const int texture_index = (int)source->data[1];
 	this->_d3d11_deviceCtx->CopySubresourceRegion(
 		this->_texture_nv12, 0, 0, 0, 0,
 		texture.Get(), texture_index, nullptr
 	);
-	this->_d3d11_deviceCtx->CopyResource(this->_texture_nv12, texture.Get());
-
 
 	//https://microsoft.github.io/DirectX-Specs/d3d/archive/D3D11_3_FunctionalSpec.htm
 
@@ -277,7 +277,7 @@ bool NV12ToRgbShader::Convert(const AVFrame* source, AVFrame** received) {
 		this->_chrominanceView
 	};
 	this->_d3d11_deviceCtx->PSSetShaderResources(0, textureViews.size(), textureViews.data());
-	FLOAT blendFactor[4] = { 0.f, 1.f, 0.f, 0.f };
+	FLOAT blendFactor[4] = { 0.f, 0.f, 0.f, 0.f };
 	this->_d3d11_deviceCtx->OMSetBlendState(nullptr, blendFactor, 0xffffffff);
 	this->_d3d11_deviceCtx->ClearRenderTargetView(this->_renderTargetView, blendFactor);
 	this->_d3d11_deviceCtx->OMSetRenderTargets(1, &this->_renderTargetView, nullptr);
@@ -325,56 +325,49 @@ bool NV12ToRgbShader::Convert(const AVFrame* source, AVFrame** received) {
 	desc2D.Usage = D3D11_USAGE_STAGING;
 	desc2D.MiscFlags = 0;
 
-
 	ComPtr<ID3D11Texture2D> pOutTexture2D = NULL;
 	hr = this->_d3d11_device->CreateTexture2D(&desc2D, NULL, pOutTexture2D.GetAddressOf());
 	if (FAILED(hr))
 		return false;
-
 	this->_d3d11_deviceCtx->CopyResource(pOutTexture2D.Get(), pInTexture2D.Get());
 
 	//get texture output
+
 	D3D11_MAPPED_SUBRESOURCE ms;
 	UINT uiSubResource = D3D11CalcSubresource(0, 0, 0);
 	hr = _d3d11_deviceCtx->Map(pOutTexture2D.Get(), uiSubResource, D3D11_MAP_READ, 0, &ms);
 	if (FAILED(hr))
 		return false;
 
-	int size = av_image_get_buffer_size(AVPixelFormat::AV_PIX_FMT_BGRA, source->width, source->height, 1);
-	if (size == ms.DepthPitch)
+	//copy texture data to new frame
+	AVFrame* frame = av_frame_alloc();
+	AVBufferRef* dataref = av_buffer_alloc(ms.DepthPitch);
+	if (frame != nullptr &&
+		dataref != nullptr &&
+		avcheck(av_image_fill_arrays(
+			frame->data, frame->linesize, dataref->data,
+			AVPixelFormat::AV_PIX_FMT_BGRA, source->width, source->height, 1)))
 	{
-		//copy texture data to new frame
-		AVFrame* frame = av_frame_alloc();
-		if (frame != nullptr) {
-			AVBufferRef* dataref = av_buffer_alloc(size);
-			memcpy(dataref->data, ms.pData, size);
-			if (avcheck(av_image_fill_arrays(
-				frame->data, frame->linesize, dataref->data,
-				AVPixelFormat::AV_PIX_FMT_BGRA, source->width, source->height, 1)))
-			{
-				av_frame_copy_props(frame, source);
-				frame->buf[0] = dataref;
-				frame->format = AVPixelFormat::AV_PIX_FMT_BGRA;
-				frame->width = source->width;
-				frame->height = source->height;
-				frame->pts = source->pts;
-				frame->pkt_dts = source->pkt_dts;
-				frame->time_base = source->time_base;
-				frame->pkt_duration = source->pkt_duration;
-				frame->pkt_pos = source->pkt_pos;
-			}
-			else
-			{
-				av_buffer_unref(&dataref);
-				av_frame_free(&frame);
-			}
-		}
-		*received = frame;
+		av_frame_copy_props(frame, source);
+		frame->format = AVPixelFormat::AV_PIX_FMT_BGRA;
+		frame->width = source->width;
+		frame->height = source->height;
+		frame->pts = source->pts;
+		frame->pkt_dts = source->pkt_dts;
+		frame->time_base = source->time_base;
+		frame->pkt_duration = source->pkt_duration;
+		frame->pkt_pos = source->pkt_pos;
+		
+		frame->buf[0] = dataref;
+		memcpy(dataref->data, ms.pData, ms.DepthPitch);
+		frame->linesize[0] = ms.RowPitch;
 	}
 	else
 	{
-
+		av_buffer_unref(&dataref);
+		av_frame_free(&frame);
 	}
+	*received = frame;
 
 	_d3d11_deviceCtx->Unmap(pOutTexture2D.Get(), 0);
 	return *received != nullptr;

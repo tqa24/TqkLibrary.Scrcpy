@@ -2,7 +2,10 @@
 using TqkLibrary.Scrcpy;
 using TqkLibrary.AdbDotNet;
 
-Directory.GetFiles(Directory.GetCurrentDirectory(), "*.png")
+var imgs = Path.Combine(Directory.GetCurrentDirectory(), "Imgs");
+Directory.CreateDirectory(imgs);
+
+Directory.GetFiles(imgs, "*.png")
     .ToList()
     .ForEach(File.Delete);
 
@@ -17,6 +20,7 @@ int i = 0;
 ScrcpyConfig config = new ScrcpyConfig()
 {
     HwType = FFmpegAVHWDeviceType.AV_HWDEVICE_TYPE_D3D11VA,
+    MaxFps = 24
 };
 while (true)
 {
@@ -28,15 +32,15 @@ while (true)
         Console.WriteLine($"{DateTime.Now:mm:ss.fff} Connected");
         await Task.Delay(3000);
 
-        //while (true) await Task.Delay(3000);
+        while (true) await Task.Delay(3000);
 
         Console.WriteLine($"{DateTime.Now:mm:ss.fff} GetScreenShot");
         while (true)
         {
             using Bitmap bitmap = scrcpy.GetScreenShot();
             Console.WriteLine($"{DateTime.Now:mm:ss.fff} GetScreenShoted");
-            bitmap.Save($"{i++:0000}.png");
-            await Task.Delay(200);
+            bitmap.Save($"{imgs}\\{i++:00000}.png");
+            await Task.Delay(1000);
             //break;
         }
         await Task.Delay(3000);

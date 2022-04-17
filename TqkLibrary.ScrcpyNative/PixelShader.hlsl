@@ -37,8 +37,8 @@ float3 ConvertYUVtoRGB(float3 yuv)
 	// These values are calculated from (16 / 255) and (128 / 255)
 	yuv -= float3(0.062745f, 0.501960f, 0.501960f);
 	yuv = mul(yuv, YUVtoRGBCoeffMatrix);
-
-	return saturate(yuv);
+	yuv = saturate(yuv);//BGR
+	return float3(yuv.z, yuv.y, yuv.x);
 }
 
 min16float4 PS(PixelShaderInput input) : SV_TARGET
