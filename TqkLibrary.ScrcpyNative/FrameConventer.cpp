@@ -25,6 +25,10 @@ bool FrameConventer::Convert(AVFrame* frame, BYTE* buff, const int sizeInByte, c
 			memcpy(buff, frame->data[0], sizeInByte);
 			return true;
 		}
+		else
+		{
+			return false;
+		}
 		break;
 	}
 	case AV_PIX_FMT_YUV420P:

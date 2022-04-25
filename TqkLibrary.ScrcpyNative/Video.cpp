@@ -119,8 +119,8 @@ void Video::threadStart() {
 
 		if (this->_parsePacket->ParserPushPacket(&packet))
 		{
-			AVFrame* frame{ nullptr };
-			if (this->_h264_mediaDecoder->Decode(&packet, &frame)) {
+			AVFrame* frame = av_frame_alloc();
+			if (this->_h264_mediaDecoder->Decode(&packet, frame)) {
 
 				//lock ref to frame
 				_mtx.lock();

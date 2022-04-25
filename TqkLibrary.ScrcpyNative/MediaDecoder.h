@@ -8,7 +8,7 @@ public:
 	bool Init();
 
 	
-	bool Decode(const AVPacket* packet,AVFrame** received);
+	bool Decode(const AVPacket* packet,AVFrame* received);
 private:
 	AVFrame* _decoding_frame = nullptr;
 	AVFrame* _transfer_frame = nullptr;

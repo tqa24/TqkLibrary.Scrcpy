@@ -66,7 +66,9 @@ bool MediaDecoder::Init() {
 	return true;
 }
 
-bool MediaDecoder::Decode(const AVPacket* packet, AVFrame** frame) {
+bool MediaDecoder::Decode(const AVPacket* packet, AVFrame* frame) {
+	if(packet == nullptr || frame == nullptr)
+		return false;
 	if (!avcheck(avcodec_send_packet(_codec_ctx, packet)))
 		return false;
 	av_frame_unref(_decoding_frame);
@@ -76,8 +78,8 @@ bool MediaDecoder::Decode(const AVPacket* packet, AVFrame** frame) {
 
 	if (_decoding_frame->hw_frames_ctx == nullptr)
 	{
-		*frame = av_frame_clone(_decoding_frame);
-		return *frame != nullptr;
+		av_frame_move_ref(frame, _decoding_frame);
+		return true;
 	}
 	else
 	{
@@ -85,24 +87,26 @@ bool MediaDecoder::Decode(const AVPacket* packet, AVFrame** frame) {
 		{
 		case AVHWDeviceType::AV_HWDEVICE_TYPE_D3D11VA:
 		{
-			return this->_d3d11_shader->Convert(_decoding_frame, frame);
+			bool result = this->_d3d11_shader->Convert(_decoding_frame, frame);
+			av_frame_unref(_decoding_frame);
+			return result;
 		}
 		case AVHWDeviceType::AV_HWDEVICE_TYPE_CUDA:
 		case AVHWDeviceType::AV_HWDEVICE_TYPE_DXVA2:
 		{
-			if (!avcheck(av_hwframe_transfer_data(_transfer_frame, _decoding_frame, 0)))
-				return false;
-
-			*frame = av_frame_clone(_transfer_frame);
-			return *frame != nullptr;
+			bool result = avcheck(av_hwframe_transfer_data(_transfer_frame, _decoding_frame, 0));
+			av_frame_unref(_decoding_frame);
+			if(result)
+				av_frame_move_ref(frame, _transfer_frame);
+			return result;
 		}
 
 		case AVHWDeviceType::AV_HWDEVICE_TYPE_NONE:
 		case AVHWDeviceType::AV_HWDEVICE_TYPE_QSV:
 		default:
 		{
-			*frame = av_frame_clone(_decoding_frame);
-			return *frame != nullptr;
+			av_frame_move_ref(frame, _decoding_frame);
+			return true;
 		}
 		}
 	}
