@@ -133,7 +133,7 @@ bool NV12ToRgbShader::CreateSharedSurf(int width, int height) {
 	texDesc_rgba.MipLevels = 1;
 	texDesc_rgba.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
 	texDesc_rgba.Usage = D3D11_USAGE_DEFAULT;
-	texDesc_rgba.CPUAccessFlags = D3D11_CPU_ACCESS_READ;
+	texDesc_rgba.CPUAccessFlags = 0;
 	texDesc_rgba.SampleDesc.Count = 1;
 	texDesc_rgba.SampleDesc.Quality = 0;
 	texDesc_rgba.MiscFlags = 0;
@@ -174,6 +174,7 @@ void NV12ToRgbShader::ReleaseSharedSurf() {
 }
 
 void NV12ToRgbShader::DeviceCtxSet(int width, int height) {
+		
 	//init set
 	this->_d3d11_deviceCtx->IASetInputLayout(this->_d3d11_inputLayout.Get());
 	this->_d3d11_deviceCtx->OMSetBlendState(nullptr, blendFactor, 0xffffffff);
@@ -226,22 +227,32 @@ bool NV12ToRgbShader::Convert(const AVFrame* source, AVFrame* received) {
 		this->ReleaseSharedSurf();
 		if (this->CreateSharedSurf(source->width, source->height))
 		{
-			//this->DeviceCtxSet(source->width, source->height);
+			this->DeviceCtxSet(source->width, source->height);
 		}
 		else
 		{
 			return false;
 		}
-	}	
-	this->DeviceCtxSet(source->width, source->height);
+	}
+	//this->_d3d11_deviceCtx->ClearState();
+	//this->DeviceCtxSet(source->width, source->height);
 	
 	ComPtr<ID3D11Texture2D> texture = (ID3D11Texture2D*)source->data[0];
 	const int texture_index = (int)source->data[1];
 
 	//bind/copy ffmpeg hw texture -> local d3d11 texture
+
+	D3D11_BOX box{0};
+	box.left = 0;
+	box.right = source->width;
+	box.top = 0;
+	box.bottom = source->height;
+	box.front = 0;
+	box.back = 1;//https://docs.microsoft.com/en-us/windows/win32/api/d3d11/nf-d3d11-id3d11devicecontext-copysubresourceregion
+	
 	this->_d3d11_deviceCtx->CopySubresourceRegion(
 		this->_texture_nv12.Get(), 0, 0, 0, 0,
-		texture.Get(), texture_index, nullptr
+		texture.Get(), texture_index, &box
 	);
 
 	this->_d3d11_deviceCtx->Draw(NUMVERTICES, 0);
