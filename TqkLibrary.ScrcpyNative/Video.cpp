@@ -24,7 +24,9 @@ Video::~Video() {
 	delete this->_videoBuffer;
 	av_frame_free(&this->_frame);
 	av_frame_free(&this->_temp_frame);
+	ReleaseMutex(this->_mtx_waitFirstFrame);
 	CloseHandle(this->_threadHandle);
+	CloseHandle(this->_mtx_waitFirstFrame);
 }
 
 void Video::Start() {
@@ -53,6 +55,10 @@ bool Video::Init() {
 	if (!this->_h264_mediaDecoder->Init())
 		return false;
 
+	this->_mtx_waitFirstFrame = CreateMutex(NULL, FALSE, NULL);
+	if (this->_mtx_waitFirstFrame == INVALID_HANDLE_VALUE)
+		return false;
+
 	this->_frame = av_frame_alloc();
 	this->_temp_frame = av_frame_alloc();
 
@@ -62,6 +68,10 @@ bool Video::Init() {
 DWORD WINAPI Video::MyThreadFunction(LPVOID lpParam) {
 	((Video*)lpParam)->threadStart();
 	return 0;
+}
+
+bool Video::WaitForFirstFrame(DWORD timeout) {
+	return WaitForSingleObject(this->_mtx_waitFirstFrame, timeout) == WAIT_OBJECT_0;
 }
 
 void Video::threadStart() {
@@ -123,13 +133,14 @@ void Video::threadStart() {
 		if (this->_parsePacket->ParserPushPacket(&packet))
 		{
 			av_frame_unref(this->_temp_frame);
-			if (this->_h264_mediaDecoder->Decode(&packet, this->_temp_frame)) 
+			if (this->_h264_mediaDecoder->Decode(&packet, this->_temp_frame))
 			{
 				//lock ref to frame
-				_mtx.lock();
+				_mtx_frame.lock();
 				av_frame_unref(this->_frame);
 				av_frame_move_ref(this->_frame, this->_temp_frame);
-				_mtx.unlock();
+				_mtx_frame.unlock();
+				ReleaseMutex(this->_mtx_waitFirstFrame);
 				this->_ishaveFrame = true;
 			}
 		}
@@ -141,10 +152,10 @@ bool Video::GetScreenSize(int& w, int& h) {
 	if (!_ishaveFrame)
 		return false;
 
-	_mtx.lock();
+	_mtx_frame.lock();
 	w = this->_frame->width;
 	h = this->_frame->height;
-	_mtx.unlock();
+	_mtx_frame.unlock();
 
 	return true;
 }
@@ -153,9 +164,9 @@ bool Video::RefCurrentFrame(AVFrame* frame) {
 	if (!_ishaveFrame)
 		return false;
 
-	_mtx.lock();
+	_mtx_frame.lock();
 	int result = av_frame_ref(frame, this->_frame);
-	_mtx.unlock();
+	_mtx_frame.unlock();
 
 	return result >= 0;
 }

@@ -206,5 +206,5 @@ bool ScrcpyWorking::Start() {
 	closesocket(this->_listenSock);
 	this->_listenSock = INVALID_SOCKET;
 
-	return true;
+	return this->_video->WaitForFirstFrame(this->_nativeConfig.ConnectionTimeout);
 }

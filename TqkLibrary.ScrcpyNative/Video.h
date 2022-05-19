@@ -9,6 +9,7 @@ public:
 	void Start();
 	void Stop();
 	bool Init();
+	bool WaitForFirstFrame(DWORD timeout);
 
 	bool GetScreenSize(int& w, int& h);
 	bool RefCurrentFrame(AVFrame* frame);
@@ -21,7 +22,9 @@ private:
 	BYTE* _videoBuffer{ nullptr };
 	AVFrame* _frame{ nullptr };
 	AVFrame* _temp_frame{ nullptr };
-	std::mutex _mtx;
+	std::mutex _mtx_frame;
+	HANDLE _mtx_waitFirstFrame{ INVALID_HANDLE_VALUE };
+
 	void threadStart();
 
 	bool _isStop = false;
