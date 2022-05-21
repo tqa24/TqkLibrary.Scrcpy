@@ -20,22 +20,32 @@ Scrcpy* ScrcpyAlloc(LPCWSTR deviceId) {
 }
 
 void ScrcpyFree(Scrcpy* scrcpy) {
-	delete scrcpy;
+	if (scrcpy != nullptr) delete scrcpy;
 }
 bool ScrcpyConnect(Scrcpy* scrcpy, LPCWSTR config, const ScrcpyNativeConfig& nativeConfig) {
+	if (scrcpy == nullptr || config == nullptr) return false;
 	return scrcpy->Connect(config, nativeConfig);
 }
 void ScrcpyStop(Scrcpy* scrcpy) {
+	if (scrcpy == nullptr) return;
 	scrcpy->Stop();
 }
 bool ScrcpyGetScreenSize(Scrcpy* scrcpy, int& w, int& h) {
+	if (scrcpy == nullptr) return false;
 	return scrcpy->GetScreenSize(w, h);
 }
 
 bool ScrcpyControlCommand(Scrcpy* scrcpy, const BYTE* command, const int sizeInByte) {
+	if (scrcpy == nullptr || command == nullptr) return false;
 	return scrcpy->ControlCommand(command, sizeInByte);
 }
 
 bool ScrcpyGetScreenShot(Scrcpy* scrcpy, BYTE* buffer, const int sizeInByte, const int w, const int h, const int lineSize) {
+	if (scrcpy == nullptr || buffer == nullptr) return false;
 	return scrcpy->GetScreenShot(buffer, sizeInByte, w, h, lineSize);
+}
+
+bool RegisterClipboardEvent(Scrcpy* scrcpy, ClipboardReceivedDelegate clipboardDelegate) {
+	if (scrcpy == nullptr || clipboardDelegate == nullptr) return false;
+	return scrcpy->RegisterClipboardEvent(clipboardDelegate);
 }

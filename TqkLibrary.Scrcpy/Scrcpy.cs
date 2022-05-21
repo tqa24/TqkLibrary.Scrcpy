@@ -23,6 +23,7 @@ namespace TqkLibrary.Scrcpy
         {
             Handle = NativeWrapper.ScrcpyAlloc(deviceId);
             Control = new ScrcpyControl(this);
+            
         }
 
         /// <summary>

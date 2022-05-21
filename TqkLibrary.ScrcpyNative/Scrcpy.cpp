@@ -91,3 +91,8 @@ bool Scrcpy::GetScreenSize(int& w, int& h) {
 	_mutex.unlock();
 	return result;
 }
+
+bool Scrcpy::RegisterClipboardEvent(const ClipboardReceivedDelegate callback) {
+	this->clipboardCallback = callback;
+	return true;
+}

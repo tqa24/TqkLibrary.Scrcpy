@@ -2,13 +2,15 @@
 #include "Control.h"
 #include "SocketWrapper.h"
 #include "Utils.h"
+#include "Scrcpy.h"
 
 #define CONTROL_MSG_MAX_SIZE 1 << 18//256k
 enum ScrcpyControlReceivedType : BYTE
 {
 	DEVICE_MSG_TYPE_CLIPBOARD = 0,
 };
-Control::Control(SOCKET sock) {
+Control::Control(const Scrcpy* scrcpy, SOCKET sock) {
+	this->scrcpy = scrcpy;
 	this->_sockControl = new SocketWrapper(sock);
 	this->_buffer = new BYTE[CONTROL_MSG_MAX_SIZE];
 }
@@ -31,7 +33,7 @@ void Control::Start() {
 void Control::Stop() {
 	this->_sockControl->Stop();
 	this->_isStop = true;
-	if(this->_threadHandle != INVALID_HANDLE_VALUE) 
+	if (this->_threadHandle != INVALID_HANDLE_VALUE)
 		WaitForSingleObject(this->_threadHandle, INFINITE);
 }
 DWORD WINAPI Control::MyThreadFunction(LPVOID lpParam) {
@@ -61,14 +63,16 @@ void Control::threadStart() {
 				return;
 
 			UINT32 len = sc_read32be(this->_buffer);
-			if (len == 0) break;
+			if (len == 0) 
+				break;
 			assert(len > CONTROL_MSG_MAX_SIZE);
 
 			if (this->_sockControl->ReadAll(this->_buffer, len) != len)
 				return;
 
 			//send to c#
-
+			if(this->scrcpy->clipboardCallback != nullptr) 
+				this->scrcpy->clipboardCallback(this->_buffer, len);
 			break;
 		}
 		default:

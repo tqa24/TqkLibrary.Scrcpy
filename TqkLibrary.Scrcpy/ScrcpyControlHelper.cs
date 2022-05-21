@@ -25,20 +25,6 @@ namespace TqkLibrary.Scrcpy
         public static bool InjectTouchEvent(this IControl control,
             AndroidMotionEventAction action, long pointerId, Point point, float pressure = 1f, AndroidMotionEventButton buttons = AndroidMotionEventButton.BUTTON_PRIMARY)
             => control.InjectTouchEvent(action, pointerId, new Rectangle(point, control.Scrcpy.ScreenSize), pressure, buttons);
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="control"></param>
-        /// <param name="action"></param>
-        /// <param name="pointerId"></param>
-        /// <param name="point"></param>
-        /// <param name="pressure"></param>
-        /// <param name="buttons"></param>
-        /// <returns></returns>
-        public static Task<bool> InjectTouchEventAsync(this IControl control,
-            AndroidMotionEventAction action, long pointerId, Point point, float pressure = 1f, AndroidMotionEventButton buttons = AndroidMotionEventButton.BUTTON_PRIMARY)
-            => control.InjectTouchEventAsync(action, pointerId, new Rectangle(point, control.Scrcpy.ScreenSize), pressure, buttons);
-
 
 
         /// <summary>
@@ -51,17 +37,6 @@ namespace TqkLibrary.Scrcpy
         /// <returns></returns>
         public static bool InjectScrollEvent(this IControl control, Point point, int vScroll, int hScroll = 0)
             => control.InjectScrollEvent(new Rectangle(point, control.Scrcpy.ScreenSize), vScroll, hScroll);
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="control"></param>
-        /// <param name="point"></param>
-        /// <param name="vScroll"></param>
-        /// <param name="hScroll"></param>
-        /// <returns></returns>
-        public static Task<bool> InjectScrollEventAsync(this IControl control, Point point, int vScroll, int hScroll = 0)
-            => control.InjectScrollEventAsync(new Rectangle(point, control.Scrcpy.ScreenSize), vScroll, hScroll);
-
 
 
         /// <summary>
@@ -103,7 +78,7 @@ namespace TqkLibrary.Scrcpy
         public static async Task TapAsync(this IControl control, int x, int y, int releaseDelay = 100, CancellationToken cancellationToken = default)
         {
             long pointerId = random.Next(int.MinValue, int.MaxValue);
-            await control.InjectTouchEventAsync(
+            control.InjectTouchEvent(
                 AndroidMotionEventAction.ACTION_DOWN,
                 pointerId,
                 new Rectangle(x, y, control.Scrcpy.ScreenSize.Width, control.Scrcpy.ScreenSize.Height),
@@ -112,7 +87,7 @@ namespace TqkLibrary.Scrcpy
 
             await Task.Delay(releaseDelay, cancellationToken);
 
-            await control.InjectTouchEventAsync(
+            control.InjectTouchEvent(
                 AndroidMotionEventAction.ACTION_UP,
                 pointerId,
                 new Rectangle(x, y, control.Scrcpy.ScreenSize.Width, control.Scrcpy.ScreenSize.Height),
@@ -198,9 +173,9 @@ namespace TqkLibrary.Scrcpy
         /// <returns></returns>
         public static async Task KeyAsync(this IControl control, AndroidKeyCode androidKeyCode, uint repeat = 1, int releaseDelay = 100, CancellationToken cancellationToken = default)
         {
-            await control.InjectKeycodeAsync(AndroidKeyEventAction.ACTION_DOWN, androidKeyCode, repeat, AndroidKeyEventMeta.META_NONE);
+            control.InjectKeycode(AndroidKeyEventAction.ACTION_DOWN, androidKeyCode, repeat, AndroidKeyEventMeta.META_NONE);
             await Task.Delay(releaseDelay, cancellationToken);
-            await control.InjectKeycodeAsync(AndroidKeyEventAction.ACTION_UP, androidKeyCode, repeat, AndroidKeyEventMeta.META_NONE);
+            control.InjectKeycode(AndroidKeyEventAction.ACTION_UP, androidKeyCode, repeat, AndroidKeyEventMeta.META_NONE);
         }
 
         /// <summary>
@@ -213,17 +188,6 @@ namespace TqkLibrary.Scrcpy
         /// <param name="hScroll"></param>
         public static bool Scroll(this IControl control, int x, int y, int vScroll, int hScroll = 0)
             => control.InjectScrollEvent(new Rectangle(x, y, control.Scrcpy.ScreenSize.Width, control.Scrcpy.ScreenSize.Height), vScroll, hScroll);
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="control"></param>
-        /// <param name="x"></param>
-        /// <param name="y"></param>
-        /// <param name="vScroll"></param>
-        /// <param name="hScroll"></param>
-        /// <returns></returns>
-        public static Task<bool> ScrollAsync(this IControl control, int x, int y, int vScroll, int hScroll = 0)
-            => control.InjectScrollEventAsync(new Rectangle(x, y, control.Scrcpy.ScreenSize.Width, control.Scrcpy.ScreenSize.Height), vScroll, hScroll);
 
 
         /// <summary>
@@ -236,17 +200,6 @@ namespace TqkLibrary.Scrcpy
         /// <returns></returns>
         public static bool Scroll(this IControl control, Point point, int hScroll, int vScroll)
             => control.Scroll(point.X, point.Y, hScroll, vScroll);
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="control"></param>
-        /// <param name="point"></param>
-        /// <param name="hScroll"></param>
-        /// <param name="vScroll"></param>
-        /// <returns></returns>
-        public static Task<bool> ScrollAsync(this IControl control, Point point, int hScroll, int vScroll)
-           => control.ScrollAsync(point.X, point.Y, hScroll, vScroll);
-
 
         /// <summary>
         /// 
@@ -258,21 +211,6 @@ namespace TqkLibrary.Scrcpy
         /// <param name="vScroll"></param>
         public static bool ScrollPercent(this IControl control, double x, double y, int hScroll, int vScroll)
              => control.Scroll(
-                 (int)(x * control.Scrcpy.ScreenSize.Width),
-                 (int)(y * control.Scrcpy.ScreenSize.Height),
-                 hScroll,
-                 vScroll);
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="control"></param>
-        /// <param name="x"></param>
-        /// <param name="y"></param>
-        /// <param name="hScroll"></param>
-        /// <param name="vScroll"></param>
-        /// <returns></returns>
-        public static Task<bool> ScrollPercentAsync(this IControl control, double x, double y, int hScroll, int vScroll)
-             => control.ScrollAsync(
                  (int)(x * control.Scrcpy.ScreenSize.Width),
                  (int)(y * control.Scrcpy.ScreenSize.Height),
                  hScroll,
@@ -331,7 +269,7 @@ namespace TqkLibrary.Scrcpy
         public static async Task SwipeAsync(this IControl control, int x1, int y1, int x2, int y2, int duration, int delayStep = 10, CancellationToken cancellationToken = default)
         {
             long pointerId = random.Next(int.MinValue, int.MaxValue);
-            await control.InjectTouchEventAsync(
+            control.InjectTouchEvent(
                 AndroidMotionEventAction.ACTION_DOWN,
                 pointerId,
                 new Rectangle(x1, y1, control.Scrcpy.ScreenSize.Width, control.Scrcpy.ScreenSize.Height));
@@ -343,14 +281,14 @@ namespace TqkLibrary.Scrcpy
             int y = (y2 - y1) / times;
             for (int i = 1; i < times; i++)
             {
-                await control.InjectTouchEventAsync(
+                control.InjectTouchEvent(
                       AndroidMotionEventAction.ACTION_MOVE,
                       pointerId,
                       new Rectangle(x1 + x * i, y1 + y * i, control.Scrcpy.ScreenSize.Width, control.Scrcpy.ScreenSize.Height));
                 await Task.Delay(delayStep, cancellationToken);
             }
 
-            await control.InjectTouchEventAsync(
+            control.InjectTouchEvent(
                  AndroidMotionEventAction.ACTION_UP,
                  pointerId,
                  new Rectangle(x2, y2, control.Scrcpy.ScreenSize.Width, control.Scrcpy.ScreenSize.Height));
@@ -480,7 +418,7 @@ namespace TqkLibrary.Scrcpy
         public static async Task SwipeSpeedAsync(this IControl control, int x1, int y1, int x2, int y2, int pixelPerSec = 1000, int delayStep = 10, CancellationToken cancellationToken = default)
         {
             long pointerId = random.Next(int.MinValue, int.MaxValue);
-            await control.InjectTouchEventAsync(
+            control.InjectTouchEvent(
                 AndroidMotionEventAction.ACTION_DOWN,
                 pointerId,
                 new Rectangle(x1, y1, control.Scrcpy.ScreenSize.Width, control.Scrcpy.ScreenSize.Height));
@@ -498,14 +436,14 @@ namespace TqkLibrary.Scrcpy
 
             for (int i = 1; i <= times; i++)
             {
-                await control.InjectTouchEventAsync(
+                control.InjectTouchEvent(
                     AndroidMotionEventAction.ACTION_MOVE,
                     pointerId,
                     new Rectangle(x1 + x * i, y1 + y * i, control.Scrcpy.ScreenSize.Width, control.Scrcpy.ScreenSize.Height));
                 await Task.Delay(delayStep, cancellationToken);
             }
 
-            await control.InjectTouchEventAsync(
+            control.InjectTouchEvent(
                 AndroidMotionEventAction.ACTION_UP,
                 pointerId,
                 new Rectangle(x2, y2, control.Scrcpy.ScreenSize.Width, control.Scrcpy.ScreenSize.Height));
@@ -537,18 +475,16 @@ namespace TqkLibrary.Scrcpy
         /// 
         /// </summary>
         /// <param name="control"></param>
-        /// <param name="timeout"></param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        public static async Task<string> GetClipboardAsync(this IControl control, int timeout = 2000)
+        public static async Task<string> GetClipboardAsync(this IControl control, CancellationToken cancellationToken = default)
         {
             TaskCompletionSource<string> taskCompletionSource = new TaskCompletionSource<string>(TaskCreationOptions.RunContinuationsAsynchronously);
             OnDataReceived<string> dataDelegate = (text) => taskCompletionSource.TrySetResult(text);
-            using CancellationTokenSource cancellationTokenSource = new CancellationTokenSource(timeout);
             try
             {
-                using var register = cancellationTokenSource.Token.Register(() => taskCompletionSource.TrySetException(new TimeoutException($"GetClipboardAsync Timeout {timeout}")));
+                using var register = cancellationToken.Register(() => taskCompletionSource.TrySetCanceled());
                 control.OnClipboardReceived += dataDelegate;
-
                 await taskCompletionSource.Task.ConfigureAwait(false);
                 return taskCompletionSource.Task.Result;
             }

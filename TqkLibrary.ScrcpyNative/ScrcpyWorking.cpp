@@ -196,7 +196,7 @@ bool ScrcpyWorking::Start() {
 		if (control == INVALID_SOCKET) {
 			return false;
 		}
-		this->_control = new Control(control);
+		this->_control = new Control(this->_scrcpy, control);
 	}
 
 	this->_video->Start();//start video thread

@@ -14,7 +14,7 @@ namespace TqkLibrary.Scrcpy
 
         [DllImport("TqkLibrary.ScrcpyNative.dll", CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
         internal static extern bool ClearKey();
-        
+
         [DllImport("TqkLibrary.ScrcpyNative.dll", CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
         internal static extern bool AddKey(byte[] key, int sizeInByte);
 
@@ -34,9 +34,12 @@ namespace TqkLibrary.Scrcpy
         internal static extern bool ScrcpyGetScreenSize(IntPtr intPtr, ref int w, ref int h);
 
         [DllImport("TqkLibrary.ScrcpyNative.dll", CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
-        internal static extern bool ScrcpyControl(IntPtr intPtr, byte[] command, int sizeInByte);
+        internal static extern bool ScrcpyControlCommand(IntPtr intPtr, [In][MarshalAs(UnmanagedType.LPArray)] byte[] command, int sizeInByte);
 
         [DllImport("TqkLibrary.ScrcpyNative.dll", CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
         internal static extern bool ScrcpyGetScreenShot(IntPtr intPtr, IntPtr buffer, int sizeInByte, int w, int h, int lineSize);
+
+        [DllImport("TqkLibrary.ScrcpyNative.dll", CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern bool RegisterClipboardEvent(IntPtr intPtr, IntPtr delegateHandle);
     }
 }
