@@ -11,6 +11,7 @@
 
 #define WIN32_LEAN_AND_MEAN             // Exclude rarely-used stuff from Windows headers
 
+typedef struct ScrcpyNativeConfig;
 #ifdef TQKLIBRARYSCRCPYNATIVE_EXPORTS
 typedef class Scrcpy;
 typedef class ScrcpyWorking;
@@ -38,35 +39,11 @@ typedef class NV12ToRgbShader;
 #include <directxmath.h>
 #include <wrl/client.h>
 #include <dxgi.h>
-
+#include "ScrcpyNativeConfig.h"
 #pragma comment(lib,"ws2_32.lib")
 using namespace Microsoft::WRL;
 using namespace DirectX;
-//enum Orientations : int
-//{
-//	Auto = -1,
-//	Natural = 0,
-//	Counterclockwise90 = 1,
-//	/// <summary>
-//	/// 180°
-//	/// </summary>
-//	Flip = 2,
-//	Clockwise90 = 3
-//};
-struct ScrcpyNativeConfig {
-	BYTE HwType;//AVHWDeviceType
-	bool ForceAdbForward;
-	bool IsControl;
-	INT32 ConnectionTimeout;
-};
-extern bool IsCudaSupport;
-//#include "ProcessWrapper.h"
-//#include "SocketWrapper.h"
-//#include "Utils.h"
-//#include "ScrcpyWorking.h"
-//#include "Video.h"
-//#include "Control.h"
-//#include "Scrcpy.h"
+
 #endif //TQKLIBRARYSCRCPYNATIVE_EXPORTS
 
 #include "Exports.h"

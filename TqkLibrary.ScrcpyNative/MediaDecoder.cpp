@@ -4,9 +4,10 @@
 #include "NV12ToRgbShader.h"
 #include "Utils.h"
 
-MediaDecoder::MediaDecoder(const AVCodec* codec, AVHWDeviceType type) {
+MediaDecoder::MediaDecoder(const AVCodec* codec, const ScrcpyNativeConfig& nativeConfig) {
 	this->_codec = codec;
-	this->_hwType = type;
+	this->_nativeConfig = nativeConfig;
+	this->_hwType = (AVHWDeviceType)nativeConfig.HwType;
 }
 
 MediaDecoder::~MediaDecoder() {
@@ -51,14 +52,17 @@ bool MediaDecoder::Init() {
 		{
 		case AVHWDeviceType::AV_HWDEVICE_TYPE_D3D11VA:
 		{
-			AVHWDeviceContext* hw_device_ctx = reinterpret_cast<AVHWDeviceContext*>(this->_codec_ctx->hw_device_ctx->data);
-			AVD3D11VADeviceContext* d3d11va_device_ctx = reinterpret_cast<AVD3D11VADeviceContext*>(hw_device_ctx->hwctx);
-			this->_d3d11_shader = new NV12ToRgbShader(d3d11va_device_ctx);
-			if (this->_d3d11_shader == nullptr)
-				return false;
+			if (this->_nativeConfig.IsUseD3D11Shader) {
+				AVHWDeviceContext* hw_device_ctx = reinterpret_cast<AVHWDeviceContext*>(this->_codec_ctx->hw_device_ctx->data);
+				AVD3D11VADeviceContext* d3d11va_device_ctx = reinterpret_cast<AVD3D11VADeviceContext*>(hw_device_ctx->hwctx);
+				this->_d3d11_shader = new NV12ToRgbShader(d3d11va_device_ctx);
+				if (this->_d3d11_shader == nullptr)
+					return false;
 
-			if (!this->_d3d11_shader->Init())
-				return false;
+				if (!this->_d3d11_shader->Init())
+					return false;
+			}
+			break;
 		}
 		default:
 			break;
@@ -78,8 +82,7 @@ bool MediaDecoder::Decode(const AVPacket* packet, AVFrame* frame) {
 		return false;
 	if (_decoding_frame->hw_frames_ctx == nullptr)
 	{
-		av_frame_move_ref(frame, _decoding_frame);
-		return true;
+		return this->TransferNoHw(frame);
 	}
 	else
 	{
@@ -87,27 +90,44 @@ bool MediaDecoder::Decode(const AVPacket* packet, AVFrame* frame) {
 		{
 		case AVHWDeviceType::AV_HWDEVICE_TYPE_D3D11VA:
 		{
-			bool result = this->_d3d11_shader->Convert(_decoding_frame, frame);
-			av_frame_unref(_decoding_frame);
-			return result;
+			if (this->_d3d11_shader != nullptr) {
+				bool result = this->_d3d11_shader->Convert(_decoding_frame, frame);
+				av_frame_unref(_decoding_frame);
+				return result;
+			}
+			return this->FFmpegTransfer(frame);
 		}
-		case AVHWDeviceType::AV_HWDEVICE_TYPE_CUDA:
-		case AVHWDeviceType::AV_HWDEVICE_TYPE_DXVA2:
+		case AVHWDeviceType::AV_HWDEVICE_TYPE_CUDA://nvidia 
+		case AVHWDeviceType::AV_HWDEVICE_TYPE_DXVA2://DirectX Video Acceleration by microsoft
+		case AVHWDeviceType::AV_HWDEVICE_TYPE_VDPAU://nvidia api
+		case AVHWDeviceType::AV_HWDEVICE_TYPE_VAAPI://by intel
+		case AVHWDeviceType::AV_HWDEVICE_TYPE_OPENCL://by amd
+		case AVHWDeviceType::AV_HWDEVICE_TYPE_VULKAN://gpu
 		{
-			bool result = avcheck(av_hwframe_transfer_data(_transfer_frame, _decoding_frame, 0));
-			av_frame_unref(_decoding_frame);
-			if (result)
-				av_frame_move_ref(frame, _transfer_frame);
-			return result;
+			return this->FFmpegTransfer(frame);
 		}
+		//case AVHWDeviceType::AV_HWDEVICE_TYPE_DRM://Digital rights management video
+		//case AVHWDeviceType::AV_HWDEVICE_TYPE_MEDIACODEC://android
+		//case AVHWDeviceType::AV_HWDEVICE_TYPE_VIDEOTOOLBOX://apple api
 
-		case AVHWDeviceType::AV_HWDEVICE_TYPE_NONE:
-		case AVHWDeviceType::AV_HWDEVICE_TYPE_QSV:
+		case AVHWDeviceType::AV_HWDEVICE_TYPE_NONE://cpu
+		case AVHWDeviceType::AV_HWDEVICE_TYPE_QSV://cpu
 		default:
 		{
-			av_frame_move_ref(frame, _decoding_frame);
-			return true;
+			return this->TransferNoHw(frame);
 		}
 		}
 	}
+}
+
+bool MediaDecoder::TransferNoHw(AVFrame* frame) {
+	av_frame_move_ref(frame, _decoding_frame);
+	return true;
+}
+bool MediaDecoder::FFmpegTransfer(AVFrame* frame) {
+	bool result = avcheck(av_hwframe_transfer_data(_transfer_frame, _decoding_frame, 0));
+	av_frame_unref(_decoding_frame);
+	if (result)
+		av_frame_move_ref(frame, _transfer_frame);
+	return result;
 }

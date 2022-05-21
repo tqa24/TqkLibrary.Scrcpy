@@ -1,7 +1,9 @@
 #ifndef ScrcpyNativeExports_H
 #define ScrcpyNativeExports_H
 
-ScrcpyNativeExport bool LoadKey(BYTE* key, const int sizeInByte);
+ScrcpyNativeExport BYTE FFmpegHWSupport(BYTE bHWSupport);
+ScrcpyNativeExport bool ClearKey();
+ScrcpyNativeExport bool AddKey(BYTE* key, const int sizeInByte);
 ScrcpyNativeExport Scrcpy* ScrcpyAlloc(LPCWSTR deviceId);
 ScrcpyNativeExport void ScrcpyFree(Scrcpy* scrcpy);
 ScrcpyNativeExport bool ScrcpyConnect(Scrcpy* scrcpy, LPCWSTR config, const ScrcpyNativeConfig& nativeConfig);

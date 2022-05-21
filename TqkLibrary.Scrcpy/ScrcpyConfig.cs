@@ -13,6 +13,21 @@ namespace TqkLibrary.Scrcpy
     public class ScrcpyConfig
     {
         /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public static IEnumerable<FFmpegAVHWDeviceType> GetHwSupports()
+        {
+            FFmpegAVHWDeviceType type = FFmpegAVHWDeviceType.AV_HWDEVICE_TYPE_NONE;
+            do
+            {
+                type = (FFmpegAVHWDeviceType)NativeWrapper.FFmpegHWSupport((byte)type);
+                yield return type;
+
+            } while (type != FFmpegAVHWDeviceType.AV_HWDEVICE_TYPE_NONE);
+        }
+        
+        /// <summary>
         /// Default: false
         /// </summary>
         public bool ShowTouches { get; set; } = false;
@@ -28,7 +43,8 @@ namespace TqkLibrary.Scrcpy
         public Orientations Orientation { get; set; } = Orientations.Auto;
 
         /// <summary>
-        /// Default: true
+        /// Bật để sử dụng <see cref="Scrcpy.Control"/><br>
+        /// </br>Default: true
         /// </summary>
         public bool IsControl { get; set; } = true;
 
@@ -43,7 +59,7 @@ namespace TqkLibrary.Scrcpy
         public int MaxSize { get; set; } = 0;
 
         /// <summary>
-        /// Bitrate of video stream
+        /// Max bitrate of video stream
         /// </summary>
         public int Bitrate { get; set; } = 8000000;
 
@@ -54,13 +70,15 @@ namespace TqkLibrary.Scrcpy
         public int DisplayId { get; set; } = 0;
 
         /// <summary>
-        /// Crop screen
-        /// Default: null
+        /// Cắt một vùng màn hình
+        /// Mặc định: null
         /// </summary>
         public Rectangle? Crop { get; set; } = null;
 
         /// <summary>
-        /// 
+        /// Dùng phần cứng đặc biệt để giải mã hình ảnh (Ví dụ: VGA/GPU)<br>
+        /// </br>Mặc định: <see cref="FFmpegAVHWDeviceType.AV_HWDEVICE_TYPE_NONE"/><br>
+        /// </br>Sử dụng <see cref="ScrcpyConfig.GetHwSupports"/> để lấy danh sách hỗ trợ
         /// </summary>
         public FFmpegAVHWDeviceType HwType { get; set; } = FFmpegAVHWDeviceType.AV_HWDEVICE_TYPE_NONE;
 
@@ -70,9 +88,26 @@ namespace TqkLibrary.Scrcpy
         public LogLevel LogLevel { get; set; } = LogLevel.Info;
 
         /// <summary>
-        /// 
+        /// default: false
         /// </summary>
         public bool PowerOffOnClose { get; set; } = false;
+
+        /// <summary>
+        /// Dùng directX 11 shader để giải mã ảnh.<br>
+        /// </br>Note: Chỉ hoạt động với <see cref="HwType"/> ở mode <see cref="FFmpegAVHWDeviceType.AV_HWDEVICE_TYPE_D3D11VA"/>
+        /// </summary>
+        public bool IsUseD3D11Shader { get; set; } = false;
+
+
+        /// <summary>
+        /// Default: 3000
+        /// </summary>
+        public int ConnectionTimeout { get; set; } = 3000;
+
+
+
+
+
 
         /// <summary>
         /// if true: Use Adb Forward instead of Adb Reverse
@@ -96,11 +131,7 @@ namespace TqkLibrary.Scrcpy
             }
         }
 
-        /// <summary>
-        /// Default: 3000
-        /// </summary>
-        public int ConnectionTimeout { get; set; } = 3000;
-        
+
         /// <summary>
         /// 
         /// </summary>
@@ -117,6 +148,7 @@ namespace TqkLibrary.Scrcpy
                 HwType = this.HwType,
                 ForceAdbForward = this.ForceAdbForward,
                 IsControl = this.IsControl,
+                IsUseD3D11Shader = this.IsUseD3D11Shader,
                 ConnectionTimeout = ConnectionTimeout,
             };
         }

@@ -14,6 +14,9 @@ namespace TqkLibrary.Scrcpy
         [MarshalAs(UnmanagedType.U1)]
         public bool IsControl;
 
+        [MarshalAs(UnmanagedType.U1)]
+        public bool IsUseD3D11Shader;
+
         public int ConnectionTimeout;
     }
 }

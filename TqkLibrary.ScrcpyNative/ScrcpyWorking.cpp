@@ -185,7 +185,7 @@ bool ScrcpyWorking::Start() {
 	if (video == INVALID_SOCKET) {
 		return false;
 	}
-	this->_video = new Video(video, (AVHWDeviceType)this->_nativeConfig.HwType);
+	this->_video = new Video(video, this->_nativeConfig);
 	if (!this->_video->Init()) {
 		return false;
 	}

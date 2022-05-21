@@ -44,11 +44,6 @@ bool FrameConventer::Convert(AVFrame* frame, BYTE* buff, const int sizeInByte, c
 			return false;
 		}
 
-		if (IsCudaSupport) {
-
-		}
-
-
 		SwsContext* sws = sws_getContext(
 			frame->width, frame->height, (AVPixelFormat)frame->format,
 			w, h, AV_PIX_FMT_BGRA,

@@ -4,7 +4,7 @@
 class Video
 {
 public:
-	Video(SOCKET sock, AVHWDeviceType hwType);
+	Video(SOCKET sock, const ScrcpyNativeConfig& nativeConfig);
 	~Video();
 	void Start();
 	void Stop();

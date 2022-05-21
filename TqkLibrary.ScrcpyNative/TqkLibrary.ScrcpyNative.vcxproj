@@ -101,6 +101,7 @@
     <ClInclude Include="pch.h" />
     <ClInclude Include="ProcessWrapper.h" />
     <ClInclude Include="Scrcpy.h" />
+    <ClInclude Include="ScrcpyNativeConfig.h" />
     <ClInclude Include="ScrcpyWorking.h" />
     <ClInclude Include="SocketWrapper.h" />
     <ClInclude Include="Utils.h" />

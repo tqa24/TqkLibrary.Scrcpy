@@ -9,12 +9,12 @@
 #define HEADER_SIZE 12
 #define DEVICE_NAME_SIZE 64
 #define NO_PTS UINT64_MAX
-Video::Video(SOCKET sock, AVHWDeviceType hwType) {
+Video::Video(SOCKET sock, const ScrcpyNativeConfig& nativeConfig) {
 	this->_videoSock = new SocketWrapper(sock);
 	this->_videoBuffer = new BYTE[DEVICE_NAME_SIZE];
 	const AVCodec* h264_decoder = avcodec_find_decoder(AV_CODEC_ID_H264);
 	this->_parsePacket = new ParsePacket(h264_decoder);
-	this->_h264_mediaDecoder = new MediaDecoder(h264_decoder, hwType);
+	this->_h264_mediaDecoder = new MediaDecoder(h264_decoder, nativeConfig);
 }
 
 Video::~Video() {

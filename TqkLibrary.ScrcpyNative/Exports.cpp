@@ -2,7 +2,16 @@
 #include "Exports.h"
 #include "Scrcpy.h"
 
-bool LoadKey(const BYTE* key, const int sizeInByte) {
+BYTE FFmpegHWSupport(BYTE bHWSupport)
+{
+	return (BYTE)av_hwdevice_iterate_types((AVHWDeviceType)bHWSupport);
+}
+
+bool ClearKey() {
+	return true;
+}
+
+bool AddKey(const BYTE* key, const int sizeInByte) {
 	return true;
 }
 

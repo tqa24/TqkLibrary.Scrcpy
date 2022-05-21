@@ -10,7 +10,6 @@ BOOL APIENTRY DllMain(HMODULE hModule,
 	switch (ul_reason_for_call)
 	{
 	case DLL_PROCESS_ATTACH:
-		IsCudaSupport = IsHwSupport(AVHWDeviceType::AV_HWDEVICE_TYPE_CUDA);
 #if _DEBUG
 		av_log_set_level(AV_LOG_DEBUG);
 #endif
