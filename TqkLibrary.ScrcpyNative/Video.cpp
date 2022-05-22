@@ -5,7 +5,7 @@
 #include "MediaDecoder.h"
 #include "SocketWrapper.h"
 #include "Utils.h"
-
+#define PACKET_BUFFER_SIZE 1 << 18//256k
 #define HEADER_SIZE 12
 #define DEVICE_NAME_SIZE 64
 #define NO_PTS UINT64_MAX
@@ -59,6 +59,8 @@ bool Video::Init() {
 	if (this->_mtx_waitFirstFrame == INVALID_HANDLE_VALUE)
 		return false;
 
+	this->_videoSock->ChangeBlockMode(true);
+
 	this->_frame = av_frame_alloc();
 	this->_temp_frame = av_frame_alloc();
 
@@ -75,6 +77,8 @@ bool Video::WaitForFirstFrame(DWORD timeout) {
 }
 
 void Video::threadStart() {
+	this->_videoSock->ChangeBufferSize(PACKET_BUFFER_SIZE);
+
 	if (this->_videoSock->ReadAll(this->_videoBuffer, DEVICE_NAME_SIZE) != DEVICE_NAME_SIZE)//device name
 		return;
 	this->_deviceName.append(std::string((const char*)this->_videoBuffer, 64));

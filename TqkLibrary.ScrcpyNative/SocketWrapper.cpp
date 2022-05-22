@@ -21,3 +21,14 @@ int SocketWrapper::Write(const BYTE* buff, int length) {
 void SocketWrapper::Stop() {
 	shutdown(this->_sock, SD_BOTH);
 }
+
+bool SocketWrapper::ChangeBlockMode(bool isBlock) {
+	u_long iMode = isBlock ? 0 : 1;
+	if (ioctlsocket(this->_sock, FIONBIO, &iMode) == SOCKET_ERROR) {
+		return false;
+	}
+	return true;
+}
+bool SocketWrapper::ChangeBufferSize(int sizeInByte) {
+	return setsockopt(this->_sock, SOL_SOCKET, SO_RCVBUF, (LPCSTR)&sizeInByte, sizeof(int)) != SOCKET_ERROR;
+}

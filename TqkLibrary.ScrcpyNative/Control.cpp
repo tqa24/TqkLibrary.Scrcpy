@@ -4,7 +4,7 @@
 #include "Utils.h"
 #include "Scrcpy.h"
 
-#define CONTROL_MSG_MAX_SIZE 1 << 18//256k
+#define CONTROL_MSG_MAX_SIZE (1 << 18)//256k
 enum ScrcpyControlReceivedType : BYTE
 {
 	DEVICE_MSG_TYPE_CLIPBOARD = 0,
@@ -48,9 +48,12 @@ bool Control::ControlCommand(const BYTE* command, const int sizeInByte) {
 }
 
 void Control::threadStart() {
+	this->_sockControl->ChangeBlockMode(true);
+	this->_sockControl->ChangeBufferSize(CONTROL_MSG_MAX_SIZE);
 	while (!this->_isStop) {
 
-		if (this->_sockControl->ReadAll(this->_buffer, 1) != 1)
+		int readSize = this->_sockControl->ReadAll(this->_buffer, 1);
+		if (readSize != 1)
 			return;
 
 		ScrcpyControlReceivedType type = (ScrcpyControlReceivedType)this->_buffer[0];
@@ -63,16 +66,22 @@ void Control::threadStart() {
 				return;
 
 			UINT32 len = sc_read32be(this->_buffer);
-			if (len == 0) 
-				break;
-			assert(len > CONTROL_MSG_MAX_SIZE);
+			if (len != 0)
+			{
+				assert(len <= CONTROL_MSG_MAX_SIZE);
 
-			if (this->_sockControl->ReadAll(this->_buffer, len) != len)
-				return;
+				if (this->_sockControl->ReadAll(this->_buffer, len) != len)
+					return;
 
-			//send to c#
-			if(this->scrcpy->clipboardCallback != nullptr) 
-				this->scrcpy->clipboardCallback(this->_buffer, len);
+				//send to c#
+				if (this->scrcpy->clipboardCallback != nullptr)
+					this->scrcpy->clipboardCallback(this->_buffer, len);
+			}
+			else 
+			{
+				if (this->scrcpy->clipboardCallback != nullptr)//string.Empty
+					this->scrcpy->clipboardCallback(this->_buffer, len);
+			}
 			break;
 		}
 		default:

@@ -68,11 +68,11 @@ SOCKET AcceptConnection(SOCKET sock, int timeout = 2000)
 	{
 		SOCKET client = accept(sock, (sockaddr*)&addr, &addrLen);
 		if (client != INVALID_SOCKET) {
-			u_long iMode = 0;
+			/*u_long iMode = 0;
 			if (ioctlsocket(client, FIONBIO, &iMode) == SOCKET_ERROR) {
 				closesocket(client);
 				return INVALID_SOCKET;
-			}
+			}*/
 			return client;
 		}
 		else
@@ -200,7 +200,8 @@ bool ScrcpyWorking::Start() {
 	}
 
 	this->_video->Start();//start video thread
-	if (this->_nativeConfig.IsControl) this->_control->Start();//start control thread
+	if (this->_nativeConfig.IsControl) 
+		this->_control->Start();//start control thread
 
 	//close listen sock
 	closesocket(this->_listenSock);

@@ -72,12 +72,22 @@ namespace TqkLibrary.Scrcpy.Control
         internal readonly NativeOnClipboardReceivedDelegate NativeOnClipboardReceivedDelegate;
         void NativeOnClipboardReceived(IntPtr intPtr, int length)
         {
-            byte[] buffer = new byte[length];
-            Marshal.Copy(intPtr, buffer, 0, length);
-            ThreadPool.QueueUserWorkItem((o) =>//use thread pool for not hold native thread
+            if (length == 0)
             {
-                OnClipboardReceived?.Invoke(Encoding.UTF8.GetString(buffer));
-            });
+                ThreadPool.QueueUserWorkItem((o) =>//use thread pool for not hold native thread
+                {
+                    OnClipboardReceived?.Invoke(string.Empty);
+                });
+            }
+            else
+            {
+                byte[] buffer = new byte[length];
+                Marshal.Copy(intPtr, buffer, 0, length);
+                ThreadPool.QueueUserWorkItem((o) =>//use thread pool for not hold native thread
+                {
+                    OnClipboardReceived?.Invoke(Encoding.UTF8.GetString(buffer));
+                });
+            }
         }
         #endregion
     }

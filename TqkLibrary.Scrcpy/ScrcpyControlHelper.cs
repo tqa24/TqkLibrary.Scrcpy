@@ -485,8 +485,12 @@ namespace TqkLibrary.Scrcpy
             {
                 using var register = cancellationToken.Register(() => taskCompletionSource.TrySetCanceled());
                 control.OnClipboardReceived += dataDelegate;
-                await taskCompletionSource.Task.ConfigureAwait(false);
-                return taskCompletionSource.Task.Result;
+                if (control.GetClipboard())
+                {
+                    await taskCompletionSource.Task.ConfigureAwait(false);
+                    return taskCompletionSource.Task.Result;
+                }
+                return string.Empty;
             }
             finally
             {
