@@ -16,21 +16,11 @@ namespace TqkLibrary.Scrcpy.Control
         {
             this.Scrcpy = scrcpy;
             this.NativeOnClipboardReceivedDelegate = NativeOnClipboardReceived;
-
-            IntPtr pointer = Marshal.GetFunctionPointerForDelegate(NativeOnClipboardReceivedDelegate);
-            NativeWrapper.RegisterClipboardEvent(scrcpy.Handle, pointer);
+            this.Scrcpy.RegisterClipboardEvent(NativeOnClipboardReceivedDelegate);
         }
         public Scrcpy Scrcpy { get; }
 
-
-
-
-        bool SendControl(ScrcpyControlMessage scrcpyControlMessage)
-        {
-            byte[] command = scrcpyControlMessage.GetCommand();
-            return NativeWrapper.ScrcpyControlCommand(Scrcpy.Handle, command, command.Length);
-        }
-
+        bool SendControl(ScrcpyControlMessage scrcpyControlMessage) => this.Scrcpy.SendControl(scrcpyControlMessage);
 
         #region BasicCommand
         public bool BackOrScreenOn(AndroidKeyEventAction KeyEventAction)
@@ -69,7 +59,7 @@ namespace TqkLibrary.Scrcpy.Control
 
         #region Native Event
         //hold for gc not release this delegate
-        internal readonly NativeOnClipboardReceivedDelegate NativeOnClipboardReceivedDelegate;
+        readonly NativeOnClipboardReceivedDelegate NativeOnClipboardReceivedDelegate;
         void NativeOnClipboardReceived(IntPtr intPtr, int length)
         {
             if (length == 0)

@@ -15,15 +15,18 @@ namespace TqkLibrary.Scrcpy
     /// </summary>
     public class Scrcpy : IDisposable
     {
+        readonly object _lock = new object();
+        private IntPtr _handle = IntPtr.Zero;
+
+
         /// <summary>
         /// 
         /// </summary>
         /// <param name="deviceId"></param>
         public Scrcpy(string deviceId)
         {
-            Handle = NativeWrapper.ScrcpyAlloc(deviceId);
+            _handle = NativeWrapper.ScrcpyAlloc(deviceId);
             Control = new ScrcpyControl(this);
-            
         }
 
         /// <summary>
@@ -33,7 +36,7 @@ namespace TqkLibrary.Scrcpy
         {
             Dispose(false);
         }
-        
+
         /// <summary>
         /// 
         /// </summary>
@@ -45,20 +48,16 @@ namespace TqkLibrary.Scrcpy
 
         private void Dispose(bool disposing)
         {
-            if (Handle != IntPtr.Zero)
+            if (_handle != IntPtr.Zero)
             {
-                NativeWrapper.ScrcpyFree(Handle);
-                Handle = IntPtr.Zero;
+                lock (_lock)
+                {
+                    NativeWrapper.ScrcpyFree(_handle);
+                    _handle = IntPtr.Zero;
+                }
             }
         }
 
-        internal IntPtr Handle { get; private set; } = IntPtr.Zero;
-
-
-        
-
-
-        
         /// <summary>
         /// 
         /// </summary>
@@ -66,11 +65,11 @@ namespace TqkLibrary.Scrcpy
         {
             get
             {
-                if (Handle == IntPtr.Zero) throw new ObjectDisposedException(nameof(Scrcpy));
-                int w = 0;
-                int h = 0;
-                NativeWrapper.ScrcpyGetScreenSize(Handle, ref w, ref h);
-                return new Size(w, h);
+                lock (_lock)
+                {
+                    CheckDispose();
+                    return GetScreenSize();
+                }
             }
         }
 
@@ -80,16 +79,44 @@ namespace TqkLibrary.Scrcpy
         public IControl Control { get; }
 
 
+        private void CheckDispose()
+        {
+            if (_handle == IntPtr.Zero) throw new ObjectDisposedException(nameof(Scrcpy));
+        }
+
+        #region Function Control
+        internal bool SendControl(ScrcpyControlMessage scrcpyControlMessage)
+        {
+            lock (_lock)
+            {
+                CheckDispose();
+                byte[] command = scrcpyControlMessage.GetCommand();
+                return NativeWrapper.ScrcpyControlCommand(_handle, command, command.Length);
+            }
+        }
+
+        //init, dont lock
+        internal bool RegisterClipboardEvent(NativeOnClipboardReceivedDelegate clipboardReceivedDelegate)
+        {
+            IntPtr pointer = Marshal.GetFunctionPointerForDelegate(clipboardReceivedDelegate);
+            return NativeWrapper.RegisterClipboardEvent(_handle, pointer);
+        }
+        #endregion
+
         /// <summary>
         /// 
         /// </summary>
         /// <param name="config"></param>
         public bool Connect(ScrcpyConfig config = null)
         {
-            if (config == null) config = new ScrcpyConfig();
-            string config_str = config.ToString();
-            ScrcpyNativeConfig nativeConfig = config.NativeConfig();
-            return NativeWrapper.ScrcpyConnect(Handle, config_str, ref nativeConfig);
+            lock (_lock)
+            {
+                CheckDispose();
+                if (config == null) config = new ScrcpyConfig();
+                string config_str = config.ToString();
+                ScrcpyNativeConfig nativeConfig = config.NativeConfig();
+                return NativeWrapper.ScrcpyConnect(_handle, config_str, ref nativeConfig);
+            }
         }
 
         /// <summary>
@@ -98,8 +125,11 @@ namespace TqkLibrary.Scrcpy
         /// <exception cref="ObjectDisposedException"></exception>
         public void Stop()
         {
-            if (Handle == IntPtr.Zero) throw new ObjectDisposedException(nameof(Scrcpy));
-            NativeWrapper.ScrcpyStop(Handle);
+            lock (_lock)
+            {
+                CheckDispose();
+                NativeWrapper.ScrcpyStop(_handle);
+            }
         }
 
         /// <summary>
@@ -109,25 +139,32 @@ namespace TqkLibrary.Scrcpy
         /// <exception cref="ObjectDisposedException"></exception>
         public Bitmap GetScreenShot()
         {
-            if (Handle == IntPtr.Zero) throw new ObjectDisposedException(nameof(Scrcpy));
-            
-            Size size = ScreenSize;
-            Bitmap bitmap = new Bitmap(size.Width, size.Height, PixelFormat.Format32bppArgb);
-            BitmapData bitmapData = bitmap.LockBits(new Rectangle(0, 0, size.Width, size.Height), ImageLockMode.WriteOnly, bitmap.PixelFormat);
+            lock (_lock)
+            {
+                CheckDispose();
+                Size size = GetScreenSize();
+                Bitmap bitmap = new Bitmap(size.Width, size.Height, PixelFormat.Format32bppArgb);
+                BitmapData bitmapData = bitmap.LockBits(new Rectangle(0, 0, size.Width, size.Height), ImageLockMode.WriteOnly, bitmap.PixelFormat);
 
-            NativeWrapper.ScrcpyGetScreenShot(
-                Handle,
-                bitmapData.Scan0,
-                size.Width * size.Height * 4,
-                size.Width,
-                size.Height,
-                bitmapData.Stride);//ARGB only
+                NativeWrapper.ScrcpyGetScreenShot(
+                    _handle,
+                    bitmapData.Scan0,
+                    size.Width * size.Height * 4,
+                    size.Width,
+                    size.Height,
+                    bitmapData.Stride);//ARGB only
 
-            bitmap.UnlockBits(bitmapData);
-            return bitmap;//blank
+                bitmap.UnlockBits(bitmapData);
+                return bitmap;//blank
+            }
         }
 
-
-
+        Size GetScreenSize()
+        {
+            int w = 0;
+            int h = 0;
+            NativeWrapper.ScrcpyGetScreenSize(_handle, ref w, ref h);
+            return new Size(w, h);
+        }
     }
 }
