@@ -38,10 +38,11 @@ string deviceId = devices.First();
 int i = 0;
 ScrcpyConfig config = new ScrcpyConfig()
 {
-    HwType = FFmpegAVHWDeviceType.AV_HWDEVICE_TYPE_D3D11VA,
-    IsUseD3D11Shader = false,
+    //HwType = FFmpegAVHWDeviceType.AV_HWDEVICE_TYPE_D3D11VA,
+    //IsUseD3D11Shader = false,
     IsControl = true,
-    MaxFps = 6
+    MaxFps = 6,
+    ConnectionTimeout = 99999999
 };
 while (true)
 {
@@ -64,8 +65,8 @@ while (true)
             //string text = await scrcpy.Control.GetClipboardAsync();
             //Console.WriteLine($"GetClipboardAsync: {text}");
 
-            //while (true)
-            //    await Task.Delay(3000);
+            while (true)
+                await Task.Delay(3000);
             //Console.WriteLine($"{DateTime.Now:mm:ss.fff} GetScreenShot");
             await Task.Delay(1000);
             while (true)

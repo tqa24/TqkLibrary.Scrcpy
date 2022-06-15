@@ -36,27 +36,40 @@ bool ParsePacket::Init() {
 }
 
 
-
-
 bool ParsePacket::ParserPushPacket(AVPacket* packet) {
 	bool is_config = packet->pts == AV_NOPTS_VALUE;
 	if (has_pending || is_config) {
 		if (has_pending) {
 			//save old pending size before change size
-			int offset = _pending->size;
+			UINT64 offset = _pending->size;
 
 			//increase size pending packet for copy at start pointer + pending->size
 			//pending: [------------|       add size packet->size     ]
-			assert(avcheck(av_grow_packet(_pending, packet->size)));
-
-			//pending: [------------|    packet->data copy to here    ]
-			memcpy(_pending->data + offset, packet->data, packet->size);
+			bool grow_result = avcheck(av_grow_packet(_pending, packet->size));
+			assert(grow_result);
+			if (grow_result)
+			{
+				//pending: [------------|    packet->data copy to here    ]
+				memcpy(_pending->data + offset, packet->data, packet->size);
+			}
+			else
+			{
+				return false;
+			}
 		}
 		else//is_config
 		{
 			//just ref
-			assert(avcheck(av_packet_ref(_pending, packet)));
-			has_pending = true;
+			bool ref_result = avcheck(av_packet_ref(_pending, packet));
+			assert(ref_result);
+			if (ref_result)
+			{
+				has_pending = true;
+			}
+			else
+			{
+				return false;
+			}
 		}
 
 		if (!is_config)//set pending pts/dts -> for parse
