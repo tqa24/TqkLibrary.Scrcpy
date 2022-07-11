@@ -14,6 +14,7 @@ public:
 	bool GetScreenShot(BYTE* buffer, const int sizeInByte, const int w, const int h, const int lineSize);
 	bool GetScreenSize(int& w, int& h);
 	bool RegisterClipboardEvent(ClipboardReceivedDelegate callback);
+	bool RegisterClipboardAcknowledgementEvent(ClipboardAcknowledgementDelegate clipboardAcknowledgementDelegate);
 private:
 	//const
 	std::wstring _deviceId;
@@ -23,6 +24,7 @@ private:
 	//need release
 	ScrcpyWorking* _scrcpyWorking{ nullptr };
 	ClipboardReceivedDelegate clipboardCallback{ nullptr };
+	ClipboardAcknowledgementDelegate clipboardAcknowledgementCallback{ nullptr };
 };
 
 #endif

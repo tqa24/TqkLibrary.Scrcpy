@@ -49,13 +49,15 @@ while (true)
     Console.WriteLine($"{DateTime.Now:mm:ss.fff} Start");
     using (Scrcpy scrcpy = new Scrcpy(deviceId))
     {
+        scrcpy.Control.OnClipboardReceived += Control_OnClipboardReceived;
+        scrcpy.Control.OnSetClipboardAcknowledgement += Control_OnSetClipboardAcknowledgement;
         Console.WriteLine($"{DateTime.Now:mm:ss.fff} Connect");
-        if(scrcpy.Connect(config))
+        if (scrcpy.Connect(config))
         {
             Console.WriteLine($"{DateTime.Now:mm:ss.fff} Connected");
             //await Task.Delay(3000);
 
-            //scrcpy.Control.SetClipboard("Phạm Đức Long Click mất cũng chừng đó thôi =))", true);
+
             //await TapKeyboard(scrcpy, "qwertyuiop");
             //await Task.Delay(500);
             //await scrcpy.Control.KeyAsync(AndroidKeyCode.KEYCODE_ENTER);
@@ -65,16 +67,23 @@ while (true)
             //string text = await scrcpy.Control.GetClipboardAsync();
             //Console.WriteLine($"GetClipboardAsync: {text}");
 
-            while (true)
-                await Task.Delay(3000);
+            //while (true)
+            //    await Task.Delay(3000);
             //Console.WriteLine($"{DateTime.Now:mm:ss.fff} GetScreenShot");
             await Task.Delay(1000);
             while (true)
             {
+                scrcpy.Control.SetClipboard("Phạm Đức Long Click mất cũng chừng đó thôi =))", true, 222233);
+
                 using Bitmap bitmap = scrcpy.GetScreenShot();
                 Console.WriteLine($"{DateTime.Now:mm:ss.fff} GetScreenShoted");
                 bitmap.Save($"{imgs}\\{i++:00000}.png");
-                await Task.Delay(90);
+                await Task.Delay(500);
+
+                //scrcpy.Control.GetClipboard();
+                Console.WriteLine($"{DateTime.Now:mm:ss.fff} GetClipboardAsync");
+                string abc = await scrcpy.Control.GetClipboardAsync().ConfigureAwait(false);
+                Console.WriteLine($"{DateTime.Now:mm:ss.fff} GetClipboardAsync: {abc}");
                 //break;
             }
             //await Task.Delay(3000);
@@ -87,7 +96,7 @@ while (true)
         }
         else
         {
-            
+
         }
     }
     Console.WriteLine($"{DateTime.Now:mm:ss.fff} Disposesed");
@@ -97,6 +106,15 @@ while (true)
     //await Task.Delay(5000);
 }
 
+void Control_OnSetClipboardAcknowledgement(long data)
+{
+    Console.WriteLine($"Control_OnSetClipboardAcknowledgement: {data}");
+}
+
+void Control_OnClipboardReceived(string data)
+{
+    Console.WriteLine($"Control_OnClipboardReceived: {data}");
+}
 
 async Task TapKeyboard(Scrcpy scrcpy, string text)
 {

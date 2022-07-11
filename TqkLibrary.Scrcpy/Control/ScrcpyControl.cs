@@ -10,13 +10,19 @@ using System.Threading.Tasks;
 namespace TqkLibrary.Scrcpy.Control
 {
     internal delegate void NativeOnClipboardReceivedDelegate(IntPtr intPtr, int length);
+    internal delegate void NativeOnClipboardAcknowledgementDelegate(long length);
     internal class ScrcpyControl : IControl
     {
+        static readonly Random random = new Random();
         internal ScrcpyControl(Scrcpy scrcpy)
         {
             this.Scrcpy = scrcpy;
+
             this.NativeOnClipboardReceivedDelegate = NativeOnClipboardReceived;
             this.Scrcpy.RegisterClipboardEvent(NativeOnClipboardReceivedDelegate);
+
+            this.NativeOnClipboardAcknowledgementDelegate = NativeClipboardAcknowledgementReceived;
+            this.Scrcpy.RegisterClipboardAcknowledgementEvent(NativeOnClipboardAcknowledgementDelegate);
         }
         public Scrcpy Scrcpy { get; }
 
@@ -31,16 +37,16 @@ namespace TqkLibrary.Scrcpy.Control
             => SendControl(ScrcpyControlMessage.ExpandNotificationPanel());
         public bool ExpandSettingsPanel()
             => SendControl(ScrcpyControlMessage.ExpandSettingsPanel());
-        public bool GetClipboard()
-            => SendControl(ScrcpyControlMessage.GetClipboard());
+        public bool GetClipboard(CopyKey copyKey)
+            => SendControl(ScrcpyControlMessage.CreateGetClipboard(copyKey));
         public bool InjectKeycode(
             AndroidKeyEventAction action,
             AndroidKeyCode keycode,
             uint repeat = 1,
             AndroidKeyEventMeta metaState = AndroidKeyEventMeta.META_NONE)
             => SendControl(ScrcpyControlMessage.CreateInjectKeycode(action, keycode, repeat, metaState));
-        public bool InjectScrollEvent(Rectangle position, int vScroll, int hScroll = 0)
-            => SendControl(ScrcpyControlMessage.CreateInjectScrollEvent(position, vScroll, hScroll));
+        public bool InjectScrollEvent(Rectangle position, int vScroll, int hScroll = 0, AndroidMotionEventButton button = AndroidMotionEventButton.BUTTON_PRIMARY)
+            => SendControl(ScrcpyControlMessage.CreateInjectScrollEvent(position, vScroll, hScroll, button));
         public bool InjectText(string text)
             => SendControl(ScrcpyControlMessage.CreateInjectText(text));
         public bool InjectTouchEvent(AndroidMotionEventAction action, long pointerId, Rectangle position, float pressure = 1, AndroidMotionEventButton buttons = AndroidMotionEventButton.BUTTON_PRIMARY)
@@ -48,18 +54,22 @@ namespace TqkLibrary.Scrcpy.Control
         public bool RotateDevice()
             => SendControl(ScrcpyControlMessage.RotateDevice());
         public bool SetClipboard(string text, bool paste)
-            => SendControl(ScrcpyControlMessage.CreateSetClipboard(text, paste));
+            => SendControl(ScrcpyControlMessage.CreateSetClipboard(text, paste, random.Next()));
+        public bool SetClipboard(string text, bool paste, long sequence)
+            => SendControl(ScrcpyControlMessage.CreateSetClipboard(text, paste, sequence));
         public bool SetScreenPowerMode(ScrcpyScreenPowerMode powerMode)
             => SendControl(ScrcpyControlMessage.CreateSetScreenPowerMode(powerMode));
         #endregion
 
         #region Event
         public event OnDataReceived<string> OnClipboardReceived;
+        public event OnDataReceived<long> OnSetClipboardAcknowledgement;
         #endregion
 
         #region Native Event
         //hold for gc not release this delegate
         readonly NativeOnClipboardReceivedDelegate NativeOnClipboardReceivedDelegate;
+        readonly NativeOnClipboardAcknowledgementDelegate NativeOnClipboardAcknowledgementDelegate;
         void NativeOnClipboardReceived(IntPtr intPtr, int length)
         {
             if (length == 0)
@@ -78,6 +88,13 @@ namespace TqkLibrary.Scrcpy.Control
                     OnClipboardReceived?.Invoke(Encoding.UTF8.GetString(buffer));
                 });
             }
+        }
+        void NativeClipboardAcknowledgementReceived(long sequence)
+        {
+            ThreadPool.QueueUserWorkItem((o) =>//use thread pool for not hold native thread
+            {
+                OnSetClipboardAcknowledgement?.Invoke(sequence);
+            });
         }
         #endregion
     }

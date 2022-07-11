@@ -58,5 +58,8 @@ namespace TqkLibrary.Scrcpy
 
         [DllImport("TqkLibrary.ScrcpyNative.dll", CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
         internal static extern bool RegisterClipboardEvent(IntPtr intPtr, IntPtr delegateHandle);
+
+        [DllImport("TqkLibrary.ScrcpyNative.dll", CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern bool RegisterClipboardAcknowledgementEvent(IntPtr intPtr, IntPtr delegateHandle);
     }
 }

@@ -49,3 +49,7 @@ bool RegisterClipboardEvent(Scrcpy* scrcpy, ClipboardReceivedDelegate clipboardD
 	if (scrcpy == nullptr || clipboardDelegate == nullptr) return false;
 	return scrcpy->RegisterClipboardEvent(clipboardDelegate);
 }
+bool RegisterClipboardAcknowledgementEvent(Scrcpy* scrcpy, ClipboardAcknowledgementDelegate clipboardAcknowledgementDelegate) {
+	if (scrcpy == nullptr || clipboardAcknowledgementDelegate == nullptr) return false;
+	return scrcpy->RegisterClipboardAcknowledgementEvent(clipboardAcknowledgementDelegate);
+}

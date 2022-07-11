@@ -5,8 +5,10 @@ using System.Text;
 
 namespace TqkLibrary.Scrcpy.Control
 {
-    // https://github.com/Genymobile/scrcpy/blob/master/server/src/main/java/com/genymobile/scrcpy/ControlMessage.java
-    // https://github.com/Genymobile/scrcpy/blob/master/app/src/control_msg.c
+    /// <summary>
+    /// https://github.com/Genymobile/scrcpy/blob/master/server/src/main/java/com/genymobile/scrcpy/ControlMessage.java
+    /// https://github.com/Genymobile/scrcpy/blob/master/app/src/control_msg.c
+    /// </summary>
     internal sealed class ScrcpyControlMessage
     {
         private ScrcpyControlType ControlType { get; set; }
@@ -23,7 +25,9 @@ namespace TqkLibrary.Scrcpy.Control
         private int VScroll { get; set; }
         private bool Paste { get; set; }
         private uint Repeat { get; set; }
+        private long Sequence { get; set; }
         private ScrcpyScreenPowerMode PowerMode { get; set; }
+        private CopyKey CopyKey { get; set; }
 
         private ScrcpyControlMessage() { }
 
@@ -55,8 +59,8 @@ namespace TqkLibrary.Scrcpy.Control
                 AndroidMotionEventAction action,
                 long pointerId,
                 Rectangle position,
-                float pressure = 1f,
-                AndroidMotionEventButton buttons = AndroidMotionEventButton.BUTTON_PRIMARY)
+                float pressure,
+                AndroidMotionEventButton buttons)
           => new ScrcpyControlMessage
           {
               ControlType = ScrcpyControlType.TYPE_INJECT_TOUCH_EVENT,
@@ -67,23 +71,37 @@ namespace TqkLibrary.Scrcpy.Control
               Buttons = buttons
           };
 
-        internal static ScrcpyControlMessage CreateInjectScrollEvent(Rectangle position, int vScroll, int hScroll)
+        internal static ScrcpyControlMessage CreateInjectScrollEvent(
+            Rectangle position,
+            int vScroll,
+            int hScroll,
+            AndroidMotionEventButton button)
           => new ScrcpyControlMessage
           {
               ControlType = ScrcpyControlType.TYPE_INJECT_SCROLL_EVENT,
               Position = position,
               HScroll = hScroll,
-              VScroll = vScroll
+              VScroll = vScroll,
+              Buttons = button
           };
 
-        internal static ScrcpyControlMessage CreateSetClipboard(string text, bool paste)
+        internal static ScrcpyControlMessage CreateSetClipboard(string text, bool paste, long sequence)
         {
             if (string.IsNullOrEmpty(text)) throw new ArgumentNullException(nameof(text));
             return new ScrcpyControlMessage
             {
                 ControlType = ScrcpyControlType.TYPE_SET_CLIPBOARD,
+                Sequence = sequence,
                 Text = text,
                 Paste = paste
+            };
+        }
+        internal static ScrcpyControlMessage CreateGetClipboard(CopyKey copyKey)
+        {
+            return new ScrcpyControlMessage
+            {
+                ControlType = ScrcpyControlType.TYPE_GET_CLIPBOARD,
+                CopyKey = copyKey
             };
         }
 
@@ -106,8 +124,6 @@ namespace TqkLibrary.Scrcpy.Control
         internal static ScrcpyControlMessage ExpandSettingsPanel() => CreateEmpty(ScrcpyControlType.TYPE_EXPAND_SETTINGS_PANEL);
 
         internal static ScrcpyControlMessage CollapsePanel() => CreateEmpty(ScrcpyControlType.TYPE_COLLAPSE_PANELS);
-
-        internal static ScrcpyControlMessage GetClipboard() => CreateEmpty(ScrcpyControlType.TYPE_GET_CLIPBOARD);
 
         internal static ScrcpyControlMessage RotateDevice() => CreateEmpty(ScrcpyControlType.TYPE_ROTATE_DEVICE);
 
@@ -176,7 +192,7 @@ namespace TqkLibrary.Scrcpy.Control
 
                 case ScrcpyControlType.TYPE_INJECT_SCROLL_EVENT:
                     {
-                        buffer = new byte[21];
+                        buffer = new byte[25];
                         buffer[0] = (byte)ControlType;
                         Array.Copy(BitConverter.GetBytes(Position.X).Reverse().ToArray(), 0, buffer, 1, 4);//1-4
                         Array.Copy(BitConverter.GetBytes(Position.Y).Reverse().ToArray(), 0, buffer, 5, 4);//5-8
@@ -184,17 +200,20 @@ namespace TqkLibrary.Scrcpy.Control
                         Array.Copy(BitConverter.GetBytes((UInt16)Position.Height).Reverse().ToArray(), 0, buffer, 11, 2);//11-12
                         Array.Copy(BitConverter.GetBytes(HScroll).Reverse().ToArray(), 0, buffer, 13, 4);//13-16
                         Array.Copy(BitConverter.GetBytes(VScroll).Reverse().ToArray(), 0, buffer, 17, 4);//17-20
+                        Array.Copy(BitConverter.GetBytes((int)Buttons).Reverse().ToArray(), 0, buffer, 21, 4);//21-24
                     }
                     break;
 
                 case ScrcpyControlType.TYPE_SET_CLIPBOARD:
                     {
                         byte[] utf8_text = Encoding.UTF8.GetBytes(Text);
-                        buffer = new byte[6 + utf8_text.Length];
-                        buffer[0] = (byte)ControlType;
-                        Array.Copy(BitConverter.GetBytes(Paste), 0, buffer, 1, 1);//1
-                        Array.Copy(BitConverter.GetBytes(utf8_text.Length).Reverse().ToArray(), 0, buffer, 2, 4);//2-5
-                        Array.Copy(utf8_text, 0, buffer, 6, utf8_text.Length);//6-....
+                        buffer = new byte[1 + 8 + 1 + 4 + utf8_text.Length];
+
+                        buffer[0] = (byte)ControlType;//0
+                        Array.Copy(BitConverter.GetBytes(Sequence).Reverse().ToArray(), 0, buffer, 1, 8);//1-8
+                        Array.Copy(BitConverter.GetBytes(Paste), 0, buffer, 9, 1);//9-9
+                        Array.Copy(BitConverter.GetBytes(utf8_text.Length).Reverse().ToArray(), 0, buffer, 10, 4);//10-13
+                        Array.Copy(utf8_text, 0, buffer, 14, utf8_text.Length);//14-....
                     }
                     break;
 
@@ -214,10 +233,16 @@ namespace TqkLibrary.Scrcpy.Control
                                                           // screen may only be turned on on ACTION_DOWN
                         break;
                     }
+                case ScrcpyControlType.TYPE_GET_CLIPBOARD:
+                    {
+                        buffer = new byte[2];
+                        buffer[0] = (byte)ControlType;
+                        buffer[1] = (byte)CopyKey;
+                        break;
+                    }
                 case ScrcpyControlType.TYPE_EXPAND_NOTIFICATION_PANEL:
                 case ScrcpyControlType.TYPE_EXPAND_SETTINGS_PANEL:
                 case ScrcpyControlType.TYPE_COLLAPSE_PANELS:
-                case ScrcpyControlType.TYPE_GET_CLIPBOARD:
                 case ScrcpyControlType.TYPE_ROTATE_DEVICE:
                     {
                         buffer = new byte[1];

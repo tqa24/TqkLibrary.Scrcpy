@@ -472,12 +472,13 @@ namespace TqkLibrary.Scrcpy
             => control.SwipeSpeedAsync(from.X, from.Y, to.X, to.Y, pixelPerSec, delayStep, cancellationToken);
 
         /// <summary>
-        /// 
+        /// Work only when <see cref="ScrcpyConfig.ClipboardAutosync"/> is disable.
         /// </summary>
         /// <param name="control"></param>
+        /// <param name="copyKey"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        public static async Task<string> GetClipboardAsync(this IControl control, CancellationToken cancellationToken = default)
+        public static async Task<string> GetClipboardAsync(this IControl control, CopyKey copyKey = CopyKey.None, CancellationToken cancellationToken = default)
         {
             TaskCompletionSource<string> taskCompletionSource = new TaskCompletionSource<string>(TaskCreationOptions.RunContinuationsAsynchronously);
             OnDataReceived<string> dataDelegate = (text) => taskCompletionSource.TrySetResult(text);
@@ -485,10 +486,9 @@ namespace TqkLibrary.Scrcpy
             {
                 using var register = cancellationToken.Register(() => taskCompletionSource.TrySetCanceled());
                 control.OnClipboardReceived += dataDelegate;
-                if (control.GetClipboard())
+                if (control.GetClipboard(copyKey))
                 {
-                    await taskCompletionSource.Task.ConfigureAwait(false);
-                    return taskCompletionSource.Task.Result;
+                    return await taskCompletionSource.Task.ConfigureAwait(false);
                 }
                 return string.Empty;
             }

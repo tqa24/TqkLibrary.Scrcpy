@@ -28,7 +28,10 @@ namespace TqkLibrary.Scrcpy
         /// 
         /// </summary>
         event OnDataReceived<string> OnClipboardReceived;
-
+        /// <summary>
+        /// 
+        /// </summary>
+        event OnDataReceived<long> OnSetClipboardAcknowledgement;
 
 
         /// <summary>
@@ -40,10 +43,10 @@ namespace TqkLibrary.Scrcpy
         /// <param name="metaState"></param>
         /// <returns></returns>
         bool InjectKeycode(
-                            AndroidKeyEventAction action,
-                            AndroidKeyCode keycode,
-                            uint repeat = 1,
-                            AndroidKeyEventMeta metaState = AndroidKeyEventMeta.META_NONE);
+                                    AndroidKeyEventAction action,
+                                    AndroidKeyCode keycode,
+                                    uint repeat = 1,
+                                    AndroidKeyEventMeta metaState = AndroidKeyEventMeta.META_NONE);
 
         /// <summary>
         /// ASCII only
@@ -62,11 +65,11 @@ namespace TqkLibrary.Scrcpy
         /// <param name="buttons"></param>
         /// <returns></returns>
         bool InjectTouchEvent(
-                                      AndroidMotionEventAction action,
-                                      long pointerId,
-                                      Rectangle position,
-                                      float pressure = 1f,
-                                      AndroidMotionEventButton buttons = AndroidMotionEventButton.BUTTON_PRIMARY);
+                                    AndroidMotionEventAction action,
+                                    long pointerId,
+                                    Rectangle position,
+                                    float pressure = 1f,
+                                    AndroidMotionEventButton buttons = AndroidMotionEventButton.BUTTON_PRIMARY);
 
         /// <summary>
         /// 
@@ -74,8 +77,13 @@ namespace TqkLibrary.Scrcpy
         /// <param name="position"></param>
         /// <param name="vScroll"></param>
         /// <param name="hScroll"></param>
+        /// <param name="button"></param>
         /// <returns></returns>
-        bool InjectScrollEvent(Rectangle position, int vScroll, int hScroll = 0);
+        bool InjectScrollEvent(
+                                    Rectangle position, 
+                                    int vScroll, 
+                                    int hScroll = 0, 
+                                    AndroidMotionEventButton button = AndroidMotionEventButton.BUTTON_PRIMARY);
 
         /// <summary>
         /// 
@@ -86,9 +94,18 @@ namespace TqkLibrary.Scrcpy
         bool SetClipboard(string text, bool paste);
 
         /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="text"></param>
+        /// <param name="paste"></param>
+        /// <param name="sequence"></param>
+        /// <returns></returns>
+        bool SetClipboard(string text, bool paste, long sequence);
+
+        /// <summary>
         /// Fire on event <see cref="OnClipboardReceived"/>
         /// </summary>
-        bool GetClipboard();
+        bool GetClipboard(CopyKey copyKey = CopyKey.None);
 
         /// <summary>
         /// 

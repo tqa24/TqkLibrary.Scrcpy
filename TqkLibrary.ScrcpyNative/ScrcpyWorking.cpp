@@ -7,6 +7,7 @@
 #include <chrono>
 
 #define IPV4_LOCALHOST 0x7F000001
+#define ScrcpyVersion L"1.24"
 const wchar_t* adbPath = L"adb.exe";
 const int portMin = 5000;
 const int portMax = 65535;
@@ -168,16 +169,17 @@ bool ScrcpyWorking::Start() {
 	}
 
 	//run main process
-	LPCWSTR cmds[5]
+	LPCWSTR cmds[6]
 	{
 		L"-s",
 		this->_scrcpy->_deviceId.c_str(),
 		L"shell CLASSPATH=/sdcard/scrcpy-server-tqk.jar",
 		L"app_process / com.genymobile.scrcpy.Server",
+		ScrcpyVersion,
 		this->_config.c_str()
 	};
 	std::wstring args(adbPath);
-	for (int i = 0; i < 5; i++)
+	for (int i = 0; i < 6; i++)
 	{
 		args.append(L" ");
 		args.append(cmds[i]);

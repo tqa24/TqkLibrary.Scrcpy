@@ -9,6 +9,11 @@
 #define HEADER_SIZE 12
 #define DEVICE_NAME_SIZE 64
 #define NO_PTS UINT64_MAX
+
+#define SC_PACKET_FLAG_CONFIG    (UINT64_C(1) << 63)
+#define SC_PACKET_FLAG_KEY_FRAME (UINT64_C(1) << 62)
+#define SC_PACKET_PTS_MASK (SC_PACKET_FLAG_KEY_FRAME - 1)
+
 Video::Video(SOCKET sock, const ScrcpyNativeConfig& nativeConfig) {
 	this->_videoSock = new SocketWrapper(sock);
 	this->_videoBuffer = new BYTE[DEVICE_NAME_SIZE];
@@ -53,7 +58,7 @@ bool Video::Init() {
 
 	if (!this->_h264_mediaDecoder->Init())
 		return false;
-	
+
 	//first bool is true for manual reset else auto reset, second bool is initially signaled
 	this->_mtx_waitFirstFrame = CreateEvent(NULL, TRUE, FALSE, NULL);
 	if (this->_mtx_waitFirstFrame == INVALID_HANDLE_VALUE)
@@ -114,11 +119,8 @@ void Video::threadStart() {
 		if (this->_videoSock->ReadAll(this->_videoBuffer, HEADER_SIZE) != HEADER_SIZE)
 			return;
 
-		UINT64 pts = sc_read64be(this->_videoBuffer);
+		UINT64 pts_flags = sc_read64be(this->_videoBuffer);
 		INT32 len = sc_read32be(&this->_videoBuffer[8]);
-
-		if (!((pts == NO_PTS || (pts & AV_NOPTS_VALUE) == 0) && len > 0))
-			return;
 
 		AVPacket packet;
 		if (!avcheck(av_new_packet(&packet, len))) {
@@ -130,11 +132,23 @@ void Video::threadStart() {
 			av_packet_unref(&packet);
 			return;
 		}
+		if (pts_flags & SC_PACKET_FLAG_CONFIG) {
+			packet.pts = AV_NOPTS_VALUE;
+		}
+		else {
+			packet.pts = pts_flags & SC_PACKET_PTS_MASK;
+		}
+
+		if (pts_flags & SC_PACKET_FLAG_KEY_FRAME) {
+			packet.flags |= AV_PKT_FLAG_KEY;
+		}
+
+		packet.dts = packet.pts;
+
 
 #if _DEBUG
 		//printf(std::string("pts:").append(std::to_string(pts)).append("  ,len:").append(std::to_string(len)).append("\r\n").c_str());
 #endif
-		packet.pts = pts != NO_PTS ? (INT64)pts : AV_NOPTS_VALUE;
 
 		if (this->_parsePacket->ParserPushPacket(&packet))
 		{
@@ -148,7 +162,7 @@ void Video::threadStart() {
 				av_frame_move_ref(this->_frame, this->_temp_frame);
 
 				_mtx_frame.unlock();
-				
+
 
 				if (!this->_ishaveFrame)
 				{

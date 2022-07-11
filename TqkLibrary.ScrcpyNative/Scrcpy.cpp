@@ -96,3 +96,7 @@ bool Scrcpy::RegisterClipboardEvent(const ClipboardReceivedDelegate callback) {
 	this->clipboardCallback = callback;
 	return true;
 }
+bool Scrcpy::RegisterClipboardAcknowledgementEvent(ClipboardAcknowledgementDelegate callback){
+	this->clipboardAcknowledgementCallback = callback;
+	return true;
+}

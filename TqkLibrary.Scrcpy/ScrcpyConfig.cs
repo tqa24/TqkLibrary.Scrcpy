@@ -107,8 +107,7 @@ namespace TqkLibrary.Scrcpy
         /// <summary>
         /// 
         /// </summary>
-        public string ScrcpyServerPath { get; set; } = "scrcpy-server1.19.jar";
-
+        public string ScrcpyServerPath { get; set; } = "scrcpy-server-v1.24.jar";
 
         /// <summary>
         /// if true: Use Adb Forward instead of Adb Reverse
@@ -116,13 +115,28 @@ namespace TqkLibrary.Scrcpy
         /// </summary>
         internal bool ForceAdbForward { get; } = false;
 
+        /// <summary>
+        /// 
+        /// </summary>
+        public bool ClipboardAutosync { get; set; } = false;
 
-        internal string Version { get; } = "1.19";
-        internal bool FrameMeta { get; } = true;// always send frame meta (packet boundaries + timestamp)
+        /// <summary>
+        /// 
+        /// </summary>
+        public bool DownsizeOnError { get; set; } = true;
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public bool Cleanup { get; set; } = false;
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public bool PowerOn { get; set; } = true;
 
         internal bool TunnelForward { get; } = false;
-        internal string CodecOptions { get; } = "-";
-        internal string EncoderName { get; } = "-";
+
         internal string Crop_string
         {
             get
@@ -139,7 +153,32 @@ namespace TqkLibrary.Scrcpy
         /// <returns></returns>
         public override string ToString()
         {
-            return $"{Version} {LogLevel.ToString().ToLower()} {MaxSize} {Bitrate} {MaxFps} {(int)Orientation} {TunnelForward} {Crop_string} {FrameMeta} {IsControl} {DisplayId} {ShowTouches} {StayAwake} {CodecOptions} {EncoderName} {PowerOffOnClose}";
+            List<string> args = new List<string>();
+            args.Add($"log_level={LogLevel.ToString().ToLower()}");
+            args.Add($"bit_rate={Bitrate}");
+            args.Add($"display_id={DisplayId}");
+
+            if (MaxSize > 0) args.Add($"max_size={MaxSize}");
+            if (MaxFps > 0) args.Add($"max_fps={MaxFps}");
+            if (Crop != null) args.Add($"crop={Crop_string}");
+            if (Orientation != Orientations.Auto) args.Add($"lock_video_orientation={(int)Orientation}");
+
+            if (TunnelForward) args.Add($"tunnel_forward=true");
+            if (ShowTouches) args.Add($"show_touches=true");
+            if (StayAwake) args.Add($"stay_awake=true");
+            if (PowerOffOnClose) args.Add($"power_off_on_close=true");
+            //codec_options
+            //encoder_name
+
+            if (!IsControl) args.Add($"control=false"); // By default, control is true
+            if (!ClipboardAutosync) args.Add($"clipboard_autosync=false");// By default, clipboard_autosync is true
+            if (!DownsizeOnError) args.Add($"downsize_on_error=false");// By default, downsize_on_error is true
+            if (!Cleanup) args.Add($"cleanup=false");// By default, cleanup is true
+            if (!PowerOn) args.Add($"power_on=false");// By default, power_on is true
+
+            if (Orientation != Orientations.Auto) args.Add($"lock_video_orientation={(int)Orientation}");
+
+            return string.Join(" ", args);
         }
 
         internal ScrcpyNativeConfig NativeConfig()

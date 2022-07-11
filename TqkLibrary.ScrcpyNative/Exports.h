@@ -13,5 +13,7 @@ ScrcpyNativeExport bool ScrcpyControlCommand(Scrcpy* scrcpy, const BYTE* command
 ScrcpyNativeExport bool ScrcpyGetScreenShot(Scrcpy* scrcpy, BYTE* buffer, const int sizeInByte, const int w, const int h, const int lineSize);
 
 typedef bool (*ClipboardReceivedDelegate)(BYTE* buffer, int length);
+typedef bool (*ClipboardAcknowledgementDelegate)(UINT64 sequence);
 ScrcpyNativeExport bool RegisterClipboardEvent(Scrcpy* scrcpy, ClipboardReceivedDelegate clipboardDelegate);
+ScrcpyNativeExport bool RegisterClipboardAcknowledgementEvent(Scrcpy* scrcpy, ClipboardAcknowledgementDelegate clipboardAcknowledgementDelegate);
 #endif // !ScrcpyNativeExports_H

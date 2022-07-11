@@ -27,8 +27,8 @@ namespace TqkLibrary.Scrcpy
         {
             _handle = NativeWrapper.ScrcpyAlloc(deviceId);
             Control = new ScrcpyControl(this);
+            Control.OnClipboardReceived += Control_OnClipboardReceived;
         }
-
         /// <summary>
         /// 
         /// </summary>
@@ -78,10 +78,19 @@ namespace TqkLibrary.Scrcpy
         /// </summary>
         public IControl Control { get; }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        public string LastClipboard { get; private set; } = string.Empty;
 
         private void CheckDispose()
         {
             if (_handle == IntPtr.Zero) throw new ObjectDisposedException(nameof(Scrcpy));
+        }
+
+        private void Control_OnClipboardReceived(string data)
+        {
+            this.LastClipboard = data;
         }
 
         #region Function Control
@@ -100,6 +109,11 @@ namespace TqkLibrary.Scrcpy
         {
             IntPtr pointer = Marshal.GetFunctionPointerForDelegate(clipboardReceivedDelegate);
             return NativeWrapper.RegisterClipboardEvent(_handle, pointer);
+        }
+        internal bool RegisterClipboardAcknowledgementEvent(NativeOnClipboardAcknowledgementDelegate clipboardAcknowledgementDelegate)
+        {
+            IntPtr pointer = Marshal.GetFunctionPointerForDelegate(clipboardAcknowledgementDelegate);
+            return NativeWrapper.RegisterClipboardAcknowledgementEvent(_handle, pointer);
         }
         #endregion
 
