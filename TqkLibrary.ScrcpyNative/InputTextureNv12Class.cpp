@@ -86,8 +86,8 @@ bool InputTextureNv12Class::Initialize(ID3D11Device* device, int width, int heig
 	texDesc_nv12.ArraySize = 1;
 	texDesc_nv12.MipLevels = 1;
 	texDesc_nv12.BindFlags = D3D11_BIND_SHADER_RESOURCE;
-	texDesc_nv12.Usage = D3D11_USAGE_DYNAMIC;
-	texDesc_nv12.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	texDesc_nv12.Usage = D3D11_USAGE_DEFAULT;// D3D11_USAGE_DYNAMIC;
+	texDesc_nv12.CPUAccessFlags = 0;// D3D11_CPU_ACCESS_WRITE;
 	texDesc_nv12.SampleDesc.Count = 1;
 	texDesc_nv12.SampleDesc.Quality = 0;
 	texDesc_nv12.MiscFlags = 0;
@@ -95,6 +95,8 @@ bool InputTextureNv12Class::Initialize(ID3D11Device* device, int width, int heig
 	if (FAILED(hr))
 		return false;
 
+	texDesc_nv12.Usage = D3D11_USAGE_DYNAMIC;
+	texDesc_nv12.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 	hr = device->CreateTexture2D(&texDesc_nv12, nullptr, this->m_texture_nv12_cache.GetAddressOf());
 	if (FAILED(hr))
 		return false;
@@ -167,7 +169,9 @@ bool InputTextureNv12Class::Copy(ID3D11DeviceContext* device_ctx, const AVFrame*
 	}
 	else if (sourceFrame->format == AV_PIX_FMT_YUV420P)
 	{
-		device_ctx->CopyResource(this->m_texture_nv12.Get(), this->m_texture_nv12_cache.Get());
+		/*this->m_texture_nv12_cache->SetEvictionPriority(DXGI_RESOURCE_PRIORITY_MAXIMUM);
+		this->m_texture_nv12->SetEvictionPriority(DXGI_RESOURCE_PRIORITY_MAXIMUM);*/
+		device_ctx->ClearState();
 
 		D3D11_MAPPED_SUBRESOURCE map;
 		device_ctx->Map(this->m_texture_nv12_cache.Get(), 0, D3D11_MAP::D3D11_MAP_WRITE_DISCARD, 0, &map);
@@ -184,7 +188,9 @@ bool InputTextureNv12Class::Copy(ID3D11DeviceContext* device_ctx, const AVFrame*
 
 		device_ctx->Unmap(this->m_texture_nv12_cache.Get(), 0);
 
+		device_ctx->Flush();//force upload resoure from cpu -> gpu in m_texture_nv12_cache
 
+		device_ctx->CopyResource(this->m_texture_nv12.Get(), this->m_texture_nv12_cache.Get());
 		return true;
 	}
 	return false;

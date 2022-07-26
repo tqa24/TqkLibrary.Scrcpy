@@ -176,6 +176,7 @@ bool MediaDecoder::Convert(AVFrame* frame) {
 	_mtx_frame.unlock();
 	return result;
 }
+
 bool MediaDecoder::Nv12Convert(AVFrame* frame) {
 	ComPtr<ID3D11DeviceContext> device_ctx = this->m_d3d11->GetDeviceContext();
 	ComPtr<ID3D11Device> device = this->m_d3d11->GetDevice();
@@ -269,6 +270,9 @@ bool MediaDecoder::Draw(D3DImageView* view, IUnknown* surface, bool isNewSurface
 
 			if (isNewFrame || isNewSurface)
 			{
+#if _DEBUG
+				auto start(std::chrono::high_resolution_clock::now());
+#endif
 				device_ctx->ClearState();
 
 				device_ctx->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
@@ -290,9 +294,19 @@ bool MediaDecoder::Draw(D3DImageView* view, IUnknown* surface, bool isNewSurface
 
 				//view->m_renderTextureSurface.ClearRenderTarget(device_ctx.Get(), nullptr, 0, 0, 0, 0);
 				device_ctx->Draw(this->m_vertex->GetVertexCount(), 0);
+
+#if _DEBUG
+				auto finish(std::chrono::high_resolution_clock::now());
+				auto r = std::chrono::duration_cast<std::chrono::milliseconds>(finish - start);
+				std::wstring text(L"Draw surface: ");
+				text.append(std::to_wstring(r.count()));
+				text.append(L"\r");
+				OutputDebugString(text.c_str());
+#endif
 			}
 			result = true;
 		}
+
 
 		_mtx_frame.unlock();
 	}

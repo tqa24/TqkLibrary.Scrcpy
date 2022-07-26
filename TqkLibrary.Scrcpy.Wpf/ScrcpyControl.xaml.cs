@@ -63,7 +63,6 @@ namespace TqkLibrary.Scrcpy.Wpf
 
         bool lastVisible;
         System.Drawing.Size videoSize;
-        System.Drawing.Size drawSize;
         System.Drawing.Rectangle drawRect;
         double rateVideoAndDraw;
         TimeSpan lastRender;
@@ -105,11 +104,14 @@ namespace TqkLibrary.Scrcpy.Wpf
                 surfWidth = videoSize.Value.Width * rateVideoAndDraw;
                 surfHeight = videoSize.Value.Height * rateVideoAndDraw;
             }
-            drawRect = new System.Drawing.Rectangle((int)((base_surfWidth - surfWidth) / 2), (int)((base_surfHeight - surfHeight) / 2), (int)surfWidth, (int)surfHeight);
+            drawRect = new System.Drawing.Rectangle(
+                (int)((base_surfWidth - surfWidth) / 2),
+                (int)((base_surfHeight - surfHeight) / 2),
+                (int)surfWidth,
+                (int)surfHeight);
             // Notify the D3D11Image of the pixel size desired for the DirectX rendering.
             // The D3DRendering component will determine the size of the new surface it is given, at that point.
-            drawSize = new System.Drawing.Size((int)surfWidth, (int)surfHeight);
-            InteropImage.SetPixelSize(drawSize.Width, drawSize.Height);
+            InteropImage.SetPixelSize(drawRect.Width, drawRect.Height);
 
 
 
@@ -214,7 +216,7 @@ namespace TqkLibrary.Scrcpy.Wpf
         private void img_MouseMove(object sender, MouseEventArgs e)
         {
             e.Handled = true;
-            var p = GetRemotePoint(e.GetPosition(null));
+            var p = GetRemotePoint(e.GetPosition((IInputElement)sender));
             var control = Control;
             if (IsControl && control != null)
             {
@@ -299,13 +301,13 @@ namespace TqkLibrary.Scrcpy.Wpf
 
         System.Drawing.Point GetRemotePoint(System.Windows.Point point)
         {
-            double x = (point.X - drawRect.X) / drawSize.Width;
-            double y = (point.Y - drawRect.Y) / drawSize.Height;
+            double x = point.X / drawRect.Width;// (point.X - drawRect.X) / drawRect.Width;
+            double y = point.Y / drawRect.Height;// (point.Y - drawRect.Y) / drawRect.Height;
             double real_x = x * videoSize.Width;
             double real_y = y * videoSize.Height;
             var outpoint = new System.Drawing.Point((int)real_x, (int)real_y);
 #if DEBUG
-            Debug.WriteLine($"drawSize: {drawSize}, videoSize: {videoSize}, inPoint: {point}, outPoint: {outpoint}, image_w: {InteropImage.Width}, image_h: {InteropImage.Height}");
+            Debug.WriteLine($"drawRect: {drawRect}, videoSize: {videoSize}, inPoint: {point}, outPoint: {outpoint}, image_w: {InteropImage.Width}, image_h: {InteropImage.Height}");
 #endif
             return outpoint;
         }
@@ -353,23 +355,23 @@ namespace TqkLibrary.Scrcpy.Wpf
 
         };
 
-    //    static const struct sc_intmap_entry kp_nav_keys[] = {
-    //    {SC_KEYCODE_KP_0,      AKEYCODE_INSERT },
-    //    {SC_KEYCODE_KP_1,      AKEYCODE_MOVE_END },
-    //    { SC_KEYCODE_KP_2,      AKEYCODE_DPAD_DOWN},
-    //    { SC_KEYCODE_KP_3,      AKEYCODE_PAGE_DOWN},
-    //    { SC_KEYCODE_KP_4,      AKEYCODE_DPAD_LEFT},
-    //    { SC_KEYCODE_KP_6,      AKEYCODE_DPAD_RIGHT},
-    //    { SC_KEYCODE_KP_7,      AKEYCODE_MOVE_HOME},
-    //    { SC_KEYCODE_KP_8,      AKEYCODE_DPAD_UP},
-    //    { SC_KEYCODE_KP_9,      AKEYCODE_PAGE_UP},
-    //    { SC_KEYCODE_KP_PERIOD, AKEYCODE_FORWARD_DEL},
-    //};
+        //    static const struct sc_intmap_entry kp_nav_keys[] = {
+        //    {SC_KEYCODE_KP_0,      AKEYCODE_INSERT },
+        //    {SC_KEYCODE_KP_1,      AKEYCODE_MOVE_END },
+        //    { SC_KEYCODE_KP_2,      AKEYCODE_DPAD_DOWN},
+        //    { SC_KEYCODE_KP_3,      AKEYCODE_PAGE_DOWN},
+        //    { SC_KEYCODE_KP_4,      AKEYCODE_DPAD_LEFT},
+        //    { SC_KEYCODE_KP_6,      AKEYCODE_DPAD_RIGHT},
+        //    { SC_KEYCODE_KP_7,      AKEYCODE_MOVE_HOME},
+        //    { SC_KEYCODE_KP_8,      AKEYCODE_DPAD_UP},
+        //    { SC_KEYCODE_KP_9,      AKEYCODE_PAGE_UP},
+        //    { SC_KEYCODE_KP_PERIOD, AKEYCODE_FORWARD_DEL},
+        //};
 
 
 
 
-AndroidKeyCode ResolveKey(KeyEventArgs e)
+        AndroidKeyCode ResolveKey(KeyEventArgs e)
         {
             Key key = e.Key;
             if (IsShift(e))
