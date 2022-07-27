@@ -66,3 +66,8 @@ bool RegisterClipboardAcknowledgementEvent(Scrcpy* scrcpy, ClipboardAcknowledgem
 	if (scrcpy == nullptr || clipboardAcknowledgementDelegate == nullptr) return false;
 	return scrcpy->RegisterClipboardAcknowledgementEvent(clipboardAcknowledgementDelegate);
 }
+
+bool RegisterDisconnectEvent(Scrcpy* scrcpy, OnDisconnectDelegate onDisconnectDelegate) {
+	if (scrcpy == nullptr || onDisconnectDelegate == nullptr) return false;
+	return scrcpy->RegisterDisconnectEvent(onDisconnectDelegate);
+}

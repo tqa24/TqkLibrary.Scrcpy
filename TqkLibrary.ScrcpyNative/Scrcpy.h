@@ -4,6 +4,7 @@ class Scrcpy
 {
 	friend ScrcpyInstance;
 	friend Control;
+	friend Video;
 public:
 	Scrcpy(LPCWSTR deviceId);
 	~Scrcpy();
@@ -13,8 +14,10 @@ public:
 	bool ControlCommand(const BYTE* command, const int sizeInByte);
 	bool GetScreenShot(BYTE* buffer, const int sizeInByte, const int w, const int h, const int lineSize);
 	bool GetScreenSize(int& w, int& h);
+
 	bool RegisterClipboardEvent(ClipboardReceivedDelegate callback);
 	bool RegisterClipboardAcknowledgementEvent(ClipboardAcknowledgementDelegate clipboardAcknowledgementDelegate);
+	bool RegisterDisconnectEvent(OnDisconnectDelegate onDisconnectDelegate);
 
 	bool Draw(D3DImageView* d3d_imgView, IUnknown* surface, bool isNewSurface);
 private:
@@ -27,6 +30,8 @@ private:
 	ScrcpyInstance* _scrcpyInstance{ nullptr };
 	ClipboardReceivedDelegate clipboardCallback{ nullptr };
 	ClipboardAcknowledgementDelegate clipboardAcknowledgementCallback{ nullptr };
+
+	OnDisconnectDelegate disconnectCallback{ nullptr };
 };
 
 #endif

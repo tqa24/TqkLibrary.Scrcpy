@@ -7,9 +7,11 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using TqkLibrary.Scrcpy.Control;
+using System.Threading;
 
 namespace TqkLibrary.Scrcpy
 {
+    internal delegate void NativeOnDisconnectDelegate();
     /// <summary>
     /// 
     /// </summary>
@@ -26,8 +28,14 @@ namespace TqkLibrary.Scrcpy
         public Scrcpy(string deviceId)
         {
             _handle = NativeWrapper.ScrcpyAlloc(deviceId);
+
             Control = new ScrcpyControl(this);
             Control.OnClipboardReceived += Control_OnClipboardReceived;
+
+
+            this.NativeOnDisconnectDelegate = onDisconnect;
+            IntPtr pointer = Marshal.GetFunctionPointerForDelegate(this.NativeOnDisconnectDelegate);
+            NativeWrapper.RegisterDisconnectEvent(_handle, pointer);
         }
         /// <summary>
         /// 
@@ -82,6 +90,22 @@ namespace TqkLibrary.Scrcpy
         /// 
         /// </summary>
         public string LastClipboard { get; private set; } = string.Empty;
+        /// <summary>
+        /// 
+        /// </summary>
+
+        public event Action OnDisconnect;
+
+
+        readonly NativeOnDisconnectDelegate NativeOnDisconnectDelegate;
+        void onDisconnect()
+        {
+            if (OnDisconnect != null)
+            {
+                ThreadPool.QueueUserWorkItem((o) => OnDisconnect?.Invoke());
+            }
+        }
+
 
         private void CheckDispose()
         {

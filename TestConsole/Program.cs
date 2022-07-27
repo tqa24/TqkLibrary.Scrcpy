@@ -107,12 +107,12 @@ while (true)
     //await Task.Delay(5000);
 }
 
-void Control_OnSetClipboardAcknowledgement(long data)
+void Control_OnSetClipboardAcknowledgement(IControl control, long data)
 {
     Console.WriteLine($"Control_OnSetClipboardAcknowledgement: {data}");
 }
 
-void Control_OnClipboardReceived(string data)
+void Control_OnClipboardReceived(IControl control, string data)
 {
     Console.WriteLine($"Control_OnClipboardReceived: {data}");
 }

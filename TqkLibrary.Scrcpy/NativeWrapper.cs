@@ -56,12 +56,19 @@ namespace TqkLibrary.Scrcpy
         [DllImport("TqkLibrary.ScrcpyNative.dll", CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
         internal static extern bool ScrcpyGetScreenShot(IntPtr scrcpy, IntPtr buffer, int sizeInByte, int w, int h, int lineSize);
 
+
+
+
+
+
         [DllImport("TqkLibrary.ScrcpyNative.dll", CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
         internal static extern bool RegisterClipboardEvent(IntPtr scrcpy, IntPtr delegateHandle);
 
         [DllImport("TqkLibrary.ScrcpyNative.dll", CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
         internal static extern bool RegisterClipboardAcknowledgementEvent(IntPtr scrcpy, IntPtr delegateHandle);
 
+        [DllImport("TqkLibrary.ScrcpyNative.dll", CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern bool RegisterDisconnectEvent(IntPtr scrcpy, IntPtr delegateHandle);
 
 
 

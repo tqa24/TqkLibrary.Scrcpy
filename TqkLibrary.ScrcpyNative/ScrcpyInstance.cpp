@@ -144,7 +144,7 @@ bool ScrcpyInstance::Start() {
 	std::wstring push(L"push ");
 	push.append(this->_nativeConfig.ScrcpyServerPath);
 	push.append(L" /sdcard/scrcpy-server-tqk.jar");
-	
+
 	exitCode = RunAdbProcess(push.c_str());
 	if (exitCode != 0) {
 		return false;
@@ -191,7 +191,7 @@ bool ScrcpyInstance::Start() {
 	if (video == INVALID_SOCKET) {
 		return false;
 	}
-	this->_video = new Video(video, this->_nativeConfig);
+	this->_video = new Video(this->_scrcpy, video, this->_nativeConfig);
 	if (!this->_video->Init()) {
 		return false;
 	}

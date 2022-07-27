@@ -5,6 +5,7 @@
 #include "MediaDecoder.h"
 #include "SocketWrapper.h"
 #include "Utils.h"
+#include "Scrcpy.h"
 #define PACKET_BUFFER_SIZE 1 << 18//256k
 #define HEADER_SIZE 12
 #define DEVICE_NAME_SIZE 64
@@ -14,7 +15,8 @@
 #define SC_PACKET_FLAG_KEY_FRAME (UINT64_C(1) << 62)
 #define SC_PACKET_PTS_MASK (SC_PACKET_FLAG_KEY_FRAME - 1)
 
-Video::Video(SOCKET sock, const ScrcpyNativeConfig& nativeConfig) {
+Video::Video(const Scrcpy* scrcpy, SOCKET sock, const ScrcpyNativeConfig& nativeConfig) {
+	this->scrcpy = scrcpy;
 	this->_videoSock = new SocketWrapper(sock);
 	this->_videoBuffer = new BYTE[DEVICE_NAME_SIZE];
 	const AVCodec* h264_decoder = avcodec_find_decoder(AV_CODEC_ID_H264);
@@ -109,20 +111,20 @@ void Video::threadStart() {
 	while (!this->_isStop)
 	{
 		if (this->_videoSock->ReadAll(this->_videoBuffer, HEADER_SIZE) != HEADER_SIZE)
-			return;
+			break;
 
 		UINT64 pts_flags = sc_read64be(this->_videoBuffer);
 		INT32 len = sc_read32be(&this->_videoBuffer[8]);
 
 		AVPacket packet;
 		if (!avcheck(av_new_packet(&packet, len))) {
-			return;
+			break;
 		}
 
 		if (this->_videoSock->ReadAll(packet.data, len) != len)
 		{
 			av_packet_unref(&packet);
-			return;
+			break;
 		}
 		if (pts_flags & SC_PACKET_FLAG_CONFIG) {
 			packet.pts = AV_NOPTS_VALUE;
@@ -152,9 +154,15 @@ void Video::threadStart() {
 					this->_ishaveFrame = true;
 				}
 			}
+			else
+			{
+				break;
+			}
 		}
 		av_packet_unref(&packet);
 	}
+
+	this->scrcpy->disconnectCallback();
 }
 
 bool Video::GetScreenSize(int& w, int& h) {

@@ -130,3 +130,8 @@ bool Scrcpy::RegisterClipboardAcknowledgementEvent(ClipboardAcknowledgementDeleg
 	this->clipboardAcknowledgementCallback = callback;
 	return true;
 }
+
+bool Scrcpy::RegisterDisconnectEvent(OnDisconnectDelegate onDisconnectDelegate) {
+	this->disconnectCallback = onDisconnectDelegate;
+	return true;
+}

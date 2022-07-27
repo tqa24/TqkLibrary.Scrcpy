@@ -5,7 +5,7 @@ class Video
 {
 	friend Scrcpy;
 public:
-	Video(SOCKET sock, const ScrcpyNativeConfig& nativeConfig);
+	Video(const Scrcpy* scrcpy, SOCKET sock, const ScrcpyNativeConfig& nativeConfig);
 	~Video();
 	void Start();
 	void Stop();
@@ -15,6 +15,9 @@ public:
 	bool GetScreenSize(int& w, int& h);
 	bool GetCurrentRgbaFrame(AVFrame* frame);
 private:
+	const Scrcpy* scrcpy;
+
+
 	std::string _deviceName{};
 	bool _ishaveFrame{ false };
 	ParsePacket* _parsePacket{ nullptr };
