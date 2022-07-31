@@ -44,7 +44,7 @@ extern "C" {
 	)
 	{
 		int i;
-		int size = uv_size / 4;
+		int size = uv_size / 2;
 		for (i = 0; i < size; i++)
 		{
 			uint8_t u_data = u[i];  // fetch u data
@@ -177,7 +177,7 @@ bool InputTextureNv12Class::Copy(ID3D11DeviceContext* device_ctx, const AVFrame*
 		device_ctx->Map(this->m_texture_nv12_cache.Get(), 0, D3D11_MAP::D3D11_MAP_WRITE_DISCARD, 0, &map);
 
 		INT64 y_size = sourceFrame->linesize[0] * sourceFrame->height;
-		INT64 uv_size = sourceFrame->linesize[1] * 2 * sourceFrame->height;
+		INT64 uv_size = sourceFrame->linesize[1] * sourceFrame->height;//linesize = 1/2 width, height / 2, * 2 u and v
 		INT64 totalSize = y_size + uv_size;
 
 		assert(map.DepthPitch == 0 || map.DepthPitch == totalSize);
