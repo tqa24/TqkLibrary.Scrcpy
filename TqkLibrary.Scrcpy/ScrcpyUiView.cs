@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace TqkLibrary.Scrcpy
@@ -11,7 +12,8 @@ namespace TqkLibrary.Scrcpy
     /// </summary>
     public class ScrcpyUiView : IDisposable
     {
-        readonly object _lock = new object();
+        private readonly CountdownEvent countdownEvent = new CountdownEvent(1);
+
         IntPtr d3dView;
 
         /// <summary>
@@ -45,12 +47,14 @@ namespace TqkLibrary.Scrcpy
 
         void Dispose(bool disposing)
         {
-            lock (_lock)
+            countdownEvent.Signal();
+            countdownEvent.Wait();
+            if (d3dView != IntPtr.Zero)
             {
-                if (d3dView == IntPtr.Zero) return;
                 NativeWrapper.D3DImageViewFree(d3dView);
                 d3dView = IntPtr.Zero;
             }
+            countdownEvent.Dispose();
         }
 
         /// <summary>
@@ -58,10 +62,17 @@ namespace TqkLibrary.Scrcpy
         /// </summary>
         /// <param name="surface"></param>
         /// <param name="isNewSurface"></param>
+        /// <param name="isNewtargetView"></param>
         /// <returns></returns>
-        public bool DoRender(IntPtr surface, bool isNewSurface,ref bool isNewtargetView)
+        public bool DoRender(IntPtr surface, bool isNewSurface, ref bool isNewtargetView)
         {
-            lock (_lock) return Scrcpy.D3DImageViewRender(d3dView, surface, isNewSurface,ref isNewtargetView);
+            bool result = false;
+            if(countdownEvent.TryAddCount())
+            {
+                result = Scrcpy.D3DImageViewRender(d3dView, surface, isNewSurface, ref isNewtargetView);
+                countdownEvent.Signal();
+            }
+            return result;
         }
     }
 }

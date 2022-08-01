@@ -17,9 +17,11 @@ namespace TqkLibrary.Scrcpy
     /// </summary>
     public class Scrcpy : IDisposable
     {
-        readonly object _lock = new object();
-        private IntPtr _handle = IntPtr.Zero;
+        private readonly CountdownEvent countdownEvent = new CountdownEvent(1);
 
+
+
+        private IntPtr _handle = IntPtr.Zero;
         /// <summary>
         /// 
         /// </summary>
@@ -63,16 +65,15 @@ namespace TqkLibrary.Scrcpy
 
         private void Dispose(bool disposing)
         {
+            Stop();
+            countdownEvent.Signal();
+            countdownEvent.Wait();
             if (_handle != IntPtr.Zero)
             {
-                Stop();
-                lock (_lock)
-                {
-                    var hold = NativeOnDisconnectDelegate;
-                    NativeWrapper.ScrcpyFree(_handle);
-                    _handle = IntPtr.Zero;
-                }
+                NativeWrapper.ScrcpyFree(_handle);
+                _handle = IntPtr.Zero;
             }
+            countdownEvent.Dispose();
         }
 
         /// <summary>
@@ -82,11 +83,13 @@ namespace TqkLibrary.Scrcpy
         {
             get
             {
-                lock (_lock)
+                var size = new Size(0, 0);
+                if (countdownEvent.TryAddCount())
                 {
-                    if (IsDispose()) return new Size(0, 0);
-                    else return GetScreenSize();
+                    if (!IsDispose()) size = GetScreenSize();
+                    countdownEvent.Signal();
                 }
+                return size;
             }
         }
 
@@ -127,12 +130,19 @@ namespace TqkLibrary.Scrcpy
         #region Function Control
         internal bool SendControl(ScrcpyControlMessage scrcpyControlMessage)
         {
-            lock (_lock)
+            bool result = false;
+
+            if (countdownEvent.TryAddCount())
             {
-                if (IsDispose()) return false;
-                byte[] command = scrcpyControlMessage.GetCommand();
-                return NativeWrapper.ScrcpyControlCommand(_handle, command, command.Length);
+                if (!IsDispose())
+                {
+                    byte[] command = scrcpyControlMessage.GetCommand();
+                    result = NativeWrapper.ScrcpyControlCommand(_handle, command, command.Length);
+                }
+                countdownEvent.Signal();
             }
+
+            return result;
         }
 
         //init, dont lock
@@ -154,14 +164,19 @@ namespace TqkLibrary.Scrcpy
         /// <param name="config"></param>
         public bool Connect(ScrcpyConfig config = null)
         {
-            lock (_lock)
+            bool result = false;
+            if (countdownEvent.TryAddCount())
             {
-                if (IsDispose()) return false;
-                if (config == null) config = new ScrcpyConfig();
-                string config_str = config.ToString();
-                ScrcpyNativeConfig nativeConfig = config.NativeConfig();
-                return NativeWrapper.ScrcpyConnect(_handle, config_str, ref nativeConfig);
+                if (!IsDispose())
+                {
+                    if (config == null) config = new ScrcpyConfig();
+                    string config_str = config.ToString();
+                    ScrcpyNativeConfig nativeConfig = config.NativeConfig();
+                    result = NativeWrapper.ScrcpyConnect(_handle, config_str, ref nativeConfig);
+                }
+                countdownEvent.Signal();
             }
+            return result;
         }
 
         /// <summary>
@@ -170,10 +185,13 @@ namespace TqkLibrary.Scrcpy
         /// <exception cref="ObjectDisposedException"></exception>
         public void Stop()
         {
-            lock (_lock)
+            if (countdownEvent.TryAddCount())
             {
-                if (IsDispose()) return;
-                NativeWrapper.ScrcpyStop(_handle);
+                if (!IsDispose())
+                {
+                    NativeWrapper.ScrcpyStop(_handle);
+                }
+                countdownEvent.Signal();
             }
         }
 
@@ -184,37 +202,48 @@ namespace TqkLibrary.Scrcpy
         /// <exception cref="ObjectDisposedException"></exception>
         public Bitmap GetScreenShot()
         {
-            lock (_lock)
+            if (countdownEvent.TryAddCount())
             {
-                if (IsDispose()) return null;
-                Size size = GetScreenSize();
-                Size fix_size = new Size(size.Width + size.Width % 16, size.Height);
-
-                Bitmap bitmap = new Bitmap(fix_size.Width, fix_size.Height, PixelFormat.Format32bppArgb);
-                BitmapData bitmapData = bitmap.LockBits(new Rectangle(0, 0, fix_size.Width, fix_size.Height), ImageLockMode.WriteOnly, PixelFormat.Format32bppArgb);
-
-                //ARGB only
-                NativeWrapper.ScrcpyGetScreenShot(
-                    _handle,
-                    bitmapData.Scan0,
-                    fix_size.Width * fix_size.Height * 4,
-                    size.Width,
-                    size.Height,
-                    fix_size.Width * 4);
-
-                bitmap.UnlockBits(bitmapData);
-
-                if (size.Width != fix_size.Width)
+                try
                 {
-                    Bitmap original_bitmap = bitmap.Clone(new Rectangle(0, 0, size.Width, size.Height), PixelFormat.Format32bppArgb);
-                    bitmap.Dispose();
-                    return original_bitmap;
+                    if (IsDispose()) return null;
+
+                    Size size = GetScreenSize();
+                    if (size.Width == 0 || size.Height == 0) return null;
+
+                    Size fix_size = new Size(size.Width + size.Width % 16, size.Height);
+
+                    Bitmap bitmap = new Bitmap(fix_size.Width, fix_size.Height, PixelFormat.Format32bppArgb);
+                    BitmapData bitmapData = bitmap.LockBits(new Rectangle(0, 0, fix_size.Width, fix_size.Height), ImageLockMode.WriteOnly, PixelFormat.Format32bppArgb);
+
+                    //ARGB only
+                    NativeWrapper.ScrcpyGetScreenShot(
+                        _handle,
+                        bitmapData.Scan0,
+                        fix_size.Width * fix_size.Height * 4,
+                        size.Width,
+                        size.Height,
+                        fix_size.Width * 4);
+
+                    bitmap.UnlockBits(bitmapData);
+
+                    if (size.Width != fix_size.Width)
+                    {
+                        Bitmap original_bitmap = bitmap.Clone(new Rectangle(0, 0, size.Width, size.Height), PixelFormat.Format32bppArgb);
+                        bitmap.Dispose();
+                        return original_bitmap;
+                    }
+                    else
+                    {
+                        return bitmap;//blank
+                    }
                 }
-                else
+                finally
                 {
-                    return bitmap;//blank
+                    countdownEvent.Signal();
                 }
             }
+            return null;
         }
 
         /// <summary>
@@ -228,10 +257,13 @@ namespace TqkLibrary.Scrcpy
 
         internal bool D3DImageViewRender(IntPtr d3dView, IntPtr surface, bool isNewSurface, ref bool isNewtargetView)
         {
-            lock (_lock)
+            bool result = false;
+            if (countdownEvent.TryAddCount())
             {
-                return NativeWrapper.D3DImageViewRender(d3dView, this._handle, surface, isNewSurface, ref isNewtargetView);
+                if(!IsDispose()) result = NativeWrapper.D3DImageViewRender(d3dView, this._handle, surface, isNewSurface, ref isNewtargetView);
+                countdownEvent.Signal();
             }
+            return result;
         }
 
         Size GetScreenSize()

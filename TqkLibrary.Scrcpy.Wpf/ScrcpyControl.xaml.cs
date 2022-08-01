@@ -515,7 +515,13 @@ namespace TqkLibrary.Scrcpy.Wpf
             if (IsKeyDown(e, Key.V) && IsCtrl(e))
             {
                 string text = Clipboard.GetText();
-                if (!string.IsNullOrEmpty(text)) Control.SetClipboard(Clipboard.GetText(), true);
+                if (!string.IsNullOrEmpty(text)) Control.SetClipboard(text, true);
+                return AndroidKeyCode.AKEYCODE_UNKNOWN;
+            }
+            if (IsKeyDown(e, Key.X) && IsCtrl(e))
+            {
+                string text = await Control.GetClipboardAsync(CopyKey.Cut);
+                if (!string.IsNullOrEmpty(text)) Clipboard.SetText(text);
                 return AndroidKeyCode.AKEYCODE_UNKNOWN;
             }
 

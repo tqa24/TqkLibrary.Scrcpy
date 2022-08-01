@@ -72,13 +72,13 @@ while (true)
             //    await Task.Delay(3000);
             //Console.WriteLine($"{DateTime.Now:mm:ss.fff} GetScreenShot");
             await Task.Delay(1000);
-            while (true)
+            //while (true)
             {
                 //scrcpy.Control.SetClipboard("Phạm Đức Long Click mất cũng chừng đó thôi =))", true, 222233);
 
-                //using Bitmap bitmap = scrcpy.GetScreenShot();
-                //Console.WriteLine($"{DateTime.Now:mm:ss.fff} GetScreenShoted");
-                //bitmap.Save($"{imgs}\\{i++:00000}.png");
+                using Bitmap bitmap = scrcpy.GetScreenShot();
+                Console.WriteLine($"{DateTime.Now:mm:ss.fff} GetScreenShoted");
+                bitmap.Save($"{imgs}\\{i++:00000}.png");
                 await Task.Delay(500);
 
                 //scrcpy.Control.GetClipboard();
@@ -92,7 +92,7 @@ while (true)
             //while (true) await Task.Delay(3000);
 
             //Console.WriteLine($"{DateTime.Now:mm:ss.fff} Stop");
-            //scrcpy.Stop();
+            scrcpy.Stop();
             //Console.WriteLine($"{DateTime.Now:mm:ss.fff} Stopped");
         }
         else
