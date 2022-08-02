@@ -94,8 +94,7 @@ bool Scrcpy::GetScreenShot(BYTE* buffer, const int sizeInByte, const int w, cons
 	_mutex.unlock();
 
 	if (result) {
-		FrameConventer convert;
-		result = convert.Convert(&temp, buffer, sizeInByte, w, h, lineSize);
+		result = FrameConventer::Convert(&temp, buffer, sizeInByte, w, h, lineSize);
 	}
 	av_frame_unref(&temp);
 	return result;

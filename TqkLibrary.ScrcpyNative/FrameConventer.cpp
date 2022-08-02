@@ -2,12 +2,7 @@
 #include "FrameConventer.h"
 #include "Utils.h"
 #define Align 16
-FrameConventer::FrameConventer() {
 
-}
-FrameConventer::~FrameConventer() {
-
-}
 bool FrameConventer::Convert(AVFrame* src_frame, BYTE* buff, const int sizeInByte, const int w, const int h, const int lineSize) {
 	//test
 	//buff[sizeInByte - 1] = 0;//success
