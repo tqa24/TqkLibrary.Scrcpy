@@ -67,13 +67,13 @@ namespace TqkLibrary.Scrcpy
         {
             Stop();
             countdownEvent.Signal();
-            countdownEvent.Wait();
+            countdownEvent.Wait();//TryAddCount will false if wait success
             if (_handle != IntPtr.Zero)
             {
                 NativeWrapper.ScrcpyFree(_handle);
                 _handle = IntPtr.Zero;
             }
-            countdownEvent.Dispose();
+            countdownEvent.Dispose();//TryAddCount will throw ObjectDisposeException
         }
 
         /// <summary>
@@ -83,13 +83,7 @@ namespace TqkLibrary.Scrcpy
         {
             get
             {
-                var size = new Size(0, 0);
-                if (countdownEvent.TryAddCount())
-                {
-                    if (!IsDispose()) size = GetScreenSize();
-                    countdownEvent.Signal();
-                }
-                return size;
+                return GetScreenSize();
             }
         }
 
@@ -119,9 +113,6 @@ namespace TqkLibrary.Scrcpy
             });
         }
 
-
-        private bool IsDispose() => _handle == IntPtr.Zero;
-
         private void Control_OnClipboardReceived(IControl control, string data)
         {
             this.LastClipboard = data;
@@ -132,13 +123,10 @@ namespace TqkLibrary.Scrcpy
         {
             bool result = false;
 
-            if (countdownEvent.TryAddCount())
+            if (countdownEvent.SafeTryAddCount())
             {
-                if (!IsDispose())
-                {
-                    byte[] command = scrcpyControlMessage.GetCommand();
-                    result = NativeWrapper.ScrcpyControlCommand(_handle, command, command.Length);
-                }
+                byte[] command = scrcpyControlMessage.GetCommand();
+                result = NativeWrapper.ScrcpyControlCommand(_handle, command, command.Length);
                 countdownEvent.Signal();
             }
 
@@ -165,15 +153,12 @@ namespace TqkLibrary.Scrcpy
         public bool Connect(ScrcpyConfig config = null)
         {
             bool result = false;
-            if (countdownEvent.TryAddCount())
+            if (countdownEvent.SafeTryAddCount())
             {
-                if (!IsDispose())
-                {
-                    if (config == null) config = new ScrcpyConfig();
-                    string config_str = config.ToString();
-                    ScrcpyNativeConfig nativeConfig = config.NativeConfig();
-                    result = NativeWrapper.ScrcpyConnect(_handle, config_str, ref nativeConfig);
-                }
+                if (config == null) config = new ScrcpyConfig();
+                string config_str = config.ToString();
+                ScrcpyNativeConfig nativeConfig = config.NativeConfig();
+                result = NativeWrapper.ScrcpyConnect(_handle, config_str, ref nativeConfig);
                 countdownEvent.Signal();
             }
             return result;
@@ -185,12 +170,9 @@ namespace TqkLibrary.Scrcpy
         /// <exception cref="ObjectDisposedException"></exception>
         public void Stop()
         {
-            if (countdownEvent.TryAddCount())
+            if (countdownEvent.SafeTryAddCount())
             {
-                if (!IsDispose())
-                {
-                    NativeWrapper.ScrcpyStop(_handle);
-                }
+                NativeWrapper.ScrcpyStop(_handle);
                 countdownEvent.Signal();
             }
         }
@@ -202,12 +184,10 @@ namespace TqkLibrary.Scrcpy
         /// <exception cref="ObjectDisposedException"></exception>
         public Bitmap GetScreenShot()
         {
-            if (countdownEvent.TryAddCount())
+            if (countdownEvent.SafeTryAddCount())
             {
                 try
                 {
-                    if (IsDispose()) return null;
-
                     Size size = GetScreenSize();
                     if (size.Width == 0 || size.Height == 0) return null;
 
@@ -258,9 +238,9 @@ namespace TqkLibrary.Scrcpy
         internal bool D3DImageViewRender(IntPtr d3dView, IntPtr surface, bool isNewSurface, ref bool isNewtargetView)
         {
             bool result = false;
-            if (countdownEvent.TryAddCount())
+            if (countdownEvent.SafeTryAddCount())
             {
-                if(!IsDispose()) result = NativeWrapper.D3DImageViewRender(d3dView, this._handle, surface, isNewSurface, ref isNewtargetView);
+                result = NativeWrapper.D3DImageViewRender(d3dView, this._handle, surface, isNewSurface, ref isNewtargetView);
                 countdownEvent.Signal();
             }
             return result;
@@ -270,7 +250,11 @@ namespace TqkLibrary.Scrcpy
         {
             int w = 0;
             int h = 0;
-            NativeWrapper.ScrcpyGetScreenSize(_handle, ref w, ref h);
+            if (countdownEvent.SafeTryAddCount())
+            {
+                NativeWrapper.ScrcpyGetScreenSize(_handle, ref w, ref h);
+                countdownEvent.Signal();
+            }
             return new Size(w, h);
         }
 
