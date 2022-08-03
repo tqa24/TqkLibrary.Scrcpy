@@ -83,6 +83,10 @@ SOCKET AcceptConnection(SOCKET sock, int timeout = 2000)
 			if (duration > timeout) {
 				return INVALID_SOCKET;
 			}
+			else
+			{
+				Sleep(10);
+			}
 		}
 	}
 }
