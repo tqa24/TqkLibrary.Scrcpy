@@ -135,6 +135,11 @@ namespace TqkLibrary.Scrcpy
         /// </summary>
         public bool PowerOn { get; set; } = true;
 
+        /// <summary>
+        /// Default
+        /// </summary>
+        public D3D11Filter Filter { get; set; } = D3D11Filter.D3D11_FILTER_MIN_MAG_LINEAR_MIP_POINT;
+
         internal bool TunnelForward { get; } = false;
 
         internal string Crop_string
@@ -190,7 +195,8 @@ namespace TqkLibrary.Scrcpy
                 IsControl = this.IsControl,
                 IsUseD3D11Shader = this.IsUseD3D11Shader,
                 ScrcpyServerPath = this.ScrcpyServerPath,
-                ConnectionTimeout = ConnectionTimeout,
+                ConnectionTimeout = this.ConnectionTimeout,
+                Filter = this.Filter,
             };
         }
     }

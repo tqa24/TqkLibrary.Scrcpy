@@ -7,6 +7,7 @@ struct ScrcpyNativeConfig {
 	bool IsUseD3D11Shader;
 	LPCWSTR ScrcpyServerPath;
 	INT32 ConnectionTimeout;
+	D3D11_FILTER Filter;
 };
 #endif // !ScrcpyNativeConfig_H
 

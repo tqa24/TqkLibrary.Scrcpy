@@ -182,7 +182,7 @@ bool MediaDecoder::Nv12Convert(AVFrame* frame) {
 	ComPtr<ID3D11Device> device = this->m_d3d11->GetDevice();
 
 	if (this->m_d3d11_renderTexture->Initialize(device.Get(), this->m_d3d11_inputNv12->Width(), this->m_d3d11_inputNv12->Height()) &&
-		this->m_d3d11_pixel_Nv12ToRgba->Initialize(device.Get()))
+		this->m_d3d11_pixel_Nv12ToRgba->Initialize(device.Get(), this->_nativeConfig.Filter))
 	{
 		device_ctx->ClearState();
 
@@ -263,7 +263,7 @@ bool MediaDecoder::Draw(RenderTextureSurfaceClass* renderSurface, IUnknown* surf
 		ComPtr<ID3D11Device> device = this->m_d3d11->GetDevice();
 
 		if (renderSurface->Initialize(device.Get(), surface, isNewSurface, isNewtargetView) &&
-			this->m_d3d11_pixel_Nv12ToBgra->Initialize(device.Get()) &&
+			this->m_d3d11_pixel_Nv12ToBgra->Initialize(device.Get(), this->_nativeConfig.Filter) &&
 			this->m_vertex->Initialize(device.Get()))
 		{
 			bool isNewFrame = renderSurface->IsNewFrame(_decoding_frame->pts);

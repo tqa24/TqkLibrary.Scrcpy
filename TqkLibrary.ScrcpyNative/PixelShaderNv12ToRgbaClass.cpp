@@ -10,7 +10,7 @@ PixelShaderNv12ToRgbaClass::PixelShaderNv12ToRgbaClass() {
 PixelShaderNv12ToRgbaClass::~PixelShaderNv12ToRgbaClass() {
 	this->Shutdown();
 }
-bool PixelShaderNv12ToRgbaClass::Initialize(ID3D11Device* d3d11_device) {
+bool PixelShaderNv12ToRgbaClass::Initialize(ID3D11Device* d3d11_device, D3D11_FILTER filter) {
 	if (this->m_d3d11_pixelShader != nullptr) return true;
 
 	UINT Size = ARRAYSIZE(g_PS);
@@ -19,6 +19,7 @@ bool PixelShaderNv12ToRgbaClass::Initialize(ID3D11Device* d3d11_device) {
 		return false;
 
 	D3D11_SAMPLER_DESC desc = CD3D11_SAMPLER_DESC(CD3D11_DEFAULT());
+	desc.Filter = filter;
 	hr = d3d11_device->CreateSamplerState(&desc, this->m_d3d11_samplerState.GetAddressOf());
 	if (FAILED(hr))
 		return false;

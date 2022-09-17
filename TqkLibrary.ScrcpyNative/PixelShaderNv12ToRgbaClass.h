@@ -6,7 +6,7 @@ public:
 	PixelShaderNv12ToRgbaClass();
 	~PixelShaderNv12ToRgbaClass();
 
-	bool Initialize(ID3D11Device* d3d11_device);
+	bool Initialize(ID3D11Device* d3d11_device, D3D11_FILTER filter);
 	void Set(ID3D11DeviceContext* d3d11_deviceCtx, ID3D11ShaderResourceView* luminance, ID3D11ShaderResourceView* chrominance);
 	void Shutdown();
 

@@ -21,5 +21,7 @@ namespace TqkLibrary.Scrcpy
         public string ScrcpyServerPath;
 
         public int ConnectionTimeout;
+
+        public D3D11Filter Filter;
     }
 }
