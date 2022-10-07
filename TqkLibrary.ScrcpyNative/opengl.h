@@ -1,5 +1,5 @@
-//#ifndef opengl_H
-//#define opengl_H
+//#ifndef _H_OPENGL_H_
+//#define _H_OPENGL_H_
 ////#include <GL/GL.h>
 //#include <GL/glew.h>
 //#include <glut.h>

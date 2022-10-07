@@ -1,5 +1,5 @@
-#ifndef Scrcpy_H
-#define Scrcpy_H
+#ifndef _H_Scrcpy_H_
+#define _H_Scrcpy_H_
 class Scrcpy
 {
 	friend ScrcpyInstance;

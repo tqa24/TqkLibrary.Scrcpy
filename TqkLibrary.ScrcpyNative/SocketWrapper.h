@@ -1,5 +1,5 @@
-#ifndef SocketWrapper_H
-#define SocketWrapper_H
+#ifndef _H_SocketWrapper_H_
+#define _H_SocketWrapper_H_
 class SocketWrapper
 {
 public:

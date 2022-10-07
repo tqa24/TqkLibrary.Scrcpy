@@ -1,5 +1,5 @@
-#ifndef VertexShaderClass_H
-#define VertexShaderClass_H
+#ifndef _H_VertexShaderClass_H_
+#define _H_VertexShaderClass_H_
 
 class VertexShaderClass
 {

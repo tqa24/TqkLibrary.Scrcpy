@@ -1,5 +1,5 @@
-#ifndef ScrcpyNativeConfig_H
-#define ScrcpyNativeConfig_H
+#ifndef _H_ScrcpyNativeConfig_H_
+#define _H_ScrcpyNativeConfig_H_
 struct ScrcpyNativeConfig {
 	BYTE HwType;//AVHWDeviceType
 	bool ForceAdbForward;

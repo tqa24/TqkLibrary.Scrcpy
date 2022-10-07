@@ -1,5 +1,5 @@
-#ifndef ScrcpyNativeExports_H
-#define ScrcpyNativeExports_H
+#ifndef _H_ScrcpyNativeExports_H_
+#define _H_ScrcpyNativeExports_H_
 
 ScrcpyNativeExport BYTE FFmpegHWSupport(BYTE bHWSupport);
 ScrcpyNativeExport bool ClearKey();

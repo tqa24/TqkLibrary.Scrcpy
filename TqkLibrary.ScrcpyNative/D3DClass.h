@@ -1,5 +1,5 @@
-#ifndef D3DClass_H
-#define D3DClass_H
+#ifndef _H_D3DClass_H_
+#define _H_D3DClass_H_
 class D3DClass
 {
 public:

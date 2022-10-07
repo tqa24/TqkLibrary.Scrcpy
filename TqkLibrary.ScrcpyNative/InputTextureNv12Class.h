@@ -1,5 +1,5 @@
-#ifndef _InputTextureNv12Class_H_
-#define _InputTextureNv12Class_H_
+#ifndef _H_InputTextureNv12Class_H_
+#define _H_InputTextureNv12Class_H_
 class InputTextureNv12Class
 {
 public:

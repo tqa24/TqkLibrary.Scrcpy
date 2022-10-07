@@ -1,5 +1,5 @@
-#ifndef Video_H
-#define Video_H
+#ifndef _H_Video_H_
+#define _H_Video_H_
 
 class Video
 {

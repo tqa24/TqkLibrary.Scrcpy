@@ -1,5 +1,5 @@
-#ifndef libav_H
-#define libav_H
+#ifndef _H_libav_H_
+#define _H_libav_H_
 
 #ifndef __d3d11_h__
 #include <d3d11.h>

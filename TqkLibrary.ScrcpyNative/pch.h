@@ -1,7 +1,7 @@
 #pragma warning(disable: 26812)
 
-#ifndef ScrcpyNativePCH_H
-#define ScrcpyNativePCH_H
+#ifndef _H_ScrcpyNativePCH_H_
+#define _H_ScrcpyNativePCH_H_
 
 #ifdef TQKLIBRARYSCRCPYNATIVE_EXPORTS
 #define ScrcpyNativeExport extern "C" __declspec( dllexport )

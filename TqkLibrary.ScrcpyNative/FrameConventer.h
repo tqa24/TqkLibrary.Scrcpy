@@ -1,5 +1,5 @@
-#ifndef FrameConventer_H
-#define FrameConventer_H
+#ifndef _H_FrameConventer_H_
+#define _H_FrameConventer_H_
 class FrameConventer
 {
 public:

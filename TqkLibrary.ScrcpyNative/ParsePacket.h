@@ -1,5 +1,5 @@
-#ifndef ParsePacket_H
-#define ParsePacket_H
+#ifndef _H_ParsePacket_H_
+#define _H_ParsePacket_H_
 class ParsePacket
 {
 public:

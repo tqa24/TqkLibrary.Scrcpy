@@ -1,5 +1,5 @@
-#ifndef RenderTextureClass_H
-#define RenderTextureClass_H
+#ifndef _H_RenderTextureClass_H_
+#define _H_RenderTextureClass_H_
 class RenderTextureClass
 {
 public:

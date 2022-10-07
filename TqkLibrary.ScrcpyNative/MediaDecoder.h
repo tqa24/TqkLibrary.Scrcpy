@@ -1,5 +1,5 @@
-#ifndef MediaDecoder_H
-#define MediaDecoder_H
+#ifndef _H_MediaDecoder_H_
+#define _H_MediaDecoder_H_
 class MediaDecoder
 {
 	friend Scrcpy;

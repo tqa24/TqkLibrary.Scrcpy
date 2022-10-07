@@ -1,5 +1,5 @@
-#ifndef Control_H
-#define Control_H
+#ifndef _H_Control_H_
+#define _H_Control_H_
 
 class Control
 {

@@ -1,5 +1,5 @@
-#ifndef Utils_H
-#define Utils_H
+#ifndef _H_Utils_H_
+#define _H_Utils_H_
 
 static inline void arlet(const char* s) {
 	::MessageBoxA(NULL, (LPCSTR)s, (LPCSTR)"ShaderErr", MB_OK);

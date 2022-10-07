@@ -1,5 +1,5 @@
-#ifndef Process_H
-#define Process_H
+#ifndef _H_ProcessWrapper_H_
+#define _H_ProcessWrapper_H_
 class ProcessWrapper
 {
 public:
