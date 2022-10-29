@@ -1,5 +1,5 @@
-#ifndef _H_D3DClass_H_
-#define _H_D3DClass_H_
+#ifndef _H_D3D11Header_H_
+#define _H_D3D11Header_H_
 
 #include <d3d11.h>
 #include <directxmath.h>
