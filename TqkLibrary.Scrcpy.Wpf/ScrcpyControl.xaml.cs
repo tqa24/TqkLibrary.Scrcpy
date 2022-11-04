@@ -88,9 +88,9 @@ namespace TqkLibrary.Scrcpy.Wpf
         private void host_Loaded(object sender, RoutedEventArgs e)
         {
             Window window = Window.GetWindow(this);
-            if (window == null) return;
-            WindowInteropHelper windowInteropHelper = new WindowInteropHelper(window);
+            if (window == null) return;//ignore design load
 
+            WindowInteropHelper windowInteropHelper = new WindowInteropHelper(window);
             InteropImage.WindowOwner = windowInteropHelper.Handle;
             InteropImage.OnRender = this.DoRender;
             InteropImage.RequestRender();
