@@ -2,6 +2,7 @@
 using System.Drawing;
 using System.Linq;
 using System.Text;
+using TqkLibrary.Scrcpy.Exceptions;
 
 namespace TqkLibrary.Scrcpy.Control
 {
@@ -21,8 +22,8 @@ namespace TqkLibrary.Scrcpy.Control
         private long PointerId { get; set; }
         private float Pressure { get; set; }
         private Rectangle Position { get; set; }
-        private int HScroll { get; set; }
-        private int VScroll { get; set; }
+        private float HScroll { get; set; }
+        private float VScroll { get; set; }
         private bool Paste { get; set; }
         private uint Repeat { get; set; }
         private long Sequence { get; set; }
@@ -61,29 +62,36 @@ namespace TqkLibrary.Scrcpy.Control
                 Rectangle position,
                 float pressure,
                 AndroidMotionEventButton buttons)
-          => new ScrcpyControlMessage
-          {
-              ControlType = ScrcpyControlType.TYPE_INJECT_TOUCH_EVENT,
-              MotionEventAction = action,
-              PointerId = pointerId,
-              Pressure = pressure,
-              Position = position,
-              Buttons = buttons
-          };
+        {
+            if (pressure > 1.0f || pressure < 0.0f) throw new InvalidRangeException($"{nameof(pressure)} must be in range 0.0f <= {nameof(pressure)} <= 1.0f");
+            return new ScrcpyControlMessage
+            {
+                ControlType = ScrcpyControlType.TYPE_INJECT_TOUCH_EVENT,
+                MotionEventAction = action,
+                PointerId = pointerId,
+                Pressure = pressure,
+                Position = position,
+                Buttons = buttons
+            };
+        }
 
         internal static ScrcpyControlMessage CreateInjectScrollEvent(
             Rectangle position,
-            int vScroll,
-            int hScroll,
+            float vScroll,
+            float hScroll,
             AndroidMotionEventButton button)
-          => new ScrcpyControlMessage
-          {
-              ControlType = ScrcpyControlType.TYPE_INJECT_SCROLL_EVENT,
-              Position = position,
-              HScroll = hScroll,
-              VScroll = vScroll,
-              Buttons = button
-          };
+        {
+            if (vScroll > 1.0f || vScroll < 0.0f) throw new InvalidRangeException($"{nameof(vScroll)} must be in range 0.0f <= {nameof(vScroll)} <= 1.0f");
+            if (hScroll > 1.0f || hScroll < 0.0f) throw new InvalidRangeException($"{nameof(hScroll)} must be in range 0.0f <= {nameof(hScroll)} <= 1.0f");
+            return new ScrcpyControlMessage
+            {
+                ControlType = ScrcpyControlType.TYPE_INJECT_SCROLL_EVENT,
+                Position = position,
+                HScroll = hScroll,
+                VScroll = vScroll,
+                Buttons = button
+            };
+        }
 
         internal static ScrcpyControlMessage CreateSetClipboard(string text, bool paste, long sequence)
         {
@@ -133,16 +141,35 @@ namespace TqkLibrary.Scrcpy.Control
               ControlType = type
           };
 
-
-        ushort ToFixedPoint16(float f)
+        /// <summary>
+        /// Convert a float between 0 and 1 to an unsigned 16-bit fixed-point value
+        /// </summary>
+        ushort ToUnsignedFixedPoint16(float f)
         {
-            uint u = (uint)(f * 65536.0f);// 0x1p16f; // 2^16
-            if (u >= 0xffff)
+            unchecked
             {
-                u = 0xffff;
+                uint u = (uint)(f * 65536.0f);// 0x1p16f; // 2^16
+                if (u >= 0xffff)
+                {
+                    u = 0xffff;
+                }
+                return (ushort)u;
             }
-            return (ushort)u;
         }
+        short ToSignedFixedPoint16(float f)
+        {
+            unchecked
+            {
+                int u = (int)(f * 32768.0F);// 0x1p15f; // 2^15
+                if (u > 0x8000) throw new InvalidOperationException();
+                if (u >= 0x7fff)
+                {
+                    u = 0x7fff;
+                }
+                return (short)u;
+            }
+        }
+
 
         /// <summary>
         /// https://github.com/Genymobile/scrcpy/blob/master/server/src/main/java/com/genymobile/scrcpy/ControlMessageReader.java
@@ -185,22 +212,22 @@ namespace TqkLibrary.Scrcpy.Control
                         Array.Copy(BitConverter.GetBytes(Position.Y).Reverse().ToArray(), 0, buffer, 14, 4);//14-17
                         Array.Copy(BitConverter.GetBytes((UInt16)Position.Width).Reverse().ToArray(), 0, buffer, 18, 2);//18-19
                         Array.Copy(BitConverter.GetBytes((UInt16)Position.Height).Reverse().ToArray(), 0, buffer, 20, 2);//20-21
-                        Array.Copy(BitConverter.GetBytes(ToFixedPoint16(Pressure)).Reverse().ToArray(), 0, buffer, 22, 2);//22-23
+                        Array.Copy(BitConverter.GetBytes(ToUnsignedFixedPoint16(Pressure)).Reverse().ToArray(), 0, buffer, 22, 2);//22-23
                         Array.Copy(BitConverter.GetBytes((int)Buttons).Reverse().ToArray(), 0, buffer, 24, 4);//24-27
                     }
                     break;
 
                 case ScrcpyControlType.TYPE_INJECT_SCROLL_EVENT:
                     {
-                        buffer = new byte[25];
-                        buffer[0] = (byte)ControlType;
+                        buffer = new byte[21];
+                        buffer[0] = (byte)ControlType;//0
                         Array.Copy(BitConverter.GetBytes(Position.X).Reverse().ToArray(), 0, buffer, 1, 4);//1-4
                         Array.Copy(BitConverter.GetBytes(Position.Y).Reverse().ToArray(), 0, buffer, 5, 4);//5-8
                         Array.Copy(BitConverter.GetBytes((UInt16)Position.Width).Reverse().ToArray(), 0, buffer, 9, 2);//9-10
                         Array.Copy(BitConverter.GetBytes((UInt16)Position.Height).Reverse().ToArray(), 0, buffer, 11, 2);//11-12
-                        Array.Copy(BitConverter.GetBytes(HScroll).Reverse().ToArray(), 0, buffer, 13, 4);//13-16
-                        Array.Copy(BitConverter.GetBytes(VScroll).Reverse().ToArray(), 0, buffer, 17, 4);//17-20
-                        Array.Copy(BitConverter.GetBytes((int)Buttons).Reverse().ToArray(), 0, buffer, 21, 4);//21-24
+                        Array.Copy(BitConverter.GetBytes(ToSignedFixedPoint16(HScroll)).Reverse().ToArray(), 0, buffer, 13, 2);//13-14
+                        Array.Copy(BitConverter.GetBytes(ToSignedFixedPoint16(VScroll)).Reverse().ToArray(), 0, buffer, 15, 2);//15-16
+                        Array.Copy(BitConverter.GetBytes((int)Buttons).Reverse().ToArray(), 0, buffer, 17, 4);//17-20
                     }
                     break;
 

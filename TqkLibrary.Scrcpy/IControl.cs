@@ -82,8 +82,8 @@ namespace TqkLibrary.Scrcpy
         /// <returns></returns>
         bool InjectScrollEvent(
                                     Rectangle position,
-                                    int vScroll,
-                                    int hScroll = 0,
+                                    float vScroll,
+                                    float hScroll = 0,
                                     AndroidMotionEventButton button = AndroidMotionEventButton.BUTTON_PRIMARY);
 
         /// <summary>

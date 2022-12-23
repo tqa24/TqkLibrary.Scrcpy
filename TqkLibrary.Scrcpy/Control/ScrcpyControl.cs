@@ -45,7 +45,7 @@ namespace TqkLibrary.Scrcpy.Control
             uint repeat = 1,
             AndroidKeyEventMeta metaState = AndroidKeyEventMeta.META_NONE)
             => SendControl(ScrcpyControlMessage.CreateInjectKeycode(action, keycode, repeat, metaState));
-        public bool InjectScrollEvent(Rectangle position, int vScroll, int hScroll = 0, AndroidMotionEventButton button = AndroidMotionEventButton.BUTTON_PRIMARY)
+        public bool InjectScrollEvent(Rectangle position, float vScroll, float hScroll = 0, AndroidMotionEventButton button = AndroidMotionEventButton.BUTTON_PRIMARY)
             => SendControl(ScrcpyControlMessage.CreateInjectScrollEvent(position, vScroll, hScroll, button));
         public bool InjectText(string text)
             => SendControl(ScrcpyControlMessage.CreateInjectText(text));
