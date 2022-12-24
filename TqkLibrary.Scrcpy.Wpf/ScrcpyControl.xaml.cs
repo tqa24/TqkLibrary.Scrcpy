@@ -55,6 +55,17 @@ namespace TqkLibrary.Scrcpy.Wpf
           typeof(ScrcpyControl),
           new FrameworkPropertyMetadata(true, FrameworkPropertyMetadataOptions.None));
 
+        public static readonly DependencyProperty IsMouseHandlerProperty = DependencyProperty.Register(
+          nameof(IsMouseHandler),
+          typeof(bool),
+          typeof(ScrcpyControl),
+          new FrameworkPropertyMetadata(false, FrameworkPropertyMetadataOptions.None));
+
+        public static readonly DependencyProperty IsKeyHandlerProperty = DependencyProperty.Register(
+          nameof(IsKeyHandler),
+          typeof(bool),
+          typeof(ScrcpyControl),
+          new FrameworkPropertyMetadata(false, FrameworkPropertyMetadataOptions.None));
         public ScrcpyUiView ScrcpyUiView
         {
             get { return (ScrcpyUiView)GetValue(ScrcpyUiViewProperty); }
@@ -70,6 +81,23 @@ namespace TqkLibrary.Scrcpy.Wpf
             get { return (bool)GetValue(IsControlProperty); }
             set { SetValue(IsControlProperty, value); }
         }
+        /// <summary>
+        /// Default false
+        /// </summary>
+        public bool IsMouseHandler
+        {
+            get { return (bool)GetValue(IsMouseHandlerProperty); }
+            set { SetValue(IsMouseHandlerProperty, value); }
+        }
+        /// <summary>
+        /// Defaut false
+        /// </summary>
+        public bool IsKeyHandler
+        {
+            get { return (bool)GetValue(IsKeyHandlerProperty); }
+            set { SetValue(IsKeyHandlerProperty, value); }
+        }
+
         public event OnUiChanged<System.Drawing.Size> OnResize;
 
         public System.Drawing.Size VideoSize { get { return videoSize; } }
@@ -192,7 +220,7 @@ namespace TqkLibrary.Scrcpy.Wpf
         bool isdown = false;
         private void img_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            e.Handled = true;
+            e.Handled = IsMouseHandler;
             Keyboard.Focus(sender as Image);
             var p = GetRemotePoint(e.GetPosition((IInputElement)sender));
             var control = Control;
@@ -204,7 +232,7 @@ namespace TqkLibrary.Scrcpy.Wpf
 
         private void img_MouseUp(object sender, MouseButtonEventArgs e)
         {
-            e.Handled = true;
+            e.Handled = IsMouseHandler;
             var p = GetRemotePoint(e.GetPosition((IInputElement)sender));
             var control = Control;
             if (IsControl && control != null)
@@ -215,7 +243,7 @@ namespace TqkLibrary.Scrcpy.Wpf
 
         private void img_MouseMove(object sender, MouseEventArgs e)
         {
-            e.Handled = true;
+            e.Handled = IsMouseHandler;
             var p = GetRemotePoint(e.GetPosition((IInputElement)sender));
             var control = Control;
             if (IsControl && control != null)
@@ -244,7 +272,7 @@ namespace TqkLibrary.Scrcpy.Wpf
 
         private void img_MouseWheel(object sender, MouseWheelEventArgs e)
         {
-            e.Handled = true;
+            e.Handled = IsMouseHandler;
             var p = GetRemotePoint(e.GetPosition((IInputElement)sender));
             var control = Control;
             if (IsControl && control != null)
@@ -255,7 +283,7 @@ namespace TqkLibrary.Scrcpy.Wpf
 
         private async void img_KeyDown(object sender, KeyEventArgs e)
         {
-            e.Handled = true;
+            e.Handled = IsKeyHandler;
             var control = Control;
             if (IsControl && control != null)
             {
@@ -264,7 +292,7 @@ namespace TqkLibrary.Scrcpy.Wpf
                     AndroidKeyCode keyCode = await ResolveKey(e);
                     if (keyCode != AndroidKeyCode.AKEYCODE_UNKNOWN)
                     {
-                        control.InjectKeycode(AndroidKeyEventAction.ACTION_DOWN, keyCode, 1, ResolveMetaKey(e));
+                        control.InjectKeycode(AndroidKeyEventAction.ACTION_DOWN, keyCode, 0, ResolveMetaKey(e));
 #if DEBUG
                         Console.WriteLine($"ACTION_DOWN: {keyCode}");
 #endif
@@ -279,7 +307,7 @@ namespace TqkLibrary.Scrcpy.Wpf
 
         private async void img_KeyUp(object sender, KeyEventArgs e)
         {
-            e.Handled = true;
+            e.Handled = IsKeyHandler;
             var control = Control;
             if (IsControl && control != null)
             {
@@ -288,7 +316,7 @@ namespace TqkLibrary.Scrcpy.Wpf
                     AndroidKeyCode keyCode = await ResolveKey(e);
                     if (keyCode != AndroidKeyCode.AKEYCODE_UNKNOWN)
                     {
-                        control.InjectKeycode(AndroidKeyEventAction.ACTION_UP, keyCode, 1, ResolveMetaKey(e));
+                        control.InjectKeycode(AndroidKeyEventAction.ACTION_UP, keyCode, 0, ResolveMetaKey(e));
 #if DEBUG
                         Console.WriteLine($"ACTION_UP: {keyCode}");
 #endif
