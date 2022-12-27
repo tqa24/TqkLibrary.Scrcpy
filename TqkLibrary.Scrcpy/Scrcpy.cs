@@ -46,9 +46,9 @@ namespace TqkLibrary.Scrcpy
             NativeWrapper.RegisterDisconnectEvent(_handle, pointer);
 
             if (AppDomain.CurrentDomain.IsDefaultAppDomain())
-                AppDomain.CurrentDomain.ProcessExit += MyTerminationHandler;
+                AppDomain.CurrentDomain.ProcessExit += TerminationHandler;
             else
-                AppDomain.CurrentDomain.DomainUnload += MyTerminationHandler;//DomainUnload not fire on DefaultAppDomain
+                AppDomain.CurrentDomain.DomainUnload += TerminationHandler;//DomainUnload not fire on DefaultAppDomain
         }
 
 
@@ -69,14 +69,14 @@ namespace TqkLibrary.Scrcpy
             GC.SuppressFinalize(this);
         }
 
-        private void MyTerminationHandler(object sender, EventArgs e)
+        private void TerminationHandler(object sender, EventArgs e)
         {
             //fix crash on forgot dispose
             //when native disconnect, it will callback to NativeOnDisconnectDelegate. But domain was unload -> crash
-            this.Dispose();
+            if (!isDisposed) this.Dispose();
         }
 
-
+        bool isDisposed = false;
         private void Dispose(bool disposing)
         {
             Stop();
@@ -88,6 +88,7 @@ namespace TqkLibrary.Scrcpy
                 _handle = IntPtr.Zero;
             }
             countdownEvent.Dispose();//TryAddCount will throw ObjectDisposeException
+            isDisposed = true;
         }
 
         /// <summary>
