@@ -11,7 +11,7 @@
 		<AllowUnsafeBlocks>True</AllowUnsafeBlocks>
 		<Configurations>Debug;Release</Configurations>
 		<Platforms>AnyCPU;x86;x64</Platforms>
-		<Version>1.25.2</Version>
+		<Version>1.25.3</Version>
 	</PropertyGroup>	
 	
 	<ItemGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
@@ -45,7 +45,7 @@
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</None>
 	</ItemGroup>
-	
+
 	<ItemGroup>
 	  <PackageReference Include="TqkLibrary.FFmpeg.GplShared" Version="5.1.2" />
 	</ItemGroup>
