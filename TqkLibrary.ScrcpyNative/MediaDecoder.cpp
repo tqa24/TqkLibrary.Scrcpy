@@ -108,17 +108,17 @@ bool MediaDecoder::Decode(const AVPacket* packet) {
 
 	bool result = false;
 
+#if _DEBUG
+	auto start(std::chrono::high_resolution_clock::now());
+#endif
 	if (avcheck(avcodec_send_packet(_codec_ctx, packet)))
 	{
 		_mtx_frame.lock();//lock read frame
 		av_frame_unref(_decoding_frame);
 		result = avcheck(avcodec_receive_frame(_codec_ctx, _decoding_frame));
 
-		if (result && this->_nativeConfig.IsUseD3D11Shader)
+		if (result)
 		{
-#if _DEBUG
-			auto start(std::chrono::high_resolution_clock::now());
-#endif
 			if ((_decoding_frame->format == AV_PIX_FMT_D3D11 && _decoding_frame->hw_frames_ctx != nullptr) ||
 				_decoding_frame->format == AV_PIX_FMT_YUV420P)//on AV_PIX_FMT_D3D11 false or AV_HWDEVICE_TYPE_NONE
 			{
@@ -127,17 +127,18 @@ bool MediaDecoder::Decode(const AVPacket* packet) {
 					result = this->m_d3d11_inputNv12->Copy(this->m_d3d11->GetDeviceContext(), _decoding_frame);
 				}
 			}
-#if _DEBUG
-			auto finish(std::chrono::high_resolution_clock::now());
-			auto r = std::chrono::duration_cast<std::chrono::milliseconds>(finish - start);
-			std::wstring text(L"Copy to Texture: ");
-			text.append(std::to_wstring(r.count()));
-			text.append(L"\r");
-			OutputDebugString(text.c_str());
-#endif
 		}
 		_mtx_frame.unlock();
 	}
+#if _DEBUG
+	auto finish(std::chrono::high_resolution_clock::now());
+	auto r = std::chrono::duration_cast<std::chrono::microseconds>(finish - start);
+	std::wstring text(L"Decode: ");
+	text.append(std::to_wstring(r.count()));
+	text.append(L"us");
+	text.append(L"\r");
+	OutputDebugString(text.c_str());
+#endif
 
 	return result;
 }
@@ -276,6 +277,9 @@ bool MediaDecoder::Draw(RenderTextureSurfaceClass* renderSurface, IUnknown* surf
 
 	if (this->_nativeConfig.IsUseD3D11Shader)
 	{
+#if _DEBUG
+		auto start(std::chrono::high_resolution_clock::now());
+#endif
 		_mtx_frame.lock();
 
 		ComPtr<ID3D11DeviceContext> device_ctx = this->m_d3d11->GetDeviceContext();
@@ -289,9 +293,6 @@ bool MediaDecoder::Draw(RenderTextureSurfaceClass* renderSurface, IUnknown* surf
 
 			if (isNewFrame || isNewSurface)
 			{
-#if _DEBUG
-				auto start(std::chrono::high_resolution_clock::now());
-#endif
 				device_ctx->ClearState();
 
 				device_ctx->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
@@ -314,21 +315,20 @@ bool MediaDecoder::Draw(RenderTextureSurfaceClass* renderSurface, IUnknown* surf
 				//view->m_renderTextureSurface.ClearRenderTarget(device_ctx.Get(), nullptr, 0, 0, 0, 0);
 				device_ctx->Draw(this->m_vertex->GetVertexCount(), 0);
 				device_ctx->Flush();
-
-#if _DEBUG
-				auto finish(std::chrono::high_resolution_clock::now());
-				auto r = std::chrono::duration_cast<std::chrono::milliseconds>(finish - start);
-				std::wstring text(L"Draw surface: ");
-				text.append(std::to_wstring(r.count()));
-				text.append(L"\r");
-				OutputDebugString(text.c_str());
-#endif
 			}
 			result = true;
 		}
-
-
 		_mtx_frame.unlock();
+
+#if _DEBUG
+		auto finish(std::chrono::high_resolution_clock::now());
+		auto r = std::chrono::duration_cast<std::chrono::microseconds>(finish - start);
+		std::wstring text(L"Draw surface: ");
+		text.append(std::to_wstring(r.count()));
+		text.append(L"us");
+		text.append(L"\r");
+		OutputDebugString(text.c_str());
+#endif
 	}
 
 	return result;
