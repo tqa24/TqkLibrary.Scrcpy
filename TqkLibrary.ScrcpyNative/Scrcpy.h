@@ -8,7 +8,7 @@ class Scrcpy
 public:
 	Scrcpy(LPCWSTR deviceId);
 	~Scrcpy();
-	bool Connect(LPCWSTR config, const ScrcpyNativeConfig& nativeConfig);
+	bool Connect(const ScrcpyNativeConfig& nativeConfig);
 	void Stop();
 
 	bool ControlCommand(const BYTE* command, const int sizeInByte);

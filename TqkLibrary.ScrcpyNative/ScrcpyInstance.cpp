@@ -7,8 +7,6 @@
 #include <chrono>
 
 #define IPV4_LOCALHOST 0x7F000001
-#define ScrcpyVersion L"1.25"
-const wchar_t* adbPath = L"adb.exe";
 const int portMin = 5000;
 const int portMax = 65535;
 const int sockTimeoutSecond = 5;
@@ -91,9 +89,8 @@ SOCKET AcceptConnection(SOCKET sock, int timeout = 2000)
 	}
 }
 
-ScrcpyInstance::ScrcpyInstance(const Scrcpy* scrcpy, LPCWSTR config, const ScrcpyNativeConfig& nativeConfig) {
+ScrcpyInstance::ScrcpyInstance(const Scrcpy* scrcpy, const ScrcpyNativeConfig& nativeConfig) {
 	this->_scrcpy = scrcpy;
-	this->_config = config;
 	this->_nativeConfig = nativeConfig;
 }
 
@@ -125,7 +122,7 @@ DWORD ScrcpyInstance::RunAdbProcess(LPCWSTR argument)
 		this->_scrcpy->_deviceId.c_str(),
 		argument
 	};
-	std::wstring args(adbPath);
+	std::wstring args(this->_nativeConfig.AdbPath);
 	for (int i = 0; i < 3; i++)
 	{
 		args.append(L" ");
@@ -173,17 +170,16 @@ bool ScrcpyInstance::Start() {
 	}
 
 	//run main process
-	LPCWSTR cmds[6]
+	LPCWSTR cmds[5]
 	{
 		L"-s",
 		this->_scrcpy->_deviceId.c_str(),
 		L"shell CLASSPATH=/sdcard/scrcpy-server-tqk.jar",
 		L"app_process / com.genymobile.scrcpy.Server",
-		ScrcpyVersion,
-		this->_config.c_str()
+		this->_nativeConfig.ConfigureArguments,
 	};
-	std::wstring args(adbPath);
-	for (int i = 0; i < 6; i++)
+	std::wstring args(this->_nativeConfig.AdbPath);
+	for (int i = 0; i < 5; i++)
 	{
 		args.append(L" ");
 		args.append(cmds[i]);

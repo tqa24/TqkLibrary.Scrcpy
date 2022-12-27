@@ -4,7 +4,7 @@ class ScrcpyInstance
 {
 	friend Scrcpy;
 public:
-	ScrcpyInstance(const Scrcpy* scrcpy, LPCWSTR config, const ScrcpyNativeConfig& nativeConfig);
+	ScrcpyInstance(const Scrcpy* scrcpy, const ScrcpyNativeConfig& nativeConfig);
 	~ScrcpyInstance();
 	bool Start();
 
@@ -15,7 +15,6 @@ private:
 
 	//const
 	const Scrcpy* _scrcpy{ nullptr };//don't delete
-	std::wstring _config;
 	ScrcpyNativeConfig _nativeConfig{ };
 	
 	//need release

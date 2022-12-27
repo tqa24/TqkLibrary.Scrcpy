@@ -6,7 +6,7 @@ ScrcpyNativeExport bool ClearKey();
 ScrcpyNativeExport bool AddKey(BYTE* key, const int sizeInByte);
 ScrcpyNativeExport Scrcpy* ScrcpyAlloc(LPCWSTR deviceId);
 ScrcpyNativeExport void ScrcpyFree(Scrcpy* scrcpy);
-ScrcpyNativeExport bool ScrcpyConnect(Scrcpy* scrcpy, LPCWSTR config, const ScrcpyNativeConfig& nativeConfig);
+ScrcpyNativeExport bool ScrcpyConnect(Scrcpy* scrcpy, const ScrcpyNativeConfig& nativeConfig);
 ScrcpyNativeExport void ScrcpyStop(Scrcpy* scrcpy);
 ScrcpyNativeExport bool ScrcpyGetScreenSize(Scrcpy* scrcpy, int& w, int& h);
 ScrcpyNativeExport bool ScrcpyControlCommand(Scrcpy* scrcpy, const BYTE* command, const int sizeInByte);

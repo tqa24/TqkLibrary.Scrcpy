@@ -170,9 +170,8 @@ namespace TqkLibrary.Scrcpy
             if (countdownEvent.TryAddCount())
             {
                 if (config == null) config = new ScrcpyConfig();
-                string config_str = config.ToString();
                 ScrcpyNativeConfig nativeConfig = config.NativeConfig();
-                result = NativeWrapper.ScrcpyConnect(_handle, config_str, ref nativeConfig);
+                result = NativeWrapper.ScrcpyConnect(_handle, ref nativeConfig);
                 countdownEvent.Signal();
             }
             return result;

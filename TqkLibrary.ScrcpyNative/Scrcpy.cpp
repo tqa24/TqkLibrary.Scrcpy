@@ -15,7 +15,7 @@ Scrcpy::~Scrcpy() {
 	Stop();
 }
 
-bool Scrcpy::Connect(LPCWSTR config, const ScrcpyNativeConfig& nativeConfig) {
+bool Scrcpy::Connect(const ScrcpyNativeConfig& nativeConfig) {
 
 	_mutex_instance.lock();
 	_mutex.lock();
@@ -23,7 +23,7 @@ bool Scrcpy::Connect(LPCWSTR config, const ScrcpyNativeConfig& nativeConfig) {
 	if (this->_scrcpyInstance == nullptr) {
 		_mutex.unlock();
 
-		auto instance = new ScrcpyInstance(this, config, nativeConfig);
+		auto instance = new ScrcpyInstance(this, nativeConfig);
 		if (instance->Start()) {//long work
 
 			_mutex.lock();

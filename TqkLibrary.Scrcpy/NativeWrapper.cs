@@ -43,7 +43,7 @@ namespace TqkLibrary.Scrcpy
         internal static extern void ScrcpyFree(IntPtr scrcpy);
 
         [DllImport("TqkLibrary.ScrcpyNative.dll", CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
-        internal static extern bool ScrcpyConnect(IntPtr scrcpy, string config, ref ScrcpyNativeConfig nativeConfig);
+        internal static extern bool ScrcpyConnect(IntPtr scrcpy, ref ScrcpyNativeConfig nativeConfig);
 
         [DllImport("TqkLibrary.ScrcpyNative.dll", CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
         internal static extern void ScrcpyStop(IntPtr scrcpy);

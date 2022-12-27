@@ -18,9 +18,9 @@ Scrcpy* ScrcpyAlloc(LPCWSTR deviceId) {
 void ScrcpyFree(Scrcpy* scrcpy) {
 	if (scrcpy != nullptr) delete scrcpy;
 }
-bool ScrcpyConnect(Scrcpy* scrcpy, LPCWSTR config, const ScrcpyNativeConfig& nativeConfig) {
-	if (scrcpy == nullptr || config == nullptr) return false;
-	return scrcpy->Connect(config, nativeConfig);
+bool ScrcpyConnect(Scrcpy* scrcpy, const ScrcpyNativeConfig& nativeConfig) {
+	if (scrcpy == nullptr) return false;
+	return scrcpy->Connect(nativeConfig);
 }
 void ScrcpyStop(Scrcpy* scrcpy) {
 	if (scrcpy == nullptr) return;

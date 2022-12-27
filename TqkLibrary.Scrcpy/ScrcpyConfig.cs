@@ -104,9 +104,19 @@ namespace TqkLibrary.Scrcpy
         public int ConnectionTimeout { get; set; } = 3000;
 
         /// <summary>
-        /// 
+        /// Default: adb.exe
         /// </summary>
-        public string ScrcpyServerPath { get; set; } = "scrcpy-server-v1.25.jar";
+        public string AdbPath { get; set; } = "adb.exe";
+
+        /// <summary>
+        /// Default: scrcpy-server.jar
+        /// </summary>
+        public string ScrcpyServerPath { get; set; } = "scrcpy-server.jar";
+
+        /// <summary>
+        /// 1.25
+        /// </summary>
+        public string ScrcpyServerVersion { get; } = "1.25";
 
         /// <summary>
         /// if true: Use Adb Forward instead of Adb Reverse<br></br>
@@ -159,6 +169,7 @@ namespace TqkLibrary.Scrcpy
         public override string ToString()
         {
             List<string> args = new List<string>();
+            args.Add(ScrcpyServerVersion);
             args.Add($"log_level={LogLevel.ToString().ToLower()}");
             args.Add($"bit_rate={Bitrate}");
             args.Add($"display_id={DisplayId}");
@@ -193,6 +204,8 @@ namespace TqkLibrary.Scrcpy
                 IsControl = this.IsControl,
                 IsUseD3D11Shader = this.IsUseD3D11Shader,
                 ScrcpyServerPath = this.ScrcpyServerPath,
+                AdbPath = this.AdbPath,
+                ConfigureArguments = this.ToString(),
                 ConnectionTimeout = this.ConnectionTimeout,
                 Filter = this.Filter,
             };
