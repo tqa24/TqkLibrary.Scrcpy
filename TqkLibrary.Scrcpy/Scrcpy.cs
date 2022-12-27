@@ -73,12 +73,20 @@ namespace TqkLibrary.Scrcpy
         {
             //fix crash on forgot dispose
             //when native disconnect, it will callback to NativeOnDisconnectDelegate. But domain was unload -> crash
-            if (!isDisposed) this.Dispose();
+            this.Dispose();
         }
 
         bool isDisposed = false;
         private void Dispose(bool disposing)
         {
+            if (!isDisposed) return;
+            isDisposed = true;
+
+            if (AppDomain.CurrentDomain.IsDefaultAppDomain())
+                AppDomain.CurrentDomain.ProcessExit -= TerminationHandler;
+            else
+                AppDomain.CurrentDomain.DomainUnload -= TerminationHandler;
+
             Stop();
             countdownEvent.Signal();
             countdownEvent.Wait();//TryAddCount will false if wait success
@@ -88,7 +96,6 @@ namespace TqkLibrary.Scrcpy
                 _handle = IntPtr.Zero;
             }
             countdownEvent.Dispose();//TryAddCount will throw ObjectDisposeException
-            isDisposed = true;
         }
 
         /// <summary>
