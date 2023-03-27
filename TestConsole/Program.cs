@@ -39,11 +39,14 @@ int i = 0;
 ScrcpyConfig config = new ScrcpyConfig()
 {
     HwType = FFmpegAVHWDeviceType.AV_HWDEVICE_TYPE_D3D11VA,
-    IsUseD3D11Shader = true,
-    IsControl = true,
-    MaxFps = 24,
+    IsUseD3D11ForConvertAndUiRender = true,
+    ServerConfig = new ScrcpyServerConfig()
+    {
+        IsControl = true,
+        MaxFps = 24,
+        ClipboardAutosync = false,
+    },
     ConnectionTimeout = 99999999,
-    ClipboardAutosync = false,
 };
 while (true)
 {

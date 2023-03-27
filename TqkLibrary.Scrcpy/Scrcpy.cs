@@ -248,7 +248,7 @@ namespace TqkLibrary.Scrcpy
         }
 
         /// <summary>
-        /// Work only when enable <see cref="ScrcpyConfig.IsUseD3D11Shader"/>
+        /// Work only when enable <see cref="ScrcpyConfig.IsUseD3D11ForConvertAndUiRender"/>
         /// </summary>
         /// <returns></returns>
         public ScrcpyUiView InitScrcpyUiView()

@@ -47,10 +47,13 @@ namespace TestRenderWpf
             {
                 HwType = FFmpegAVHWDeviceType.AV_HWDEVICE_TYPE_D3D11VA,
                 //HwType = FFmpegAVHWDeviceType.AV_HWDEVICE_TYPE_NONE,
-                IsUseD3D11Shader = true,
-                IsControl = true,
-                MaxFps = 24,
-                ConnectionTimeout = 10000
+                IsUseD3D11ForConvertAndUiRender = true,
+                ConnectionTimeout = 10000,
+                ServerConfig = new ScrcpyServerConfig()
+                {
+                    IsControl = true,
+                    MaxFps = 24,
+                },
             }))
             {
                 MessageBox.Show("Connect Failed");
@@ -65,10 +68,13 @@ namespace TestRenderWpf
             {
                 HwType = FFmpegAVHWDeviceType.AV_HWDEVICE_TYPE_D3D11VA,
                 //HwType = FFmpegAVHWDeviceType.AV_HWDEVICE_TYPE_NONE,
-                IsUseD3D11Shader = true,
-                IsControl = true,
-                MaxFps = 24,
-                ConnectionTimeout = 3000
+                IsUseD3D11ForConvertAndUiRender = true,
+                ConnectionTimeout = 3000,
+                ServerConfig = new ScrcpyServerConfig()
+                {
+                    IsControl = true,
+                    MaxFps = 24,
+                },
             });
         }
 

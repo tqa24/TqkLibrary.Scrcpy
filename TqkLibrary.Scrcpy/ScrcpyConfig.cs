@@ -28,75 +28,24 @@ namespace TqkLibrary.Scrcpy
         }
 
         /// <summary>
-        /// Default: false
-        /// </summary>
-        public bool ShowTouches { get; set; } = false;
-
-        /// <summary>
-        /// Default: true
-        /// </summary>
-        public bool StayAwake { get; set; } = true;
-
-        /// <summary>
-        /// Default: <see cref="Orientations.Auto"/>
-        /// </summary>
-        public Orientations Orientation { get; set; } = Orientations.Auto;
-
-        /// <summary>
-        /// Turn on for use <see cref="Scrcpy.Control"/><br>
-        /// </br>Default: true
-        /// </summary>
-        public bool IsControl { get; set; } = true;
-
-        /// <summary>
-        /// Default: 0 (unlimit)
-        /// </summary>
-        public int MaxFps { get; set; } = 0;
-
-        /// <summary>
-        /// Default: 0
-        /// </summary>
-        public int MaxSize { get; set; } = 0;
-
-        /// <summary>
-        /// Max bitrate of video stream
-        /// </summary>
-        public int Bitrate { get; set; } = 8000000;
-
-        /// <summary>
-        /// Index of screen android<br></br>
-        /// Default: 0
-        /// </summary>
-        public int DisplayId { get; set; } = 0;
-
-        /// <summary>
-        /// Crop a region in base android screen<br></br>
-        /// Default: null
-        /// </summary>
-        public Rectangle? Crop { get; set; } = null;
-
-        /// <summary>
         /// Use Hardware Accelerator for decode image<br>
         /// </br>Default: <see cref="FFmpegAVHWDeviceType.AV_HWDEVICE_TYPE_NONE"/><br>
         /// </br>Use <see cref="ScrcpyConfig.GetHwSupports"/> for get support list.
         /// </summary>
         public FFmpegAVHWDeviceType HwType { get; set; } = FFmpegAVHWDeviceType.AV_HWDEVICE_TYPE_NONE;
 
-        /// <summary>
-        /// 
-        /// </summary>
-        public LogLevel LogLevel { get; set; } = LogLevel.Info;
+
 
         /// <summary>
-        /// default: false
+        /// Config for scrcpy server
         /// </summary>
-        public bool PowerOffOnClose { get; set; } = false;
+        public ScrcpyServerConfig ServerConfig { get; set; } = new ScrcpyServerConfig();
 
         /// <summary>
         /// Use directx 11 for convert image.<br>
         /// </br>Only work with <see cref="HwType"/> in mode <see cref="FFmpegAVHWDeviceType.AV_HWDEVICE_TYPE_D3D11VA"/> or <see cref="FFmpegAVHWDeviceType.AV_HWDEVICE_TYPE_NONE"/>
         /// </summary>
-        public bool IsUseD3D11Shader { get; set; } = false;
+        public bool IsUseD3D11ForConvertAndUiRender { get; set; } = false;
 
         /// <summary>
         /// Default: 3000
@@ -113,36 +62,7 @@ namespace TqkLibrary.Scrcpy
         /// </summary>
         public string ScrcpyServerPath { get; set; } = "scrcpy-server.jar";
 
-        /// <summary>
-        /// 1.25
-        /// </summary>
-        public string ScrcpyServerVersion { get; } = "1.25";
 
-        /// <summary>
-        /// if true: Use Adb Forward instead of Adb Reverse<br></br>
-        /// Default: false
-        /// </summary>
-        internal bool ForceAdbForward { get; } = false;
-
-        /// <summary>
-        /// 
-        /// </summary>
-        public bool ClipboardAutosync { get; set; } = false;
-
-        /// <summary>
-        /// 
-        /// </summary>
-        public bool DownsizeOnError { get; set; } = true;
-
-        /// <summary>
-        /// 
-        /// </summary>
-        public bool Cleanup { get; set; } = false;
-
-        /// <summary>
-        /// 
-        /// </summary>
-        public bool PowerOn { get; set; } = true;
 
         /// <summary>
         /// Only work with <see cref="HwType"/> in mode <see cref="FFmpegAVHWDeviceType.AV_HWDEVICE_TYPE_D3D11VA"/><br></br>
@@ -152,14 +72,7 @@ namespace TqkLibrary.Scrcpy
 
         internal bool TunnelForward { get; } = false;
 
-        internal string Crop_string
-        {
-            get
-            {
-                if (Crop == null) return "-";
-                else return $"{Crop.Value.Width}:{Crop.Value.Height}:{Crop.Value.X}:{Crop.Value.Y}";
-            }
-        }
+
 
 
         /// <summary>
@@ -168,29 +81,49 @@ namespace TqkLibrary.Scrcpy
         /// <returns></returns>
         public override string ToString()
         {
+            if (ServerConfig is null) ServerConfig = new ScrcpyServerConfig();
+
             List<string> args = new List<string>();
-            args.Add(ScrcpyServerVersion);
-            args.Add($"log_level={LogLevel.ToString().ToLower()}");
-            args.Add($"bit_rate={Bitrate}");
-            args.Add($"display_id={DisplayId}");
+            args.Add(ServerConfig.ScrcpyServerVersion);
 
-            if (MaxSize > 0) args.Add($"max_size={MaxSize}");
-            if (MaxFps > 0) args.Add($"max_fps={MaxFps}");
-            if (Crop != null) args.Add($"crop={Crop_string}");
-            if (Orientation != Orientations.Auto) args.Add($"lock_video_orientation={(int)Orientation}");
+            //android
+            if (ServerConfig.ShowTouches) args.Add($"show_touches=true");
+            if (ServerConfig.StayAwake) args.Add($"stay_awake=true");
+            if (ServerConfig.PowerOffOnClose) args.Add($"power_off_on_close=true");
+            if (!ServerConfig.PowerOn) args.Add($"power_on=false");// By default, power_on is true
 
-            if (TunnelForward) args.Add($"tunnel_forward=true");
-            if (ShowTouches) args.Add($"show_touches=true");
-            if (StayAwake) args.Add($"stay_awake=true");
-            if (PowerOffOnClose) args.Add($"power_off_on_close=true");
-            //codec_options
-            //encoder_name
+            //scrcpy
+            if (!ServerConfig.IsControl) args.Add($"control=false"); // By default, control is true
+            args.Add($"log_level={ServerConfig.LogLevel.ToString().ToLower()}");
+            args.Add($"scid={ServerConfig.SCID:X4}");
+            if (!ServerConfig.ClipboardAutosync) args.Add($"clipboard_autosync=false");// By default, clipboard_autosync is true
+            if (!ServerConfig.Cleanup) args.Add($"cleanup=false");// By default, cleanup is true
 
-            if (!IsControl) args.Add($"control=false"); // By default, control is true
-            if (!ClipboardAutosync) args.Add($"clipboard_autosync=false");// By default, clipboard_autosync is true
-            if (!DownsizeOnError) args.Add($"downsize_on_error=false");// By default, downsize_on_error is true
-            if (!Cleanup) args.Add($"cleanup=false");// By default, cleanup is true
-            if (!PowerOn) args.Add($"power_on=false");// By default, power_on is true
+            //video
+            if (ServerConfig.DisplayId.HasValue) args.Add($"display_id={ServerConfig.DisplayId}");
+            if (ServerConfig.Orientation != Orientations.Auto) args.Add($"lock_video_orientation={(int)ServerConfig.Orientation}");
+            if (ServerConfig.MaxFps > 0) args.Add($"max_fps={ServerConfig.MaxFps}");
+            if (ServerConfig.VideoBitrate > 0) args.Add($"video_bit_rate={ServerConfig.VideoBitrate}");
+            if (!string.IsNullOrWhiteSpace(ServerConfig.VideoCodec)) args.Add($"video_codec={ServerConfig.VideoCodec}");
+            if (!string.IsNullOrWhiteSpace(ServerConfig.VideoCodecOption)) args.Add($"video_codec_options={ServerConfig.VideoCodecOption}");
+            if (!string.IsNullOrWhiteSpace(ServerConfig.VideoEncoder)) args.Add($"video_encoder={ServerConfig.VideoEncoder}");
+            if (ServerConfig.Crop != null) args.Add($"crop={ServerConfig.Crop_string}");
+            if (!ServerConfig.DownsizeOnError) args.Add($"downsize_on_error=false");// By default, downsize_on_error is true
+            if (ServerConfig.ListDisplays) args.Add($"list_displays=true");
+
+            //audio
+            if (!ServerConfig.IsAudio) args.Add($"audio=false"); // By default, audio is true
+            if (ServerConfig.IsAudio)
+            {
+                if (ServerConfig.AudioBitrate > 0) args.Add($"audio_bit_rate={ServerConfig.AudioBitrate}");
+                if (!string.IsNullOrWhiteSpace(ServerConfig.AudioCodec)) args.Add($"audio_codec={ServerConfig.AudioCodec}");
+                if (!string.IsNullOrWhiteSpace(ServerConfig.AudioCodecOption)) args.Add($"audio_codec_options={ServerConfig.AudioCodecOption}");
+                if (!string.IsNullOrWhiteSpace(ServerConfig.AudioEncoder)) args.Add($"audio_encoder={ServerConfig.AudioEncoder}");
+            }
+
+            if (ServerConfig.TunnelForward) args.Add($"tunnel_forward=true");
+            if (ServerConfig.MaxSize > 0) args.Add($"max_size={ServerConfig.MaxSize}");
+            if (ServerConfig.ListEncoders) args.Add($"list_encoders=true");
 
             return string.Join(" ", args);
         }
@@ -200,14 +133,16 @@ namespace TqkLibrary.Scrcpy
             return new ScrcpyNativeConfig
             {
                 HwType = this.HwType,
-                ForceAdbForward = this.ForceAdbForward,
-                IsControl = this.IsControl,
-                IsUseD3D11Shader = this.IsUseD3D11Shader,
+                ForceAdbForward = this.ServerConfig.TunnelForward,
+                IsControl = this.ServerConfig.IsControl,
+                IsUseD3D11ForConvertAndUiRender = this.IsUseD3D11ForConvertAndUiRender,
+                IsAudio = this.ServerConfig.IsAudio,
                 ScrcpyServerPath = this.ScrcpyServerPath,
                 AdbPath = this.AdbPath,
                 ConfigureArguments = this.ToString(),
                 ConnectionTimeout = this.ConnectionTimeout,
                 Filter = this.Filter,
+                SCID = this.ServerConfig.SCID
             };
         }
     }

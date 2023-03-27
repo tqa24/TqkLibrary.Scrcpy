@@ -1,4 +1,5 @@
-﻿using System.Runtime.InteropServices;
+﻿using System;
+using System.Runtime.InteropServices;
 
 namespace TqkLibrary.Scrcpy
 {
@@ -15,7 +16,10 @@ namespace TqkLibrary.Scrcpy
         public bool IsControl;
 
         [MarshalAs(UnmanagedType.U1)]
-        public bool IsUseD3D11Shader;
+        public bool IsUseD3D11ForConvertAndUiRender;
+
+        [MarshalAs(UnmanagedType.U1)]
+        public bool IsAudio;
 
         [MarshalAs(UnmanagedType.LPWStr)]
         public string AdbPath;
@@ -29,5 +33,7 @@ namespace TqkLibrary.Scrcpy
         public int ConnectionTimeout;
 
         public D3D11Filter Filter;
+
+        public int SCID;
     }
 }
