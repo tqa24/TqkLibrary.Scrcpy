@@ -105,6 +105,9 @@
     <ClInclude Include="Scrcpy_pch.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Audio.h">
+      <Filter>Scrcpy\Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -163,6 +166,9 @@
     </ClCompile>
     <ClCompile Include="RenderTextureSurfaceClass.cpp">
       <Filter>D3D11\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Audio.cpp">
+      <Filter>Scrcpy\Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

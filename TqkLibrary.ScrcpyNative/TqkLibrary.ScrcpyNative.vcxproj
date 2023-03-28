@@ -260,6 +260,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Audio.h" />
     <ClInclude Include="Control.h" />
     <ClInclude Include="D3D11Header.h" />
     <ClInclude Include="D3DClass.h" />
@@ -286,6 +287,7 @@
     <ClInclude Include="Video.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Audio.cpp" />
     <ClCompile Include="Control.cpp" />
     <ClCompile Include="D3DClass.cpp" />
     <ClCompile Include="dllmain.cpp" />

@@ -11,6 +11,7 @@ typedef class FrameConventer;
 typedef class MediaDecoder;
 typedef class Video;
 
+typedef class Audio;
 
 typedef class Control;
 
@@ -24,6 +25,7 @@ typedef class ScrcpyInstance;
 #include "FrameConventer.h"
 #include "MediaDecoder.h"
 #include "Video.h"
+#include "Audio.h"
 #include "Control.h"
 #include "Scrcpy.h"
 #include "ScrcpyInstance.h"

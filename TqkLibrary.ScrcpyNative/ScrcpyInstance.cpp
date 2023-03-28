@@ -149,7 +149,8 @@ bool ScrcpyInstance::Start() {
 	}
 
 	int backlog = 1;
-	if (this->_nativeConfig.IsControl) backlog = 2;
+	if (this->_nativeConfig.IsAudio) backlog += 1;
+	if (this->_nativeConfig.IsControl) backlog += 1;
 	const timeval timeout{ 2 , 0 };
 
 	int port = -1;
@@ -184,25 +185,37 @@ bool ScrcpyInstance::Start() {
 	this->_process = new ProcessWrapper((LPWSTR)args.c_str());
 
 
-	SOCKET video = AcceptConnection(this->_listenSock, this->_nativeConfig.ConnectionTimeout);
-	if (video == INVALID_SOCKET) {
+	SOCKET video_sock = AcceptConnection(this->_listenSock, this->_nativeConfig.ConnectionTimeout);
+	if (video_sock == INVALID_SOCKET) {
 		return false;
 	}
-	this->_video = new Video(this->_scrcpy, video, this->_nativeConfig);
+	this->_video = new Video(this->_scrcpy, video_sock, this->_nativeConfig);
 	if (!this->_video->Init()) {
 		return false;
 	}
 
-	SOCKET control = INVALID_SOCKET;
-	if (this->_nativeConfig.IsControl) {
-		control = AcceptConnection(this->_listenSock, this->_nativeConfig.ConnectionTimeout);
-		if (control == INVALID_SOCKET) {
+	SOCKET audio_sock = INVALID_SOCKET;
+	if (this->_nativeConfig.IsAudio)
+	{
+		audio_sock = AcceptConnection(this->_listenSock, this->_nativeConfig.ConnectionTimeout);
+		if (audio_sock == INVALID_SOCKET) {
 			return false;
 		}
-		this->_control = new Control(this->_scrcpy, control);
+		this->_audio = new Audio(this->_scrcpy, audio_sock, this->_nativeConfig);
+	}
+
+	SOCKET control_sock = INVALID_SOCKET;
+	if (this->_nativeConfig.IsControl) {
+		control_sock = AcceptConnection(this->_listenSock, this->_nativeConfig.ConnectionTimeout);
+		if (control_sock == INVALID_SOCKET) {
+			return false;
+		}
+		this->_control = new Control(this->_scrcpy, control_sock);
 	}
 
 	this->_video->Start();//start video thread
+	if (this->_nativeConfig.IsAudio)
+		this->_audio->Start();//start control thread
 	if (this->_nativeConfig.IsControl)
 		this->_control->Start();//start control thread
 

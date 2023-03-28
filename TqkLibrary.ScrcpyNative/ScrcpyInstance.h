@@ -21,6 +21,7 @@ private:
 	SOCKET _listenSock{ INVALID_SOCKET };
 	ProcessWrapper* _process{ nullptr };
 	Video* _video{ nullptr };
+	Audio* _audio{ nullptr };
 	Control* _control{ nullptr };
 };
 #endif
