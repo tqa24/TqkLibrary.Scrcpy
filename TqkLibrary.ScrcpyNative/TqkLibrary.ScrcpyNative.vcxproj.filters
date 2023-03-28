@@ -60,7 +60,7 @@
     <ClInclude Include="FrameConventer.h">
       <Filter>Scrcpy\Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="MediaDecoder.h">
+    <ClInclude Include="VideoDecoder.h">
       <Filter>Scrcpy\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ParsePacket.h">
@@ -137,7 +137,7 @@
     <ClCompile Include="ScrcpyInstance.cpp">
       <Filter>Scrcpy\Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="MediaDecoder.cpp">
+    <ClCompile Include="VideoDecoder.cpp">
       <Filter>Scrcpy\Source Files</Filter>
     </ClCompile>
     <ClCompile Include="FrameConventer.cpp">

@@ -22,7 +22,7 @@ typedef class ProcessWrapper ProcessWrapper;
 typedef class Control Control;
 typedef class Video Video;
 typedef class ParsePacket ParsePacket;
-typedef class MediaDecoder MediaDecoder;
+typedef class VideoDecoder VideoDecoder;
 #include <windows.h>
 #include <string>
 #include <winsock2.h>

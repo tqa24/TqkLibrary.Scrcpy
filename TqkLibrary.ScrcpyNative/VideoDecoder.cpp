@@ -4,13 +4,13 @@
 #define DeleteHeap(v) if(v != nullptr) { delete v; v = nullptr; } 
 
 
-MediaDecoder::MediaDecoder(const AVCodec* codec, const ScrcpyNativeConfig& nativeConfig) {
+VideoDecoder::VideoDecoder(const AVCodec* codec, const ScrcpyNativeConfig& nativeConfig) {
 	this->_codec = codec;
 	this->_nativeConfig = nativeConfig;
 	this->_hwType = (AVHWDeviceType)nativeConfig.HwType;
 }
 
-MediaDecoder::~MediaDecoder() {
+VideoDecoder::~VideoDecoder() {
 
 	avcodec_close(_codec_ctx);
 	avcodec_free_context(&_codec_ctx);
@@ -24,7 +24,7 @@ MediaDecoder::~MediaDecoder() {
 }
 
 
-bool MediaDecoder::Init() {
+bool VideoDecoder::Init() {
 	this->_codec_ctx = avcodec_alloc_context3(this->_codec);
 	if (this->_codec_ctx == NULL)
 		return FALSE;
@@ -97,7 +97,7 @@ bool MediaDecoder::Init() {
 	return TRUE;
 }
 
-bool MediaDecoder::Decode(const AVPacket* packet) {
+bool VideoDecoder::Decode(const AVPacket* packet) {
 	if (packet == nullptr)
 		return false;
 
@@ -138,7 +138,7 @@ bool MediaDecoder::Decode(const AVPacket* packet) {
 	return result;
 }
 
-bool MediaDecoder::Convert(AVFrame* frame) {
+bool VideoDecoder::Convert(AVFrame* frame) {
 	bool result = false;
 
 	_mtx_frame.lock();
@@ -191,7 +191,7 @@ bool MediaDecoder::Convert(AVFrame* frame) {
 	return result;
 }
 
-bool MediaDecoder::Nv12Convert(AVFrame* frame) {
+bool VideoDecoder::Nv12Convert(AVFrame* frame) {
 	ComPtr<ID3D11DeviceContext> device_ctx = this->m_d3d11->GetDeviceContext();
 	ComPtr<ID3D11Device> device = this->m_d3d11->GetDevice();
 
@@ -229,7 +229,7 @@ bool MediaDecoder::Nv12Convert(AVFrame* frame) {
 	return false;
 }
 
-bool MediaDecoder::IsNewFrame(INT64& pts) {
+bool VideoDecoder::IsNewFrame(INT64& pts) {
 	_mtx_frame.lock();
 
 	bool result = _decoding_frame->pts > pts;
@@ -240,7 +240,7 @@ bool MediaDecoder::IsNewFrame(INT64& pts) {
 	return result;
 }
 
-bool MediaDecoder::GetFrameSize(int& w, int& h) {
+bool VideoDecoder::GetFrameSize(int& w, int& h) {
 	if (_decoding_frame == nullptr)
 		return false;
 
@@ -254,18 +254,18 @@ bool MediaDecoder::GetFrameSize(int& w, int& h) {
 	return true;
 }
 
-bool MediaDecoder::TransferNoHw(AVFrame* frame) {
+bool VideoDecoder::TransferNoHw(AVFrame* frame) {
 	av_frame_move_ref(frame, _decoding_frame);
 	return true;
 }
 
-bool MediaDecoder::FFmpegTransfer(AVFrame* frame) {
+bool VideoDecoder::FFmpegTransfer(AVFrame* frame) {
 	av_frame_unref(frame);
 	bool result = avcheck(av_hwframe_transfer_data(frame, _decoding_frame, 0));
 	return result;
 }
 
-bool MediaDecoder::Draw(RenderTextureSurfaceClass* renderSurface, IUnknown* surface, bool isNewSurface, bool& isNewtargetView) {
+bool VideoDecoder::Draw(RenderTextureSurfaceClass* renderSurface, IUnknown* surface, bool isNewSurface, bool& isNewtargetView) {
 	assert(renderSurface != nullptr);
 
 	bool result = false;

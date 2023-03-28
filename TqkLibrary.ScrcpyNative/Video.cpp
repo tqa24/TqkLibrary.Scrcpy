@@ -14,13 +14,13 @@ Video::Video(const Scrcpy* scrcpy, SOCKET sock, const ScrcpyNativeConfig& native
 	this->_videoSock = new SocketWrapper(sock);
 	this->_videoBuffer = new BYTE[DEVICE_NAME_SIZE];
 	const AVCodec* h264_decoder = avcodec_find_decoder(AV_CODEC_ID_H264);
+	this->_videoDecoder = new VideoDecoder(h264_decoder, nativeConfig);
 	this->_parsePacket = new ParsePacket(h264_decoder);
-	this->_h264_mediaDecoder = new MediaDecoder(h264_decoder, nativeConfig);
 }
 
 Video::~Video() {
 	delete this->_parsePacket;
-	delete this->_h264_mediaDecoder;
+	delete this->_videoDecoder;
 	delete this->_videoSock;
 	delete this->_videoBuffer;
 	CloseHandle(this->_threadHandle);
@@ -50,7 +50,7 @@ bool Video::Init() {
 	if (!this->_parsePacket->Init())
 		return false;
 
-	if (!this->_h264_mediaDecoder->Init())
+	if (!this->_videoDecoder->Init())
 		return false;
 
 	//first bool is true for manual reset else auto reset, second bool is initially signaled
@@ -143,7 +143,7 @@ void Video::threadStart() {
 
 		if (this->_parsePacket->ParserPushPacket(&packet))
 		{
-			if (this->_h264_mediaDecoder->Decode(&packet))
+			if (this->_videoDecoder->Decode(&packet))
 			{
 				if (!this->_ishaveFrame)
 				{
@@ -164,12 +164,12 @@ bool Video::GetScreenSize(int& w, int& h) {
 	if (!_ishaveFrame)
 		return false;
 
-	return this->_h264_mediaDecoder->GetFrameSize(w, h);
+	return this->_videoDecoder->GetFrameSize(w, h);
 }
 
 bool Video::GetCurrentRgbaFrame(AVFrame* frame) {
 	if (!_ishaveFrame)
 		return false;
 
-	return this->_h264_mediaDecoder->Convert(frame);
+	return this->_videoDecoder->Convert(frame);
 }

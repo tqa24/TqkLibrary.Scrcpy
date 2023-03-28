@@ -268,7 +268,7 @@
     <ClInclude Include="FrameConventer.h" />
     <ClInclude Include="InputTextureNv12Class.h" />
     <ClInclude Include="libav.h" />
-    <ClInclude Include="MediaDecoder.h" />
+    <ClInclude Include="VideoDecoder.h" />
     <ClInclude Include="opengl.h" />
     <ClInclude Include="ParsePacket.h" />
     <ClInclude Include="pch.h" />
@@ -294,7 +294,7 @@
     <ClCompile Include="Exports.cpp" />
     <ClCompile Include="FrameConventer.cpp" />
     <ClCompile Include="InputTextureNv12Class.cpp" />
-    <ClCompile Include="MediaDecoder.cpp" />
+    <ClCompile Include="VideoDecoder.cpp" />
     <ClCompile Include="ParsePacket.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>

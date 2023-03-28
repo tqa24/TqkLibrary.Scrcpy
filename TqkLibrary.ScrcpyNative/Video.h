@@ -22,7 +22,7 @@ private:
 	std::string _deviceName{};
 	bool _ishaveFrame{ false };
 	ParsePacket* _parsePacket{ nullptr };
-	MediaDecoder* _h264_mediaDecoder{ nullptr };
+	VideoDecoder* _videoDecoder{ nullptr };
 	SocketWrapper* _videoSock{ nullptr };
 	BYTE* _videoBuffer{ nullptr };
 

@@ -1,11 +1,11 @@
-#ifndef _H_MediaDecoder_H_
-#define _H_MediaDecoder_H_
-class MediaDecoder
+#ifndef _H_VideoDecoder_H_
+#define _H_VideoDecoder_H_
+class VideoDecoder
 {
 	friend Scrcpy;
 public:
-	MediaDecoder(const AVCodec* codec, const ScrcpyNativeConfig& nativeConfig);
-	~MediaDecoder();
+	VideoDecoder(const AVCodec* codec, const ScrcpyNativeConfig& nativeConfig);
+	~VideoDecoder();
 	bool Init();
 
 	bool Decode(const AVPacket* packet);

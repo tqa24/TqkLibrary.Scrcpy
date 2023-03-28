@@ -6,7 +6,7 @@
 #include "SocketWrapper.h"
 #include "ParsePacket.h"
 #include "FrameConventer.h"
-#include "MediaDecoder.h"
+#include "VideoDecoder.h"
 #include "Video.h"
 #include "Audio.h"
 #include "Control.h"
