@@ -472,7 +472,7 @@ namespace TqkLibrary.Scrcpy
             => control.SwipeSpeedAsync(from.X, from.Y, to.X, to.Y, pixelPerSec, delayStep, cancellationToken);
 
         /// <summary>
-        /// Work only when <see cref="ScrcpyConfig.ClipboardAutosync"/> is disable.
+        /// Work only when <see cref="ScrcpyServerConfig.ClipboardAutosync"/> is disable.
         /// </summary>
         /// <param name="control"></param>
         /// <param name="copyKey"></param>
