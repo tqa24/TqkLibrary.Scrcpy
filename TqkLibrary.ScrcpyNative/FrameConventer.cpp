@@ -1,6 +1,5 @@
 #include "pch.h"
-#include "FrameConventer.h"
-#include "Utils.h"
+#include "Scrcpy_pch.h"
 #define Align 16
 
 bool FrameConventer::Convert(AVFrame* src_frame, BYTE* buff, const int sizeInByte, const int w, const int h, const int lineSize) {

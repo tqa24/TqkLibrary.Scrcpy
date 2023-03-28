@@ -279,6 +279,7 @@
     <ClInclude Include="Scrcpy.h" />
     <ClInclude Include="ScrcpyNativeConfig.h" />
     <ClInclude Include="ScrcpyInstance.h" />
+    <ClInclude Include="Scrcpy_pch.h" />
     <ClInclude Include="SocketWrapper.h" />
     <ClInclude Include="Utils.h" />
     <ClInclude Include="VertexShaderClass.h" />

@@ -1,11 +1,5 @@
 #include "pch.h"
-#include "Scrcpy.h"
-#include "MediaDecoder.h"
-#include "ProcessWrapper.h"
-#include "FrameConventer.h"
-#include "ScrcpyInstance.h"
-#include "Video.h"
-#include "Control.h"
+#include "Scrcpy_pch.h"
 
 Scrcpy::Scrcpy(LPCWSTR deviceId) {
 	this->_deviceId = deviceId;

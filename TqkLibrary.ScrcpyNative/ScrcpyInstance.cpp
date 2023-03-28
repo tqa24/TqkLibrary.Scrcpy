@@ -1,9 +1,5 @@
 #include "pch.h"
-#include "ScrcpyInstance.h"
-#include "Video.h"
-#include "Control.h"
-#include "ProcessWrapper.h"
-#include "Scrcpy.h"
+#include "Scrcpy_pch.h"
 #include <chrono>
 
 #define IPV4_LOCALHOST 0x7F000001

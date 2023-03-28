@@ -1,8 +1,5 @@
 #include "pch.h"
-#include "Control.h"
-#include "SocketWrapper.h"
-#include "Utils.h"
-#include "Scrcpy.h"
+#include "Scrcpy_pch.h"
 
 #define CONTROL_MSG_MAX_SIZE (1 << 18)//256k
 enum ScrcpyControlReceivedType : BYTE
