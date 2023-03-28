@@ -1,11 +1,5 @@
 #include "pch.h"
-#include "Video.h"
-#include "libav.h"
-#include "ParsePacket.h"
-#include "MediaDecoder.h"
-#include "SocketWrapper.h"
-#include "Utils.h"
-#include "Scrcpy.h"
+#include "Scrcpy_pch.h"
 #define PACKET_BUFFER_SIZE 1 << 18//256k
 #define HEADER_SIZE 12
 #define DEVICE_NAME_SIZE 64

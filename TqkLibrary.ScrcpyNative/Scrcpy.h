@@ -3,8 +3,8 @@
 class Scrcpy
 {
 	friend ScrcpyInstance;
-	friend Control;
 	friend Video;
+	friend Control;
 public:
 	Scrcpy(LPCWSTR deviceId);
 	~Scrcpy();

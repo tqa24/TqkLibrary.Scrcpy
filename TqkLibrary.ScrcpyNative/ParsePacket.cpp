@@ -1,7 +1,6 @@
 #include "pch.h"
+#include "Scrcpy_pch.h"
 #include "libav.h"
-#include "ParsePacket.h"
-#include "Utils.h"
 
 ParsePacket::ParsePacket(const AVCodec* codec_decoder) {
 	this->_codec_decoder = codec_decoder;

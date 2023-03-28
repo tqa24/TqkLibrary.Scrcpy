@@ -1,10 +1,5 @@
 #include "pch.h"
-//#include "libav.h"
-//#include "D3D11Header.h"
-//
-//#include "NV12ToRgbShader.h"
-#include "Utils.h"
-#include "MediaDecoder.h"
+#include "Scrcpy_pch.h"
 
 #define DeleteHeap(v) if(v != nullptr) { delete v; v = nullptr; } 
 
