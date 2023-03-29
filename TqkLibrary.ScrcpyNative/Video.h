@@ -4,7 +4,7 @@
 class Video
 {
 public:
-	Video(const Scrcpy* scrcpy, SOCKET sock, const ScrcpyNativeConfig& nativeConfig);
+	Video(Scrcpy* scrcpy, SOCKET sock, const ScrcpyNativeConfig& nativeConfig);
 	~Video();
 	void Start();
 	void Stop();

@@ -4,7 +4,7 @@
 class Control
 {
 public:
-	Control(const Scrcpy* scrcpy, SOCKET sock);
+	Control(Scrcpy* scrcpy, SOCKET sock);
 	~Control();
 	void Start();
 	void Stop();
