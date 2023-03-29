@@ -98,7 +98,7 @@ void Audio::threadStart() {
 		packet.dts = packet.pts;
 
 #if _DEBUG
-		//printf(std::string("Audio pts:").append(std::to_string(pts)).append("  ,len:").append(std::to_string(len)).append("\r\n").c_str());
+		printf(std::string("Audio pts:").append(std::to_string(packet.pts)).append("  ,len:").append(std::to_string(len)).append("\r\n").c_str());
 #endif
 
 		if (this->_parsePacket->ParserPushPacket(&packet))
