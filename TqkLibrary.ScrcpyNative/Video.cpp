@@ -9,7 +9,7 @@
 #define SC_PACKET_FLAG_KEY_FRAME (UINT64_C(1) << 62)
 #define SC_PACKET_PTS_MASK (SC_PACKET_FLAG_KEY_FRAME - 1)
 
-Video::Video(const Scrcpy* scrcpy, SOCKET sock, const ScrcpyNativeConfig& nativeConfig) {
+Video::Video(Scrcpy* scrcpy, SOCKET sock, const ScrcpyNativeConfig& nativeConfig) {
 	this->_scrcpy = scrcpy;
 	this->_videoSock = new SocketWrapper(sock);
 	this->_videoBuffer = new BYTE[HEADER_SIZE];
@@ -17,13 +17,13 @@ Video::Video(const Scrcpy* scrcpy, SOCKET sock, const ScrcpyNativeConfig& native
 }
 
 Video::~Video() {
-	if(this->_parsePacket)
+	if (this->_parsePacket)
 		delete this->_parsePacket;
-	if(this->_videoDecoder)
+	if (this->_videoDecoder)
 		delete this->_videoDecoder;
-	if(this->_videoSock)
+	if (this->_videoSock)
 		delete this->_videoSock;
-	if(this->_videoBuffer)
+	if (this->_videoBuffer)
 		delete this->_videoBuffer;
 	CloseHandle(this->_threadHandle);
 	CloseHandle(this->_mtx_waitFirstFrame);
@@ -61,7 +61,7 @@ DWORD WINAPI Video::MyThreadFunction(LPVOID lpParam) {
 	Video* video = (Video*)lpParam;
 	video->threadStart();
 	video->_isStopped = true;
-	((Scrcpy*)video->_scrcpy)->VideoDisconnectCallback();
+	video->_scrcpy->VideoDisconnectCallback();
 	return 0;
 }
 

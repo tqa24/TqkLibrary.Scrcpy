@@ -17,7 +17,7 @@ public:
 	bool Draw(RenderTextureSurfaceClass* renderSurface, IUnknown* surface, bool isNewSurface, bool& isNewtargetView);
 private:
 	ScrcpyNativeConfig _nativeConfig{};
-	const Scrcpy* _scrcpy;
+	Scrcpy* _scrcpy;
 
 	bool _isStopped{ false };
 
