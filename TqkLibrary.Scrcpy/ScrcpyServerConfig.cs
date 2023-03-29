@@ -79,13 +79,13 @@ namespace TqkLibrary.Scrcpy
         public int VideoBitrate { get; set; }
         /// <summary>
         /// VideoCodec<br></br>
-        /// Default: null (ignore)
+        /// Default: null (ignore)<br></br>
+        /// Support: h264, h265, av1, opus, aac, raw
         /// </summary>
         public string VideoCodec { get; set; }
         /// <summary>
         /// VideoCodecOption<br></br>
-        /// Default: null (ignore)<br></br>
-        /// Support: h264, h265, av1, opus, aac, raw
+        /// Default: null (ignore)
         /// </summary>
         public string VideoCodecOption { get; set; }
         /// <summary>
