@@ -4,7 +4,7 @@ class ScrcpyInstance
 {
 	friend Scrcpy;
 public:
-	ScrcpyInstance(const Scrcpy* scrcpy, const ScrcpyNativeConfig& nativeConfig);
+	ScrcpyInstance(Scrcpy* scrcpy, const ScrcpyNativeConfig& nativeConfig);
 	~ScrcpyInstance();
 	bool Start();
 
@@ -15,7 +15,7 @@ private:
 	DWORD RunAdbProcess(LPCWSTR argument);
 
 	//const
-	const Scrcpy* _scrcpy{ nullptr };//don't delete
+	Scrcpy* _scrcpy{ nullptr };//don't delete
 	ScrcpyNativeConfig _nativeConfig{ };
 	
 	//need release

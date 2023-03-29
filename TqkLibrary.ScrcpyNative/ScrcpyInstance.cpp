@@ -89,7 +89,7 @@ SOCKET AcceptConnection(SOCKET sock, int timeout = 2000)
 	}
 }
 
-ScrcpyInstance::ScrcpyInstance(const Scrcpy* scrcpy, const ScrcpyNativeConfig& nativeConfig) {
+ScrcpyInstance::ScrcpyInstance(Scrcpy* scrcpy, const ScrcpyNativeConfig& nativeConfig) {
 	this->_scrcpy = scrcpy;
 	this->_nativeConfig = nativeConfig;
 }
