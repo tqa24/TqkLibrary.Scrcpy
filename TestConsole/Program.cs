@@ -45,8 +45,9 @@ ScrcpyConfig config = new ScrcpyConfig()
         IsControl = true,
         MaxFps = 24,
         ClipboardAutosync = false,
+        SCID = new Random(DateTime.Now.Millisecond).Next()
     },
-    ConnectionTimeout = 99999999,
+    ConnectionTimeout = 10000,
 };
 while (true)
 {
@@ -75,7 +76,7 @@ while (true)
             //    await Task.Delay(3000);
             //Console.WriteLine($"{DateTime.Now:mm:ss.fff} GetScreenShot");
             await Task.Delay(1000);
-            //while (true)
+            while (true)
             {
                 //scrcpy.Control.SetClipboard("Phạm Đức Long Click mất cũng chừng đó thôi =))", true, 222233);
 
