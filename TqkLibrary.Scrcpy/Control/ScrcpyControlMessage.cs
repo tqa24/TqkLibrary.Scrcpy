@@ -18,6 +18,7 @@ namespace TqkLibrary.Scrcpy.Control
         private AndroidMotionEventAction MotionEventAction { get; set; }//MotionEvent.ACTION_
         private AndroidKeyEventAction KeyEventAction { get; set; }//KeyEvent.ACTION_*
         private AndroidKeyCode Keycode { get; set; } // KeyEvent.KEYCODE_*
+        private AndroidMotionEventButton ActionButton { get; set; } // MotionEvent.BUTTON_*
         private AndroidMotionEventButton Buttons { get; set; } // MotionEvent.BUTTON_*
         private long PointerId { get; set; }
         private float Pressure { get; set; }
@@ -61,9 +62,10 @@ namespace TqkLibrary.Scrcpy.Control
                 long pointerId,
                 Rectangle position,
                 float pressure,
-                AndroidMotionEventButton buttons)
+                AndroidMotionEventButton buttons,
+                AndroidMotionEventButton actionButton)
         {
-            if (pressure > 1.0f || pressure < 0.0f) throw new InvalidRangeException($"{nameof(pressure)} must be in range 0.0f <= {nameof(pressure)} <= 1.0f");
+            if (pressure != 1.0f && pressure != 0.0f) throw new InvalidRangeException($"{nameof(pressure)} must be 0.0f or 1.0f");
             return new ScrcpyControlMessage
             {
                 ControlType = ScrcpyControlType.TYPE_INJECT_TOUCH_EVENT,
@@ -71,7 +73,8 @@ namespace TqkLibrary.Scrcpy.Control
                 PointerId = pointerId,
                 Pressure = pressure,
                 Position = position,
-                Buttons = buttons
+                Buttons = buttons,
+                ActionButton = actionButton,
             };
         }
 
@@ -207,7 +210,7 @@ namespace TqkLibrary.Scrcpy.Control
 
                 case ScrcpyControlType.TYPE_INJECT_TOUCH_EVENT:
                     {
-                        buffer = new byte[28];
+                        buffer = new byte[32];
                         buffer[0] = (byte)ControlType;
                         buffer[1] = (byte)MotionEventAction;
                         Array.Copy(BitConverter.GetBytes((ulong)PointerId).Reverse().ToArray(), 0, buffer, 2, 8);//2-9
@@ -216,7 +219,8 @@ namespace TqkLibrary.Scrcpy.Control
                         Array.Copy(BitConverter.GetBytes((UInt16)Position.Width).Reverse().ToArray(), 0, buffer, 18, 2);//18-19
                         Array.Copy(BitConverter.GetBytes((UInt16)Position.Height).Reverse().ToArray(), 0, buffer, 20, 2);//20-21
                         Array.Copy(BitConverter.GetBytes(ToUnsignedFixedPoint16(Pressure)).Reverse().ToArray(), 0, buffer, 22, 2);//22-23
-                        Array.Copy(BitConverter.GetBytes((int)Buttons).Reverse().ToArray(), 0, buffer, 24, 4);//24-27
+                        Array.Copy(BitConverter.GetBytes((int)ActionButton).Reverse().ToArray(), 0, buffer, 24, 4);//24-27
+                        Array.Copy(BitConverter.GetBytes((int)Buttons).Reverse().ToArray(), 0, buffer, 28, 4);//28-31
                     }
                     break;
 

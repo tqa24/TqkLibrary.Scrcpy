@@ -21,10 +21,11 @@ namespace TqkLibrary.Scrcpy
         /// <param name="point"></param>
         /// <param name="pressure"></param>
         /// <param name="buttons"></param>
+        /// <param name="actionButton"></param>
         /// <returns></returns>
         public static bool InjectTouchEvent(this IControl control,
-            AndroidMotionEventAction action, long pointerId, Point point, float pressure = 1f, AndroidMotionEventButton buttons = AndroidMotionEventButton.BUTTON_PRIMARY)
-            => control.InjectTouchEvent(action, pointerId, new Rectangle(point, control.Scrcpy.ScreenSize), pressure, buttons);
+            AndroidMotionEventAction action, long pointerId, Point point, float pressure, AndroidMotionEventButton buttons, AndroidMotionEventButton actionButton)
+            => control.InjectTouchEvent(action, pointerId, new Rectangle(point, control.Scrcpy.ScreenSize), pressure, buttons, actionButton);
 
 
         /// <summary>
@@ -34,9 +35,10 @@ namespace TqkLibrary.Scrcpy
         /// <param name="point"></param>
         /// <param name="vScroll"></param>
         /// <param name="hScroll"></param>
+        /// <param name="androidMotion"></param>
         /// <returns></returns>
-        public static bool InjectScrollEvent(this IControl control, Point point, float vScroll, float hScroll = 0)
-            => control.InjectScrollEvent(new Rectangle(point, control.Scrcpy.ScreenSize), vScroll, hScroll);
+        public static bool InjectScrollEvent(this IControl control, Point point, float vScroll, float hScroll = 0, AndroidMotionEventButton androidMotion = AndroidMotionEventButton.BUTTON_PRIMARY)
+            => control.InjectScrollEvent(new Rectangle(point, control.Scrcpy.ScreenSize), vScroll, hScroll, androidMotion);
 
 
         /// <summary>
@@ -55,6 +57,7 @@ namespace TqkLibrary.Scrcpy
               pointerId,
               new Rectangle(x, y, control.Scrcpy.ScreenSize.Width, control.Scrcpy.ScreenSize.Height),
               1f,
+              AndroidMotionEventButton.BUTTON_PRIMARY,
               AndroidMotionEventButton.BUTTON_PRIMARY);
 
             Task.Delay(releaseDelay, cancellationToken).Wait();
@@ -64,7 +67,8 @@ namespace TqkLibrary.Scrcpy
              pointerId,
              new Rectangle(x, y, control.Scrcpy.ScreenSize.Width, control.Scrcpy.ScreenSize.Height),
              1f,
-             AndroidMotionEventButton.BUTTON_PRIMARY);
+             AndroidMotionEventButton.BUTTON_PRIMARY,
+             AndroidMotionEventButton.None);
         }
         /// <summary>
         /// 
@@ -83,6 +87,7 @@ namespace TqkLibrary.Scrcpy
                 pointerId,
                 new Rectangle(x, y, control.Scrcpy.ScreenSize.Width, control.Scrcpy.ScreenSize.Height),
                 1f,
+                AndroidMotionEventButton.BUTTON_PRIMARY,
                 AndroidMotionEventButton.BUTTON_PRIMARY);
 
             await Task.Delay(releaseDelay, cancellationToken);
@@ -92,7 +97,8 @@ namespace TqkLibrary.Scrcpy
                 pointerId,
                 new Rectangle(x, y, control.Scrcpy.ScreenSize.Width, control.Scrcpy.ScreenSize.Height),
                 1f,
-                AndroidMotionEventButton.BUTTON_PRIMARY);
+                AndroidMotionEventButton.BUTTON_PRIMARY,
+                AndroidMotionEventButton.None);
         }
         /// <summary>
         /// 
@@ -186,8 +192,9 @@ namespace TqkLibrary.Scrcpy
         /// <param name="y"></param>
         /// <param name="vScroll"></param>
         /// <param name="hScroll"></param>
-        public static bool Scroll(this IControl control, int x, int y, float vScroll, float hScroll = 0)
-            => control.InjectScrollEvent(new Rectangle(x, y, control.Scrcpy.ScreenSize.Width, control.Scrcpy.ScreenSize.Height), vScroll, hScroll);
+        /// <param name="androidMotion"></param>
+        public static bool Scroll(this IControl control, int x, int y, float vScroll, float hScroll = 0, AndroidMotionEventButton androidMotion = AndroidMotionEventButton.BUTTON_PRIMARY)
+            => control.InjectScrollEvent(new Rectangle(x, y, control.Scrcpy.ScreenSize.Width, control.Scrcpy.ScreenSize.Height), vScroll, hScroll, androidMotion);
 
 
         /// <summary>
@@ -233,7 +240,10 @@ namespace TqkLibrary.Scrcpy
             control.InjectTouchEvent(
               AndroidMotionEventAction.ACTION_DOWN,
               pointerId,
-              new Rectangle(x1, y1, control.Scrcpy.ScreenSize.Width, control.Scrcpy.ScreenSize.Height));
+              new Rectangle(x1, y1, control.Scrcpy.ScreenSize.Width, control.Scrcpy.ScreenSize.Height),
+              1f,
+              AndroidMotionEventButton.BUTTON_PRIMARY,
+              AndroidMotionEventButton.BUTTON_PRIMARY);
 
             Task.Delay(delayStep, cancellationToken).Wait();
 
@@ -245,14 +255,20 @@ namespace TqkLibrary.Scrcpy
                 control.InjectTouchEvent(
                   AndroidMotionEventAction.ACTION_MOVE,
                   pointerId,
-                  new Rectangle(x1 + x * i, y1 + y * i, control.Scrcpy.ScreenSize.Width, control.Scrcpy.ScreenSize.Height));
+                  new Rectangle(x1 + x * i, y1 + y * i, control.Scrcpy.ScreenSize.Width, control.Scrcpy.ScreenSize.Height),
+                  1f,
+                  AndroidMotionEventButton.BUTTON_PRIMARY,
+                  AndroidMotionEventButton.BUTTON_PRIMARY);
                 Task.Delay(delayStep, cancellationToken).Wait();
             }
 
             control.InjectTouchEvent(
              AndroidMotionEventAction.ACTION_UP,
              pointerId,
-             new Rectangle(x2, y2, control.Scrcpy.ScreenSize.Width, control.Scrcpy.ScreenSize.Height));
+             new Rectangle(x2, y2, control.Scrcpy.ScreenSize.Width, control.Scrcpy.ScreenSize.Height),
+             0f,
+             AndroidMotionEventButton.BUTTON_PRIMARY,
+             AndroidMotionEventButton.None);
         }
         /// <summary>
         /// 
@@ -272,7 +288,10 @@ namespace TqkLibrary.Scrcpy
             control.InjectTouchEvent(
                 AndroidMotionEventAction.ACTION_DOWN,
                 pointerId,
-                new Rectangle(x1, y1, control.Scrcpy.ScreenSize.Width, control.Scrcpy.ScreenSize.Height));
+                new Rectangle(x1, y1, control.Scrcpy.ScreenSize.Width, control.Scrcpy.ScreenSize.Height),
+                1f,
+                AndroidMotionEventButton.BUTTON_PRIMARY,
+                AndroidMotionEventButton.None);
 
             await Task.Delay(delayStep, cancellationToken);
 
@@ -284,14 +303,20 @@ namespace TqkLibrary.Scrcpy
                 control.InjectTouchEvent(
                       AndroidMotionEventAction.ACTION_MOVE,
                       pointerId,
-                      new Rectangle(x1 + x * i, y1 + y * i, control.Scrcpy.ScreenSize.Width, control.Scrcpy.ScreenSize.Height));
+                      new Rectangle(x1 + x * i, y1 + y * i, control.Scrcpy.ScreenSize.Width, control.Scrcpy.ScreenSize.Height),
+                      1f,
+                      AndroidMotionEventButton.BUTTON_PRIMARY,
+                      AndroidMotionEventButton.BUTTON_PRIMARY);
                 await Task.Delay(delayStep, cancellationToken);
             }
 
             control.InjectTouchEvent(
                  AndroidMotionEventAction.ACTION_UP,
                  pointerId,
-                 new Rectangle(x2, y2, control.Scrcpy.ScreenSize.Width, control.Scrcpy.ScreenSize.Height));
+                 new Rectangle(x2, y2, control.Scrcpy.ScreenSize.Width, control.Scrcpy.ScreenSize.Height),
+                 0f,
+                 AndroidMotionEventButton.BUTTON_PRIMARY,
+                 AndroidMotionEventButton.None);
         }
         /// <summary>
         /// 
@@ -374,9 +399,12 @@ namespace TqkLibrary.Scrcpy
         {
             long pointerId = random.Next(int.MinValue, int.MaxValue);
             control.InjectTouchEvent(
-              AndroidMotionEventAction.ACTION_DOWN,
-              pointerId,
-              new Rectangle(x1, y1, control.Scrcpy.ScreenSize.Width, control.Scrcpy.ScreenSize.Height));
+                AndroidMotionEventAction.ACTION_DOWN,
+                pointerId,
+                new Rectangle(x1, y1, control.Scrcpy.ScreenSize.Width, control.Scrcpy.ScreenSize.Height),
+                1f,
+                AndroidMotionEventButton.BUTTON_PRIMARY,
+                AndroidMotionEventButton.BUTTON_PRIMARY);
             Task.Delay(delayStep, cancellationToken).Wait();
 
             int x = x2 - x1;
@@ -392,16 +420,22 @@ namespace TqkLibrary.Scrcpy
             for (int i = 1; i <= times; i++)
             {
                 control.InjectTouchEvent(
-                  AndroidMotionEventAction.ACTION_MOVE,
-                  pointerId,
-                  new Rectangle(x1 + x * i, y1 + y * i, control.Scrcpy.ScreenSize.Width, control.Scrcpy.ScreenSize.Height));
+                    AndroidMotionEventAction.ACTION_MOVE,
+                    pointerId,
+                    new Rectangle(x1 + x * i, y1 + y * i, control.Scrcpy.ScreenSize.Width, control.Scrcpy.ScreenSize.Height),
+                    1f,
+                    AndroidMotionEventButton.BUTTON_PRIMARY,
+                    AndroidMotionEventButton.BUTTON_PRIMARY);
                 Task.Delay(delayStep, cancellationToken).Wait();
             }
 
             control.InjectTouchEvent(
-             AndroidMotionEventAction.ACTION_UP,
-             pointerId,
-             new Rectangle(x2, y2, control.Scrcpy.ScreenSize.Width, control.Scrcpy.ScreenSize.Height));
+                AndroidMotionEventAction.ACTION_UP,
+                pointerId,
+                new Rectangle(x2, y2, control.Scrcpy.ScreenSize.Width, control.Scrcpy.ScreenSize.Height),
+                1f,
+                AndroidMotionEventButton.BUTTON_PRIMARY,
+                AndroidMotionEventButton.None);
         }
         /// <summary>
         /// 
@@ -421,7 +455,10 @@ namespace TqkLibrary.Scrcpy
             control.InjectTouchEvent(
                 AndroidMotionEventAction.ACTION_DOWN,
                 pointerId,
-                new Rectangle(x1, y1, control.Scrcpy.ScreenSize.Width, control.Scrcpy.ScreenSize.Height));
+                new Rectangle(x1, y1, control.Scrcpy.ScreenSize.Width, control.Scrcpy.ScreenSize.Height),
+                1f,
+                AndroidMotionEventButton.BUTTON_PRIMARY,
+                AndroidMotionEventButton.BUTTON_PRIMARY);
             await Task.Delay(delayStep, cancellationToken);
 
             int x = x2 - x1;
@@ -439,14 +476,20 @@ namespace TqkLibrary.Scrcpy
                 control.InjectTouchEvent(
                     AndroidMotionEventAction.ACTION_MOVE,
                     pointerId,
-                    new Rectangle(x1 + x * i, y1 + y * i, control.Scrcpy.ScreenSize.Width, control.Scrcpy.ScreenSize.Height));
+                    new Rectangle(x1 + x * i, y1 + y * i, control.Scrcpy.ScreenSize.Width, control.Scrcpy.ScreenSize.Height),
+                    1f,
+                    AndroidMotionEventButton.BUTTON_PRIMARY,
+                    AndroidMotionEventButton.BUTTON_PRIMARY);
                 await Task.Delay(delayStep, cancellationToken);
             }
 
             control.InjectTouchEvent(
                 AndroidMotionEventAction.ACTION_UP,
                 pointerId,
-                new Rectangle(x2, y2, control.Scrcpy.ScreenSize.Width, control.Scrcpy.ScreenSize.Height));
+                new Rectangle(x2, y2, control.Scrcpy.ScreenSize.Width, control.Scrcpy.ScreenSize.Height),
+                0f,
+                AndroidMotionEventButton.BUTTON_PRIMARY,
+                AndroidMotionEventButton.None);
         }
         /// <summary>
         /// 

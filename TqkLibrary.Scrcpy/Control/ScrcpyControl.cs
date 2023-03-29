@@ -49,8 +49,8 @@ namespace TqkLibrary.Scrcpy.Control
             => SendControl(ScrcpyControlMessage.CreateInjectScrollEvent(position, vScroll, hScroll, button));
         public bool InjectText(string text)
             => SendControl(ScrcpyControlMessage.CreateInjectText(text));
-        public bool InjectTouchEvent(AndroidMotionEventAction action, long pointerId, Rectangle position, float pressure = 1, AndroidMotionEventButton buttons = AndroidMotionEventButton.BUTTON_PRIMARY)
-            => SendControl(ScrcpyControlMessage.CreateInjectTouchEvent(action, pointerId, position, pressure, buttons));
+        public bool InjectTouchEvent(AndroidMotionEventAction action, long pointerId, Rectangle position, float pressure, AndroidMotionEventButton buttons, AndroidMotionEventButton actionButton)
+            => SendControl(ScrcpyControlMessage.CreateInjectTouchEvent(action, pointerId, position, pressure, buttons, actionButton));
         public bool RotateDevice()
             => SendControl(ScrcpyControlMessage.RotateDevice());
         public bool SetClipboard(string text, bool paste)

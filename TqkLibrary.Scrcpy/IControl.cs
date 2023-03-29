@@ -47,8 +47,8 @@ namespace TqkLibrary.Scrcpy
         bool InjectKeycode(
                                     AndroidKeyEventAction action,
                                     AndroidKeyCode keycode,
-                                    uint repeat = 0,
-                                    AndroidKeyEventMeta metaState = AndroidKeyEventMeta.META_NONE);
+                                    uint repeat,
+                                    AndroidKeyEventMeta metaState);
 
         /// <summary>
         /// ASCII only
@@ -66,15 +66,19 @@ namespace TqkLibrary.Scrcpy
         /// </br>Otherwise use finger
         /// </param>
         /// <param name="position"></param>
-        /// <param name="pressure"></param>
-        /// <param name="buttons"></param>
+        /// <param name="pressure">when <see cref="AndroidMotionEventAction.ACTION_DOWN"/> or <see cref="AndroidMotionEventAction.ACTION_MOVE"/> pressure = 1f, else pressure = 0f</param>
+        /// <param name="buttons">ButtonChange</param>
+        /// <param name="actionButton">All button current state<br></br>
+        /// Example: buttons <see cref="AndroidMotionEventButton.BUTTON_PRIMARY"/> down then actionButton is <see cref="AndroidMotionEventButton.BUTTON_PRIMARY"/><br></br>
+        /// buttons <see cref="AndroidMotionEventButton.BUTTON_PRIMARY"/> up then actionButton is <see cref="AndroidMotionEventButton.None"/></param>
         /// <returns></returns>
         bool InjectTouchEvent(
                                     AndroidMotionEventAction action,
                                     long pointerId,
                                     Rectangle position,
-                                    float pressure = 1f,
-                                    AndroidMotionEventButton buttons = AndroidMotionEventButton.BUTTON_PRIMARY);
+                                    float pressure,
+                                    AndroidMotionEventButton buttons,
+                                    AndroidMotionEventButton actionButton);
 
         /// <summary>
         /// 
@@ -87,8 +91,8 @@ namespace TqkLibrary.Scrcpy
         bool InjectScrollEvent(
                                     Rectangle position,
                                     float vScroll,
-                                    float hScroll = 0,
-                                    AndroidMotionEventButton button = AndroidMotionEventButton.BUTTON_PRIMARY);
+                                    float hScroll,
+                                    AndroidMotionEventButton button);
 
         /// <summary>
         /// 
@@ -110,7 +114,7 @@ namespace TqkLibrary.Scrcpy
         /// <summary>
         /// Fire on event <see cref="OnClipboardReceived"/>
         /// </summary>
-        bool GetClipboard(CopyKey copyKey = CopyKey.None);
+        bool GetClipboard(CopyKey copyKey);
 
         /// <summary>
         /// 
