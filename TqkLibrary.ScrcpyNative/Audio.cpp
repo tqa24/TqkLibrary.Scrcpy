@@ -7,7 +7,7 @@
 #define SC_PACKET_FLAG_KEY_FRAME (UINT64_C(1) << 62)
 #define SC_PACKET_PTS_MASK (SC_PACKET_FLAG_KEY_FRAME - 1)
 
-Audio::Audio(const Scrcpy* scrcpy, SOCKET sock, const ScrcpyNativeConfig& nativeConfig) {
+Audio::Audio(Scrcpy* scrcpy, SOCKET sock, const ScrcpyNativeConfig& nativeConfig) {
 	this->_scrcpy = scrcpy;
 	this->_audioSock = new SocketWrapper(sock);
 	this->_audioBuffer = new BYTE[HEADER_SIZE];

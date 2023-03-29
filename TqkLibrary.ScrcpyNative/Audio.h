@@ -3,14 +3,14 @@
 class Audio
 {
 public:
-	Audio(const Scrcpy* scrcpy, SOCKET sock, const ScrcpyNativeConfig& nativeConfig);
+	Audio(Scrcpy* scrcpy, SOCKET sock, const ScrcpyNativeConfig& nativeConfig);
 	~Audio();
 	void Start();
 	void Stop();
 	bool Init();
 
 private:
-	const Scrcpy* _scrcpy;
+	Scrcpy* _scrcpy;
 
 	bool _isStopped = false;
 
