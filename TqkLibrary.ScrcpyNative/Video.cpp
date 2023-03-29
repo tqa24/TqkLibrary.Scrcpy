@@ -169,3 +169,16 @@ bool Video::GetCurrentRgbaFrame(AVFrame* frame) {
 
 	return this->_videoDecoder->Convert(frame);
 }
+
+bool Video::IsNewFrame(INT64& pts) {
+	return this->_videoDecoder->IsNewFrame(pts);
+}
+
+bool Video::Draw(RenderTextureSurfaceClass* renderSurface, IUnknown* surface, bool isNewSurface, bool& isNewtargetView) {
+	if (!this->_videoDecoder) return false;
+	return this->_videoDecoder->Draw(
+		renderSurface,
+		surface,
+		isNewSurface,
+		isNewtargetView);
+}

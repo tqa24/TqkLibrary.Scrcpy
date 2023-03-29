@@ -14,6 +14,8 @@ public:
 
 	bool GetScreenSize(int& w, int& h);
 	bool GetCurrentRgbaFrame(AVFrame* frame);
+	bool IsNewFrame(INT64& pts);
+	bool Draw(RenderTextureSurfaceClass* renderSurface, IUnknown* surface, bool isNewSurface, bool& isNewtargetView);
 private:
 	ScrcpyNativeConfig _nativeConfig{};
 	const Scrcpy* _scrcpy;

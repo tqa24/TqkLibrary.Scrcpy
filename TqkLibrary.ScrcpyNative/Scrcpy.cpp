@@ -75,7 +75,7 @@ bool Scrcpy::GetScreenShot(BYTE* buffer, const int sizeInByte, const int w, cons
 	bool result = false;
 	if (this->_scrcpyInstance != nullptr &&
 		this->_scrcpyInstance->_video != nullptr) {
-		if (this->_scrcpyInstance->_video->_videoDecoder->IsNewFrame(this->cache.pts))
+		if (this->_scrcpyInstance->_video->IsNewFrame(this->cache.pts))
 		{
 			av_frame_unref(&this->cache);
 			result = this->_scrcpyInstance->_video->GetCurrentRgbaFrame(&this->cache);
@@ -117,9 +117,8 @@ bool Scrcpy::Draw(RenderTextureSurfaceClass* renderSurface, IUnknown* surface, b
 		renderSurface->Shutdown();
 	}
 	else if (this->_scrcpyInstance != nullptr &&
-		this->_scrcpyInstance->_video != nullptr &&
-		this->_scrcpyInstance->_video->_videoDecoder != nullptr) {
-		result = this->_scrcpyInstance->_video->_videoDecoder->Draw(
+		this->_scrcpyInstance->_video != nullptr) {
+		result = this->_scrcpyInstance->_video->Draw(
 			renderSurface,
 			surface,
 			isNewSurface,
