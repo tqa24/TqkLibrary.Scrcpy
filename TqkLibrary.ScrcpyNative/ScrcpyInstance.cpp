@@ -9,7 +9,6 @@ const int portMin = 5000;
 const int portMax = 65535;
 const int sockTimeoutSecond = 5;
 #define SCRCPY_INSTALL_PATH L"/sdcard/scrcpy-server-tqk.jar"
-#define DEVICE_NAME_SIZE 64
 
 SOCKET CreateListenSock(int port, int backlog, const timeval timeout) {
 	SOCKET sock = socket(AF_INET, SOCK_STREAM, NULL);
@@ -251,13 +250,6 @@ bool ScrcpyInstance::Start() {
 		this->_control = new Control(this->_scrcpy, control_sock);
 	}
 
-	SocketWrapper videoSock(video_sock);
-	BYTE buff_deviceName[DEVICE_NAME_SIZE];
-	if (videoSock.ReadAll(buff_deviceName, DEVICE_NAME_SIZE) != DEVICE_NAME_SIZE)//device name
-	{
-		return false;
-	}
-	this->_deviceName.append(std::string((const char*)buff_deviceName, 64));
 
 	this->_video->Start();//start video thread
 	if (this->_nativeConfig.IsAudio)

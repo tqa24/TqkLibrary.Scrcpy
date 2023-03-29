@@ -10,7 +10,6 @@ public:
 
 private:
 	bool _wsa_isStartUp = false;
-	std::string _deviceName;
 	//function	
 	DWORD RunAdbProcess(LPCWSTR argument);
 

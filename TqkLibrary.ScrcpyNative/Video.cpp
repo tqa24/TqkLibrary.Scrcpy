@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "Utils.h"
 #include "Scrcpy_pch.h"
+#define DEVICE_NAME_SIZE 64
 
 
 Video::Video(Scrcpy* scrcpy, SOCKET sock, const ScrcpyNativeConfig& nativeConfig) {
@@ -63,6 +64,13 @@ bool Video::WaitForFirstFrame(DWORD timeout) {
 
 void Video::threadStart() {
 	this->_videoSock->ChangeBufferSize();
+
+	BYTE buff_deviceName[DEVICE_NAME_SIZE];
+	if (this->_videoSock->ReadAll(buff_deviceName, DEVICE_NAME_SIZE) != DEVICE_NAME_SIZE)//device name
+		return;
+	this->_deviceName = (const char*)buff_deviceName;
+
+
 
 	AVCodecID codecId = this->_videoSock->ReadCodecId();
 	const AVCodec* codec_decoder = avcodec_find_decoder(codecId);

@@ -18,6 +18,7 @@ public:
 private:
 	ScrcpyNativeConfig _nativeConfig{};
 	Scrcpy* _scrcpy;
+	std::string _deviceName;
 
 	bool _isStopped{ false };
 
