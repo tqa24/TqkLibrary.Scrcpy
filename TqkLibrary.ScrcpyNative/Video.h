@@ -15,11 +15,11 @@ public:
 	bool GetScreenSize(int& w, int& h);
 	bool GetCurrentRgbaFrame(AVFrame* frame);
 private:
+	ScrcpyNativeConfig _nativeConfig{};
 	const Scrcpy* _scrcpy;
 
 	bool _isStopped{ false };
 
-	std::string _deviceName{};
 	bool _ishaveFrame{ false };
 	ParsePacket* _parsePacket{ nullptr };
 	VideoDecoder* _videoDecoder{ nullptr };
@@ -30,7 +30,7 @@ private:
 
 	void threadStart();
 
-	bool _isStop = false;
+	bool _isStopMainLoop = false;
 	DWORD _threadId{ 0 };
 	HANDLE _threadHandle{ INVALID_HANDLE_VALUE };
 	static DWORD WINAPI MyThreadFunction(LPVOID lpParam);

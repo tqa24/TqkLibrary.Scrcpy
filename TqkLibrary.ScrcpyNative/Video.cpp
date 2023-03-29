@@ -1,8 +1,8 @@
 #include "pch.h"
+#include "Utils.h"
 #include "Scrcpy_pch.h"
 #define PACKET_BUFFER_SIZE 1 << 18//256k
 #define HEADER_SIZE 12
-#define DEVICE_NAME_SIZE 64
 #define NO_PTS UINT64_MAX
 
 #define SC_PACKET_FLAG_CONFIG    (UINT64_C(1) << 63)
@@ -12,17 +12,19 @@
 Video::Video(const Scrcpy* scrcpy, SOCKET sock, const ScrcpyNativeConfig& nativeConfig) {
 	this->_scrcpy = scrcpy;
 	this->_videoSock = new SocketWrapper(sock);
-	this->_videoBuffer = new BYTE[DEVICE_NAME_SIZE];
-	const AVCodec* h264_decoder = avcodec_find_decoder(AV_CODEC_ID_H264);
-	this->_videoDecoder = new VideoDecoder(h264_decoder, nativeConfig);
-	this->_parsePacket = new ParsePacket(h264_decoder);
+	this->_videoBuffer = new BYTE[HEADER_SIZE];
+	this->_nativeConfig = nativeConfig;
 }
 
 Video::~Video() {
-	delete this->_parsePacket;
-	delete this->_videoDecoder;
-	delete this->_videoSock;
-	delete this->_videoBuffer;
+	if(this->_parsePacket)
+		delete this->_parsePacket;
+	if(this->_videoDecoder)
+		delete this->_videoDecoder;
+	if(this->_videoSock)
+		delete this->_videoSock;
+	if(this->_videoBuffer)
+		delete this->_videoBuffer;
 	CloseHandle(this->_threadHandle);
 	CloseHandle(this->_mtx_waitFirstFrame);
 }
@@ -41,18 +43,12 @@ void Video::Start() {
 
 void Video::Stop() {
 	this->_videoSock->Stop();
-	this->_isStop = true;
+	this->_isStopMainLoop = true;
 	if (this->_threadHandle != INVALID_HANDLE_VALUE)
 		WaitForSingleObject(this->_threadHandle, INFINITE);
 }
 
 bool Video::Init() {
-	if (!this->_parsePacket->Init())
-		return false;
-
-	if (!this->_videoDecoder->Init())
-		return false;
-
 	//first bool is true for manual reset else auto reset, second bool is initially signaled
 	this->_mtx_waitFirstFrame = CreateEvent(NULL, TRUE, FALSE, NULL);
 	if (this->_mtx_waitFirstFrame == INVALID_HANDLE_VALUE)
@@ -77,35 +73,35 @@ bool Video::WaitForFirstFrame(DWORD timeout) {
 void Video::threadStart() {
 	this->_videoSock->ChangeBufferSize(PACKET_BUFFER_SIZE);
 
-	if (this->_videoSock->ReadAll(this->_videoBuffer, DEVICE_NAME_SIZE) != DEVICE_NAME_SIZE)//device name
+	if (this->_videoSock->ReadAll(this->_videoBuffer, HEADER_SIZE) != HEADER_SIZE)
 		return;
-	this->_deviceName.append(std::string((const char*)this->_videoBuffer, 64));
-
+	uint32_t raw_codec_id = sc_read32be(this->_videoBuffer);
 
 #if _DEBUG
-	if (this->_videoSock->ReadAll(this->_videoBuffer, 2) != 2)//width
-		return;
-	int width = sc_read16be(this->_videoBuffer);
-
-	if (this->_videoSock->ReadAll(this->_videoBuffer, 2) != 2)//height
-		return;
-	int height = sc_read16be(this->_videoBuffer);
-
-
-	printf(this->_deviceName.c_str());
-	printf("\r\n");
+	uint32_t width = sc_read32be(this->_videoBuffer + 4);
+	uint32_t height = sc_read32be(this->_videoBuffer + 8);
 	printf(std::string("width:").append(std::to_string(width)).append("\r\n").c_str());
 	printf(std::string("height:").append(std::to_string(height)).append("\r\n").c_str());
-#else
-	if (this->_videoSock->ReadAll(this->_videoBuffer, 2) != 2)//width
-		return;
-	if (this->_videoSock->ReadAll(this->_videoBuffer, 2) != 2)//height
-		return;
 #endif
 
+	if (raw_codec_id == 0 ||	//stream explicitly disabled by the device
+		raw_codec_id == 1)		//stream configuration error on the device
+		return;
 
+	AVCodecID codecId = sc_demuxer_to_avcodec_id(raw_codec_id);
+	const AVCodec* codec_decoder = avcodec_find_decoder(codecId);
+	if (!codec_decoder)
+		return;
 
-	while (!this->_isStop)
+	this->_parsePacket = new ParsePacket(codec_decoder);
+	if (!this->_parsePacket->Init())
+		return;
+
+	this->_videoDecoder = new VideoDecoder(codec_decoder, this->_nativeConfig);
+	if (!this->_videoDecoder->Init())
+		return;
+
+	while (!this->_isStopMainLoop)
 	{
 		if (this->_videoSock->ReadAll(this->_videoBuffer, HEADER_SIZE) != HEADER_SIZE)
 			return;
@@ -135,7 +131,6 @@ void Video::threadStart() {
 		}
 
 		packet.dts = packet.pts;
-
 
 #if _DEBUG
 		//printf(std::string("pts:").append(std::to_string(pts)).append("  ,len:").append(std::to_string(len)).append("\r\n").c_str());
