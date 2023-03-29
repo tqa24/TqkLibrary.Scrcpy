@@ -149,15 +149,22 @@ bool ScrcpyInstance::Start() {
 	}
 	auto scid_prefix_str = scid_prefix.str();
 
-
 	std::wstring arg(L"reverse --remove ");
 	arg.append(scid_prefix_str);
+#if _DEBUG
+	wprintf(arg.c_str());
+	wprintf(L"\r\n");
+#endif
 	DWORD exitCode = RunAdbProcess(arg.c_str());
 
 
 	arg = L"push ";
 	arg.append(this->_nativeConfig.ScrcpyServerPath);
 	arg.append(L" " SCRCPY_INSTALL_PATH);
+#if _DEBUG
+	wprintf(arg.c_str());
+	wprintf(L"\r\n");
+#endif
 	exitCode = RunAdbProcess(arg.c_str());
 	if (exitCode != 0) {
 		return false;
@@ -181,6 +188,10 @@ bool ScrcpyInstance::Start() {
 	arg.append(scid_prefix_str);
 	arg.append(L" tcp:");
 	arg.append(std::to_wstring(port));
+#if _DEBUG
+	wprintf(arg.c_str());
+	wprintf(L"\r\n");
+#endif
 	exitCode = RunAdbProcess(arg.c_str());
 	if (exitCode != 0) {
 		return false;
@@ -202,6 +213,10 @@ bool ScrcpyInstance::Start() {
 		arg.append(L" ");
 		arg.append(cmds[i]);
 	}
+#if _DEBUG
+	wprintf(arg.c_str());
+	wprintf(L"\r\n");
+#endif
 	this->_process = new ProcessWrapper((LPWSTR)arg.c_str());
 
 
