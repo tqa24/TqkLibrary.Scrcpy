@@ -273,6 +273,7 @@ namespace TqkLibrary.Scrcpy.Wpf
                         MousePointerId,
                         p,
                         1.0f,
+                        HandleMouseButton(e),
                         HandleMouseButton(e));
             }
         }
@@ -377,7 +378,9 @@ namespace TqkLibrary.Scrcpy.Wpf
                             action,
                             MousePointerId,
                             point,
-                            action == AndroidMotionEventAction.ACTION_DOWN ? 1.0f : 0.0f);
+                            action == AndroidMotionEventAction.ACTION_DOWN ? 1.0f : 0.0f,
+                            AndroidMotionEventButton.BUTTON_PRIMARY,
+                            action == AndroidMotionEventAction.ACTION_DOWN ? AndroidMotionEventButton.BUTTON_PRIMARY : AndroidMotionEventButton.None);
                         break;
 
                     case MouseButton.Right:
@@ -396,7 +399,9 @@ namespace TqkLibrary.Scrcpy.Wpf
                     case MouseButton.XButton1:
                         control.InjectKeycode(
                             action == AndroidMotionEventAction.ACTION_DOWN ? AndroidKeyEventAction.ACTION_DOWN : AndroidKeyEventAction.ACTION_UP,
-                            AndroidKeyCode.AKEYCODE_APP_SWITCH);
+                            AndroidKeyCode.AKEYCODE_APP_SWITCH,
+                            0,
+                            AndroidKeyEventMeta.META_NONE);
                         break;
 
                     case MouseButton.XButton2:

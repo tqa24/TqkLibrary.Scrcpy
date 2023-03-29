@@ -80,8 +80,14 @@ namespace TqkLibrary.Scrcpy.Wpf
         public bool InjectText(string text)
             => this.FixAll(x => x.InjectText(text));
 
-        public bool InjectTouchEvent(AndroidMotionEventAction action, long pointerId, Rectangle position, float pressure = 1, AndroidMotionEventButton buttons = AndroidMotionEventButton.BUTTON_PRIMARY)
-            => this.FixAll(x => x.InjectTouchEvent(action, pointerId, new Rectangle(position.Location, x.Scrcpy.ScreenSize), pressure, buttons));
+        public bool InjectTouchEvent(
+            AndroidMotionEventAction action,
+            long pointerId,
+            Rectangle position,
+            float pressure = 1,
+            AndroidMotionEventButton buttons = AndroidMotionEventButton.BUTTON_PRIMARY,
+            AndroidMotionEventButton actionButton = AndroidMotionEventButton.BUTTON_PRIMARY)
+            => this.FixAll(x => x.InjectTouchEvent(action, pointerId, new Rectangle(position.Location, x.Scrcpy.ScreenSize), pressure, buttons, actionButton));
 
         public bool RotateDevice()
             => this.FixAll(x => x.RotateDevice());
