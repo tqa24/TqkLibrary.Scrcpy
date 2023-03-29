@@ -13,10 +13,26 @@ SocketWrapper::~SocketWrapper() {
 }
 
 int SocketWrapper::ReadAll(BYTE* buff, int length) {
-	return recv(this->_sock, (char*)buff, length, MSG_WAITALL);
+	int result = recv(this->_sock, (char*)buff, length, MSG_WAITALL);
+#if _DEBUG
+	if (result == SOCKET_ERROR)
+	{
+		int err = WSAGetLastError();
+		printf("SocketWrapper::ReadAll error code %d", err);
+	}
+#endif
+	return result;
 }
 int SocketWrapper::Write(const BYTE* buff, int length) {
-	return send(this->_sock, (const char*)buff, length, NULL);//MSG_OOB
+	int result = send(this->_sock, (const char*)buff, length, NULL);//MSG_OOB
+#if _DEBUG
+	if (result == SOCKET_ERROR)
+	{
+		int err = WSAGetLastError();
+		printf("SocketWrapper::Write error code %d", err);
+	}
+#endif
+	return result;
 }
 
 void SocketWrapper::Stop() {
