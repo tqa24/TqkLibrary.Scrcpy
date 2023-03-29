@@ -1,10 +1,16 @@
 #include "pch.h"
 #include "Scrcpy_pch.h"
+#define PACKET_BUFFER_SIZE 1 << 18//256k
+#define HEADER_SIZE 12
+
+#define SC_PACKET_FLAG_CONFIG    (UINT64_C(1) << 63)
+#define SC_PACKET_FLAG_KEY_FRAME (UINT64_C(1) << 62)
+#define SC_PACKET_PTS_MASK (SC_PACKET_FLAG_KEY_FRAME - 1)
 
 Audio::Audio(const Scrcpy* scrcpy, SOCKET sock, const ScrcpyNativeConfig& nativeConfig) {
 	this->_scrcpy = scrcpy;
 	this->_audioSock = new SocketWrapper(sock);
-	this->_audioBuffer = new BYTE[32];
+	this->_audioBuffer = new BYTE[HEADER_SIZE];
 }
 Audio::~Audio() {
 	delete this->_audioBuffer;
@@ -24,7 +30,7 @@ void Audio::Start() {
 }
 void Audio::Stop() {
 	this->_audioSock->Stop();
-	this->_isStop = true;
+	this->_isStopMainLoop = true;
 	if (this->_threadHandle != INVALID_HANDLE_VALUE)
 		WaitForSingleObject(this->_threadHandle, INFINITE);
 }
@@ -39,10 +45,78 @@ DWORD Audio::MyThreadFunction(LPVOID lpParam) {
 	return 0;
 }
 void Audio::threadStart() {
-	while (!this->_isStop)
+	this->_audioSock->ChangeBufferSize(PACKET_BUFFER_SIZE);
+
+	if (this->_audioSock->ReadAll(this->_audioBuffer, 4) != 4)
+		return;
+	uint32_t raw_codec_id = sc_read32be(this->_audioBuffer);
+
+	if (raw_codec_id == 0 ||	//stream explicitly disabled by the device
+		raw_codec_id == 1)		//stream configuration error on the device
+		return;
+
+	AVCodecID codecId = sc_demuxer_to_avcodec_id(raw_codec_id);
+	const AVCodec* codec_decoder = avcodec_find_decoder(codecId);
+	if (!codec_decoder)
+		return;
+
+	this->_parsePacket = new ParsePacket(codec_decoder);
+	if (!this->_parsePacket->Init())
+		return;
+
+
+	while (!this->_isStopMainLoop)
 	{
-		if (this->_audioSock->ReadAll(this->_audioBuffer, 32) < 0) {
+		if (this->_audioSock->ReadAll(this->_audioBuffer, HEADER_SIZE) != HEADER_SIZE)
+			return;
+
+		UINT64 pts_flags = sc_read64be(this->_audioBuffer);
+		INT32 len = sc_read32be(this->_audioBuffer + 8);
+
+		AVPacket packet;
+		if (!avcheck(av_new_packet(&packet, len))) {
 			return;
 		}
+
+		if (this->_audioSock->ReadAll(packet.data, len) != len)
+		{
+			av_packet_unref(&packet);
+			return;
+		}
+
+		if (pts_flags & SC_PACKET_FLAG_CONFIG) {
+			packet.pts = AV_NOPTS_VALUE;
+		}
+		else {
+			packet.pts = pts_flags & SC_PACKET_PTS_MASK;
+		}
+
+		if (pts_flags & SC_PACKET_FLAG_KEY_FRAME) {
+			packet.flags |= AV_PKT_FLAG_KEY;
+		}
+
+		packet.dts = packet.pts;
+
+#if _DEBUG
+		//printf(std::string("Audio pts:").append(std::to_string(pts)).append("  ,len:").append(std::to_string(len)).append("\r\n").c_str());
+#endif
+
+		if (this->_parsePacket->ParserPushPacket(&packet))
+		{
+			//if (this->_videoDecoder->Decode(&packet))
+			//{
+			//	if (!this->_ishaveFrame)
+			//	{
+			//		SetEvent(this->_mtx_waitFirstFrame);
+			//		this->_ishaveFrame = true;
+			//	}
+			//}
+			//else
+			//{
+			//	av_packet_unref(&packet);
+			//	return;
+			//}
+		}
+		av_packet_unref(&packet);
 	}
 }

@@ -14,6 +14,9 @@ private:
 
 	bool _isStopped = false;
 
+
+
+	ParsePacket* _parsePacket{ nullptr };
 	BYTE* _audioBuffer{ nullptr };
 	SocketWrapper* _audioSock{ nullptr };
 
@@ -22,10 +25,10 @@ private:
 
 
 	void threadStart();
-	bool _isStop = false;
+
+	bool _isStopMainLoop = false;
 	DWORD _threadId{ 0 };
 	HANDLE _threadHandle{ INVALID_HANDLE_VALUE };
-
 	static DWORD WINAPI MyThreadFunction(LPVOID lpParam);
 };
 #endif
