@@ -145,7 +145,7 @@ bool ScrcpyInstance::Start() {
 	scid_prefix << L"localabstract:scrcpy";
 	if (this->_nativeConfig.SCID != -1)
 	{
-		scid_prefix << L"_" << std::hex << (this->_nativeConfig.SCID && 0x7FFFFFFF);
+		scid_prefix << L"_" << std::hex << (INT32)(this->_nativeConfig.SCID & 0x7FFFFFFF);
 	}
 	auto scid_prefix_str = scid_prefix.str();
 
