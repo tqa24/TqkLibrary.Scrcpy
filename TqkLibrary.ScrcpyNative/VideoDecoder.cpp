@@ -256,7 +256,7 @@ bool VideoDecoder::GetFrameSize(int& w, int& h) {
 }
 
 bool VideoDecoder::TransferNoHw(AVFrame* frame) {
-	av_frame_move_ref(frame, _decoding_frame);
+	av_frame_ref(frame, _decoding_frame);
 	return true;
 }
 
