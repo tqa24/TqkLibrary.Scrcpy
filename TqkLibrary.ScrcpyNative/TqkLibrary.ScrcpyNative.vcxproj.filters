@@ -108,6 +108,9 @@
     <ClInclude Include="Audio.h">
       <Filter>Scrcpy\Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="AudioDecoder.h">
+      <Filter>Scrcpy\Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -168,6 +171,9 @@
       <Filter>D3D11\Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Audio.cpp">
+      <Filter>Scrcpy\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AudioDecoder.cpp">
       <Filter>Scrcpy\Source Files</Filter>
     </ClCompile>
   </ItemGroup>
