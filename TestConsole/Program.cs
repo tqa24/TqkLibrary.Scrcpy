@@ -43,6 +43,7 @@ ScrcpyConfig config = new ScrcpyConfig()
     ServerConfig = new ScrcpyServerConfig()
     {
         IsControl = true,
+        IsAudio = true,
         MaxFps = 24,
         ClipboardAutosync = false,
         SCID = new Random(DateTime.Now.Millisecond).Next()
