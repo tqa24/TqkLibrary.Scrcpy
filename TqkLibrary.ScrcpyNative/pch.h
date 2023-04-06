@@ -23,6 +23,7 @@ typedef class Control Control;
 typedef class Video Video;
 typedef class ParsePacket ParsePacket;
 typedef class VideoDecoder VideoDecoder;
+typedef class AudioDecoder AudioDecoder;
 #include <windows.h>
 #include <string>
 #include <winsock2.h>

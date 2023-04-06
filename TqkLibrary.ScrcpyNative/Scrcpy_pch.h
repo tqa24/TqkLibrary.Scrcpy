@@ -7,6 +7,7 @@
 #include "ParsePacket.h"
 #include "FrameConventer.h"
 #include "VideoDecoder.h"
+#include "AudioDecoder.h"
 #include "Video.h"
 #include "Audio.h"
 #include "Control.h"

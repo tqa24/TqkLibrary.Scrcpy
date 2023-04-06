@@ -4,6 +4,7 @@
 Audio::Audio(Scrcpy* scrcpy, SOCKET sock, const ScrcpyNativeConfig& nativeConfig) {
 	this->_scrcpy = scrcpy;
 	this->_audioSock = new SocketWrapper(sock);
+	this->_nativeConfig = nativeConfig;
 }
 Audio::~Audio() {
 	delete this->_audioSock;
@@ -48,6 +49,9 @@ void Audio::threadStart() {
 	if (!this->_parsePacket->Init())
 		return;
 
+	this->_audioDecoder = new AudioDecoder(codec_decoder, this->_nativeConfig);
+	if (!this->_audioDecoder->Init())
+		return;
 
 	while (!this->_isStopMainLoop)
 	{
@@ -64,19 +68,19 @@ void Audio::threadStart() {
 
 		if (this->_parsePacket->ParserPushPacket(&packet))
 		{
-			//if (this->_videoDecoder->Decode(&packet))
-			//{
-			//	if (!this->_ishaveFrame)
-			//	{
-			//		SetEvent(this->_mtx_waitFirstFrame);
-			//		this->_ishaveFrame = true;
-			//	}
-			//}
-			//else
-			//{
-			//	av_packet_unref(&packet);
-			//	return;
-			//}
+			if (this->_audioDecoder->Decode(&packet))
+			{
+				//	if (!this->_ishaveFrame)
+				//	{
+				//		SetEvent(this->_mtx_waitFirstFrame);
+				//		this->_ishaveFrame = true;
+				//	}
+			}
+			else
+			{
+				av_packet_unref(&packet);
+				return;
+			}
 		}
 		av_packet_unref(&packet);
 	}

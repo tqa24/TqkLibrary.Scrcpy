@@ -10,19 +10,23 @@ public:
 	bool Init();
 
 private:
+	ScrcpyNativeConfig _nativeConfig{};
 	Scrcpy* _scrcpy;
+
+
+
 
 	bool _isStopped = false;
 
-
-
+	//need delete
+	AudioDecoder* _audioDecoder{ nullptr };
 	ParsePacket* _parsePacket{ nullptr };
 	SocketWrapper* _audioSock{ nullptr };
 
 
 
 
-
+	//thread object
 	void threadStart();
 
 	bool _isStopMainLoop = false;
