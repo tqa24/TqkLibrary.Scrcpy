@@ -19,6 +19,10 @@ bool AudioDecoder::Init() {
 	if (this->_codec_ctx == NULL)
 		return FALSE;
 
+	this->_codec_ctx->flags |= AV_CODEC_FLAG_LOW_DELAY;
+	this->_codec_ctx->ch_layout.nb_channels = 2;
+	this->_codec_ctx->sample_rate = 48000;
+
 	this->_decoding_frame = av_frame_alloc();
 	if (this->_decoding_frame == NULL)
 		return FALSE;
@@ -40,7 +44,7 @@ bool AudioDecoder::Decode(const AVPacket* packet) {
 	if (avcheck(avcodec_send_packet(_codec_ctx, packet)))
 	{
 		_mtx_frame.lock();//lock read frame
-		
+
 		av_frame_unref(_decoding_frame);
 		result = avcheck(avcodec_receive_frame(_codec_ctx, _decoding_frame));
 

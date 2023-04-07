@@ -45,10 +45,6 @@ void Audio::threadStart() {
 	if (!codec_decoder)
 		return;
 
-	this->_parsePacket = new ParsePacket(codec_decoder);
-	if (!this->_parsePacket->Init())
-		return;
-
 	this->_audioDecoder = new AudioDecoder(codec_decoder, this->_nativeConfig);
 	if (!this->_audioDecoder->Init())
 		return;
@@ -62,12 +58,12 @@ void Audio::threadStart() {
 			return;
 		}
 
-#if _DEBUG
-		printf(std::string("Audio pts:").append(std::to_string(packet.pts)).append("  ,len:").append(std::to_string(packet.size)).append("\r\n").c_str());
-#endif
-
-		if (this->_parsePacket->ParserPushPacket(&packet))
+		//https://github.com/Genymobile/scrcpy/blob/21df2c240e544b1c1eba7775e1474c1c772be04b/app/src/decoder.c#L40
+		if (packet.pts != AV_NOPTS_VALUE)
 		{
+#if _DEBUG
+			printf(std::string("Audio pts:").append(std::to_string(packet.pts)).append("  ,len:").append(std::to_string(packet.size)).append("\r\n").c_str());
+#endif
 			if (this->_audioDecoder->Decode(&packet))
 			{
 				//	if (!this->_ishaveFrame)

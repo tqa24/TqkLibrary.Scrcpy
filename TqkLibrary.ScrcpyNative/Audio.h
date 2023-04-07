@@ -20,7 +20,6 @@ private:
 
 	//need delete
 	AudioDecoder* _audioDecoder{ nullptr };
-	ParsePacket* _parsePacket{ nullptr };
 	SocketWrapper* _audioSock{ nullptr };
 
 
