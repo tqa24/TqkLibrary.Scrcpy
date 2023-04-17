@@ -106,6 +106,15 @@ bool Scrcpy::GetScreenSize(int& w, int& h) {
 	return result;
 }
 
+bool Scrcpy::IsHaveScrcpyInstance() {
+	_mutex.lock();
+
+	bool result = this->_scrcpyInstance != nullptr;
+
+	_mutex.unlock();
+	return result;
+}
+
 bool Scrcpy::Draw(RenderTextureSurfaceClass* renderSurface, IUnknown* surface, bool isNewSurface, bool& isNewtargetView) {
 	assert(renderSurface != nullptr);
 

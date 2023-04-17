@@ -11,6 +11,7 @@ public:
 	bool ControlCommand(const BYTE* command, const int sizeInByte);
 	bool GetScreenShot(BYTE* buffer, const int sizeInByte, const int w, const int h, const int lineSize);
 	bool GetScreenSize(int& w, int& h);
+	bool IsHaveScrcpyInstance();
 
 	bool RegisterClipboardEvent(ClipboardReceivedDelegate callback);
 	bool RegisterClipboardAcknowledgementEvent(ClipboardAcknowledgementDelegate clipboardAcknowledgementDelegate);
