@@ -12,6 +12,7 @@ public:
 	bool WaitForFirstFrame(DWORD timeout);
 
 	bool GetScreenSize(int& w, int& h);
+	bool GetDeviceName(BYTE* buffer, int sizeInByte);
 	bool GetCurrentRgbaFrame(AVFrame* frame);
 	bool IsNewFrame(INT64& pts);
 	bool Draw(RenderTextureSurfaceClass* renderSurface, IUnknown* surface, bool isNewSurface, bool& isNewtargetView);

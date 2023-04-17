@@ -106,6 +106,18 @@ bool Scrcpy::GetScreenSize(int& w, int& h) {
 	return result;
 }
 
+bool Scrcpy::GetDeviceName(BYTE* buffer, int sizeInByte) {
+	_mutex.lock();
+
+	bool result = false;
+	if (this->_scrcpyInstance != nullptr && this->_scrcpyInstance->_video != nullptr) {
+		result = this->_scrcpyInstance->_video->GetDeviceName(buffer, sizeInByte);
+	}
+
+	_mutex.unlock();
+	return result;
+}
+
 bool Scrcpy::Draw(RenderTextureSurfaceClass* renderSurface, IUnknown* surface, bool isNewSurface, bool& isNewtargetView) {
 	assert(renderSurface != nullptr);
 

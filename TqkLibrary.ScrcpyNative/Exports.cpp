@@ -42,6 +42,10 @@ bool ScrcpyGetScreenShot(Scrcpy* scrcpy, BYTE* buffer, const int sizeInByte, con
 	return false;
 #endif // Scrcpy_ScreenShot
 }
+bool ScrcpyGetDeviceName(Scrcpy* scrcpy, BYTE* buffer, const int sizeInByte) {
+	if (scrcpy == nullptr || buffer == nullptr) return false;
+	return scrcpy->GetDeviceName(buffer, sizeInByte);
+}
 
 RenderTextureSurfaceClass* D3DImageViewAlloc() {
 	return new RenderTextureSurfaceClass();

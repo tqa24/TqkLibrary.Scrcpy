@@ -8,6 +8,7 @@ Video::Video(Scrcpy* scrcpy, SOCKET sock, const ScrcpyNativeConfig& nativeConfig
 	this->_scrcpy = scrcpy;
 	this->_videoSock = new SocketWrapper(sock);
 	this->_nativeConfig = nativeConfig;
+	this->_deviceName = "";
 }
 
 Video::~Video() {
@@ -139,6 +140,16 @@ bool Video::GetScreenSize(int& w, int& h) {
 		return false;
 
 	return this->_videoDecoder->GetFrameSize(w, h);
+}
+
+bool Video::GetDeviceName(BYTE* buffer, int sizeInByte) {
+	if (!_ishaveFrame)
+		return false;
+
+	auto name = this->_deviceName.c_str();
+	memcpy(buffer, name, min(sizeInByte, this->_deviceName.size()));
+
+	return true;
 }
 
 bool Video::GetCurrentRgbaFrame(AVFrame* frame) {

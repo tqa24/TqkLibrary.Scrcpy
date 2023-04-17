@@ -217,7 +217,7 @@ bool ScrcpyInstance::Start() {
 	wprintf(L"\r\n");
 #endif
 	this->_process = new ProcessWrapper((LPWSTR)arg.c_str());
-
+	              
 
 
 	SOCKET video_sock = AcceptConnection(this->_listenSock, this->_nativeConfig.ConnectionTimeout);

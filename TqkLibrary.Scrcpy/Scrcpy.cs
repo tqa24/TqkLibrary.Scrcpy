@@ -30,6 +30,14 @@ namespace TqkLibrary.Scrcpy
         /// <summary>
         /// 
         /// </summary>
+        public string DeviceName
+        {
+            get { return GetDeviceName(); }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
         /// <param name="deviceId"></param>
         public Scrcpy(string deviceId)
         {
@@ -280,5 +288,15 @@ namespace TqkLibrary.Scrcpy
             return new Size(w, h);
         }
 
+        string GetDeviceName()
+        {
+            byte[] buffer = new byte[64];
+            if (countdownEvent.TryAddCount())
+            {
+                NativeWrapper.ScrcpyGetDeviceName(_handle, buffer, 64);
+                countdownEvent.Signal();
+            }
+            return Encoding.ASCII.GetString(buffer);
+        }
     }
 }

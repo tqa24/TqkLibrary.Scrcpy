@@ -50,6 +50,8 @@ namespace TqkLibrary.Scrcpy
 
         [DllImport("TqkLibrary.ScrcpyNative.dll", CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
         internal static extern bool ScrcpyGetScreenSize(IntPtr scrcpy, ref int w, ref int h);
+        [DllImport("TqkLibrary.ScrcpyNative.dll", CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern bool ScrcpyGetDeviceName(IntPtr scrcpy, [In][Out][MarshalAs(UnmanagedType.LPArray)] byte[] buffer, int sizeInByte);
 
         [DllImport("TqkLibrary.ScrcpyNative.dll", CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
         internal static extern bool ScrcpyControlCommand(IntPtr scrcpy, [In][MarshalAs(UnmanagedType.LPArray)] byte[] command, int sizeInByte);

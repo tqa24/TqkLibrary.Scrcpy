@@ -8,6 +8,7 @@ public:
 	~ScrcpyInstance();
 	bool Start();
 
+
 private:
 	bool _wsa_isStartUp = false;
 	//function	
