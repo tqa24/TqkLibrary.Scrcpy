@@ -183,59 +183,53 @@ bool InputTextureNv12Class::Copy(ID3D11DeviceContext* device_ctx, const AVFrame*
 		//assert(map.DepthPitch == 0 || map.DepthPitch == totalSize);
 		assert(sourceFrame->linesize[1] == sourceFrame->linesize[2]);
 
-		//std::wstring f(L"sourceFrame linesize: ");
-		//f.append(std::to_wstring(sourceFrame->linesize[0]));
-		//f.append(L", TotalSize:");
-		//f.append(std::to_wstring(totalSize));
-		//f.append(L", W:");
-		//f.append(std::to_wstring(sourceFrame->width));
-		//f.append(L", H:");
-		//f.append(std::to_wstring(sourceFrame->height));
-		//std::wstring s(L"D3D11_MAPPED_SUBRESOURCE.RowPitch");
-		//s.append(std::to_wstring(map.RowPitch));
-		//s.append(L", DepthPitch:");
-		//s.append(std::to_wstring(map.DepthPitch));
-		//MessageBox(NULL, f.c_str(), s.c_str(), 0);
-
 		bool result = false;
-		if (
-			sourceFrame->linesize[0] == map.RowPitch &&
-			(map.DepthPitch == 0 || map.DepthPitch == totalSize))
+		if ((UINT)sourceFrame->width <= map.RowPitch &&
+			(map.DepthPitch == 0 || map.DepthPitch == map.RowPitch * 3 * sourceFrame->height / 2))
 		{
-			memcpy(map.pData, sourceFrame->data[0], y_size);
-			planar_to_interleave((UINT32)uv_size, (uint8_t*)((UINT64)map.pData + y_size), sourceFrame->data[1], sourceFrame->data[2]);
-			result = true;
-		}
-		else if (
-			(UINT)sourceFrame->linesize[0] < map.RowPitch &&
-			map.DepthPitch == map.RowPitch * 3 * sourceFrame->height / 2)
-		{
-			for (int row = 0; row < sourceFrame->height; row++)
+			if (sourceFrame->linesize[0] == map.RowPitch)
 			{
-				memcpy(
-					(uint8_t*)((UINT64)map.pData + (map.RowPitch * row)),
-					sourceFrame->data[0] + (sourceFrame->linesize[0] * row),
-					sourceFrame->linesize[0]);
+				memcpy(map.pData, sourceFrame->data[0], y_size);
+				planar_to_interleave((UINT32)uv_size, (uint8_t*)((UINT64)map.pData + y_size), sourceFrame->data[1], sourceFrame->data[2]);
 			}
-
-			uint8_t* start_uv = (uint8_t*)map.pData + map.RowPitch * sourceFrame->height;
-			int uv_rowSizeCopy = sourceFrame->linesize[1] + sourceFrame->linesize[2];
-			int uv_height = sourceFrame->height / 2;
-			for (int row = 0; row < uv_height; row++)
+			else
 			{
-				planar_to_interleave(
-					uv_rowSizeCopy,
-					start_uv + map.RowPitch * row,
-					sourceFrame->data[1] + (sourceFrame->linesize[1] * row),
-					sourceFrame->data[2] + (sourceFrame->linesize[2] * row));
+				for (int row = 0; row < sourceFrame->height; row++)
+				{
+					memcpy(
+						(uint8_t*)((UINT64)map.pData + (map.RowPitch * row)),
+						sourceFrame->data[0] + (sourceFrame->linesize[0] * row),
+						sourceFrame->width);
+				}
+				uint8_t* start_uv = (uint8_t*)map.pData + map.RowPitch * sourceFrame->height;
+				int uv_rowSizeCopy = sourceFrame->width;//sourceFrame->linesize[1] + sourceFrame->linesize[2];
+				int uv_height = sourceFrame->height / 2;
+				for (int row = 0; row < uv_height; row++)
+				{
+					planar_to_interleave(
+						uv_rowSizeCopy,
+						start_uv + map.RowPitch * row,
+						sourceFrame->data[1] + (sourceFrame->linesize[1] * row),
+						sourceFrame->data[2] + (sourceFrame->linesize[2] * row));
+				}
 			}
 			result = true;
 		}
 		else
 		{
-#if _DEBUG
-			MessageBox(NULL, L"Failed", L"", 0);
-#endif
+			std::wstring f(L"sourceFrame linesize: ");
+			f.append(std::to_wstring(sourceFrame->linesize[0]));
+			f.append(L", TotalSize:");
+			f.append(std::to_wstring(totalSize));
+			f.append(L", W:");
+			f.append(std::to_wstring(sourceFrame->width));
+			f.append(L", H:");
+			f.append(std::to_wstring(sourceFrame->height));
+			std::wstring s(L"D3D11_MAPPED_SUBRESOURCE.RowPitch");
+			s.append(std::to_wstring(map.RowPitch));
+			s.append(L", DepthPitch:");
+			s.append(std::to_wstring(map.DepthPitch));
+			MessageBox(NULL, f.c_str(), s.c_str(), 0);
 		}
 
 		device_ctx->Unmap(this->m_texture_nv12_cache.Get(), 0);
