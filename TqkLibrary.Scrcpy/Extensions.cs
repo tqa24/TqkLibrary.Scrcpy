@@ -116,6 +116,10 @@ namespace TqkLibrary.Scrcpy
                     {
                         return $"{optionNameAttribute.Name}={rect.Width}:{rect.Height}:{rect.X}:{rect.Y}";
                     }
+                    else if (select is Size size)
+                    {
+                        return $"{optionNameAttribute.Name}={size.Width}x{size.Height}";
+                    }
                     else if (select is int i)
                     {
                         return $"{optionNameAttribute.Name}={i}";
