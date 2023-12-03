@@ -78,12 +78,6 @@ namespace TqkLibrary.Scrcpy.Configs
         [OptionName("max_size")]
         public int MaxSize { get; } = 0;
 
-        /// <summary>
-        /// print list Encoders support to adb shell output<br></br>
-        /// default: false
-        /// </summary>
-        [OptionName("list_encoders")]
-        public bool ListEncoders { get; } = false;
 
         /// <summary>
         /// 2.0
@@ -99,7 +93,6 @@ namespace TqkLibrary.Scrcpy.Configs
             yield return this._GetArgument(x => x.Cleanup, !Cleanup);
             yield return this._GetArgument(x => x.TunnelForward, TunnelForward);
             yield return this._GetArgument(x => x.MaxSize, x => x > 0);
-            yield return this._GetArgument(x => x.ListEncoders, ListEncoders);
         }
         /// <summary>
         /// 

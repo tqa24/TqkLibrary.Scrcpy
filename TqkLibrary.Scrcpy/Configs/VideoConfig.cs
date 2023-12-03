@@ -69,12 +69,6 @@ namespace TqkLibrary.Scrcpy.Configs
         /// </summary>
         [OptionName("downsize_on_error")]
         public bool DownsizeOnError { get; set; } = true;
-        /// <summary>
-        /// print list Displays to adb shell output<br></br>
-        /// default: false
-        /// </summary>
-        [OptionName("list_displays")]
-        public bool ListDisplays { get; } = false;
 
 
         /// <summary>
@@ -92,7 +86,6 @@ namespace TqkLibrary.Scrcpy.Configs
             yield return this._GetArgument(x => x.VideoEncoder, string.IsNullOrWhiteSpace);
             yield return this._GetArgument(x => x.Crop, x => x.HasValue);
             yield return this._GetArgument(x => x.DownsizeOnError, !DownsizeOnError);
-            yield return this._GetArgument(x => x.ListDisplays, ListDisplays);
         }
     }
 }

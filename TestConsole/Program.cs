@@ -4,6 +4,7 @@ using TqkLibrary.AdbDotNet;
 using TqkLibrary.Scrcpy.Interfaces;
 using TqkLibrary.Scrcpy.Configs;
 using TqkLibrary.Scrcpy.Enums;
+using TqkLibrary.Scrcpy.ListSupport;
 
 var env = System.Environment.GetEnvironmentVariables();
 var h = 1080 % 16;
@@ -46,8 +47,14 @@ ScrcpyConfig config = new ScrcpyConfig()
     ServerConfig = new ScrcpyServerConfig()
     {
         IsControl = true,
-        IsAudio = true,
-        MaxFps = 24,
+        AudioConfig = new AudioConfig()
+        {
+            IsAudio = true,
+        },
+        VideoConfig = new VideoConfig()
+        {
+            MaxFps = 24,
+        },
         ClipboardAutosync = false,
         SCID = new Random(DateTime.Now.Millisecond).Next()
     },
@@ -58,6 +65,12 @@ while (true)
     Console.WriteLine($"{DateTime.Now:mm:ss.fff} Start");
     using (Scrcpy scrcpy = new Scrcpy(deviceId))
     {
+        var s = await scrcpy.ListSupportAsync(new ListSupportQuery()
+        {
+            ListEncoders = true,
+            ListDisplays = true,
+        });
+
         scrcpy.Control.OnClipboardReceived += Control_OnClipboardReceived;
         scrcpy.Control.OnSetClipboardAcknowledgement += Control_OnSetClipboardAcknowledgement;
         Console.WriteLine($"{DateTime.Now:mm:ss.fff} Connect");
