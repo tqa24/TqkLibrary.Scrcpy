@@ -6,8 +6,9 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 using TqkLibrary.Scrcpy.Control;
+using TqkLibrary.Scrcpy.Enums;
 
-namespace TqkLibrary.Scrcpy
+namespace TqkLibrary.Scrcpy.Interfaces
 {
     /// <summary>
     /// 
