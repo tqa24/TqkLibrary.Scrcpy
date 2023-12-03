@@ -110,15 +110,28 @@ namespace TqkLibrary.Scrcpy.Configs
         public IEnumerable<string> GetArguments()
         {
             if (AndroidConfig is null) AndroidConfig = new AndroidConfig();
-            if (VideoConfig is null) VideoConfig = new VideoConfig();
             if (AudioConfig is null) AudioConfig = new AudioConfig();
-            if (CameraConfig is null) CameraConfig = new CameraConfig();
-            return _GetArguments()
+
+            IEnumerable<string> result = _GetArguments()
                 .Concat(AndroidConfig.GetArguments())
-                .Concat(VideoConfig.GetArguments())
-                .Concat(AudioConfig.GetArguments())
-                .Concat(CameraConfig.GetArguments())
-                .Where(x => !string.IsNullOrWhiteSpace(x));
+                .Concat(AudioConfig.GetArguments());
+
+            switch (VideoSource)
+            {
+                case VideoSource.Camera:
+                    if (CameraConfig is null) CameraConfig = new CameraConfig();
+                    result = result.Concat(CameraConfig.GetArguments());
+                    break;
+
+                case VideoSource.Display:
+                    if (VideoConfig is null) VideoConfig = new VideoConfig();
+                    result = result.Concat(VideoConfig.GetArguments());
+                    break;
+
+                default:
+                    throw new System.NotSupportedException(VideoSource.ToString());
+            }
+            return result.Where(x => !string.IsNullOrWhiteSpace(x));
         }
     }
 }
