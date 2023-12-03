@@ -22,7 +22,7 @@ namespace TqkLibrary.Scrcpy.ListSupport
         /// <summary>
         /// 
         /// </summary>
-        public string Size { get; set; }
+        public Size Size { get; set; }
         /// <summary>
         /// 
         /// </summary>
@@ -31,24 +31,14 @@ namespace TqkLibrary.Scrcpy.ListSupport
         /// 
         /// </summary>
         public int FpsMin { get; set; }
+
         /// <summary>
         /// 
         /// </summary>
         /// <returns></returns>
-        public Size? GetSize()
+        public override string ToString()
         {
-            if (!string.IsNullOrWhiteSpace(Size))
-            {
-                var split = Size.Split('x');
-                if (split.Length == 2)
-                {
-                    if (int.TryParse(split[0], out int w) && int.TryParse(split[1], out int h))
-                    {
-                        return new Size(w, h);
-                    }
-                }
-            }
-            return null;
+            return $"{CameraFacing}, Size: {Size}, IsHighSpeed: {IsHighSpeed}, Fps=[{FpsMin}-{FpsMax}]";
         }
     }
 }
