@@ -8,6 +8,10 @@ using System.Text;
 using System.Threading.Tasks;
 using TqkLibrary.Scrcpy.Control;
 using System.Threading;
+using TqkLibrary.Scrcpy.Interfaces;
+using TqkLibrary.Scrcpy.Configs;
+using TqkLibrary.Scrcpy.ListSupport;
+using TqkLibrary.Scrcpy.Helpers;
 
 namespace TqkLibrary.Scrcpy
 {
@@ -280,6 +284,31 @@ namespace TqkLibrary.Scrcpy
         public ScrcpyUiView InitScrcpyUiView()
         {
             return new ScrcpyUiView(this);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="listSupportQuery"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        public async Task<ScrcpyServerListSupport> ListSupportAsync(
+            ListSupportQuery listSupportQuery,
+            CancellationToken cancellationToken = default)
+        {
+            if (listSupportQuery is null) throw new ArgumentNullException(nameof(listSupportQuery));
+
+            await AdbHelper.PushServerAsync(listSupportQuery.AdbPath, DeviceId, listSupportQuery.ScrcpyPath, cancellationToken);
+
+            string q = string.Join(" ", listSupportQuery.GetArguments().Where(x => !string.IsNullOrWhiteSpace(x)));
+            string result = await AdbHelper.RunServerWithAdbAsync(
+                listSupportQuery.AdbPath,
+                DeviceId,
+                $"shell CLASSPATH=/sdcard/scrcpy-server-tqk.jar app_process / com.genymobile.scrcpy.Server {q}",
+                cancellationToken
+                );
+
+            return ScrcpyServerListSupport.Parse(result);
         }
 
         internal bool D3DImageViewRender(IntPtr d3dView, IntPtr surface, bool isNewSurface, ref bool isNewtargetView)

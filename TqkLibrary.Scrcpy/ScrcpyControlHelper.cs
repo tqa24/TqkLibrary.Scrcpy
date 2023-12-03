@@ -2,6 +2,9 @@
 using System.Drawing;
 using System.Threading;
 using System.Threading.Tasks;
+using TqkLibrary.Scrcpy.Configs;
+using TqkLibrary.Scrcpy.Enums;
+using TqkLibrary.Scrcpy.Interfaces;
 
 namespace TqkLibrary.Scrcpy
 {
