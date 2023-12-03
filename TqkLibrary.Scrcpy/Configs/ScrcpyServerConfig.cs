@@ -32,7 +32,11 @@ namespace TqkLibrary.Scrcpy.Configs
         /// </summary>
         public CameraConfig CameraConfig { get; set; } = new CameraConfig();
 
-
+        /// <summary>
+        /// 
+        /// </summary>
+        [OptionName("video_source")]
+        public VideoSource VideoSource { get; set; } = VideoSource.Display;
 
         /// <summary>
         /// Turn on for use <see cref="Scrcpy.Control"/><br>
@@ -97,6 +101,7 @@ namespace TqkLibrary.Scrcpy.Configs
             yield return this._GetArgument(x => x.Cleanup, !Cleanup);
             yield return this._GetArgument(x => x.TunnelForward, TunnelForward);
             yield return this._GetArgument(x => x.MaxSize, x => x > 0);
+            yield return this._GetArgument(x => x.VideoSource, x => x != VideoSource.Display, x => x.ToString().ToLower());
         }
         /// <summary>
         /// 
@@ -107,6 +112,7 @@ namespace TqkLibrary.Scrcpy.Configs
             if (AndroidConfig is null) AndroidConfig = new AndroidConfig();
             if (VideoConfig is null) VideoConfig = new VideoConfig();
             if (AudioConfig is null) AudioConfig = new AudioConfig();
+            if (CameraConfig is null) CameraConfig = new CameraConfig();
             return _GetArguments()
                 .Concat(AndroidConfig.GetArguments())
                 .Concat(VideoConfig.GetArguments())
