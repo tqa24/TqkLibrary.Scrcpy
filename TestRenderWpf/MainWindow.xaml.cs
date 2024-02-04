@@ -19,6 +19,7 @@ using System.Timers;
 using TqkLibrary.Scrcpy.Wpf;
 using TqkLibrary.Scrcpy.Enums;
 using TqkLibrary.Scrcpy.Configs;
+using TqkLibrary.Scrcpy.ListSupport;
 
 namespace TestRenderWpf
 {
@@ -37,7 +38,7 @@ namespace TestRenderWpf
             mainWindowVM = this.DataContext as MainWindowVM;
         }
 
-        private void Window_Loaded(object sender, RoutedEventArgs e)
+        private async void Window_Loaded(object sender, RoutedEventArgs e)
         {
             deviceId = Adb.Devices().Where(x => x.DeviceState == DeviceState.Device).FirstOrDefault().DeviceId;
             adb = new Adb(deviceId);
@@ -45,6 +46,13 @@ namespace TestRenderWpf
             scrcpy.OnDisconnect += Scrcpy_OnDisconnect;
             mainWindowVM.Control = new ControlChain(scrcpy.Control);
             mainWindowVM.ScrcpyUiView = scrcpy.InitScrcpyUiView();
+
+            var support = await scrcpy.ListSupportAsync(new ListSupportQuery()
+            {
+                ListDisplays = true,
+                ListEncoders = true,
+            });
+
             if (!scrcpy.Connect(new ScrcpyConfig()
             {
                 //HwType = FFmpegAVHWDeviceType.AV_HWDEVICE_TYPE_D3D11VA,
