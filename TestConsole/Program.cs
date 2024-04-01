@@ -69,6 +69,8 @@ while (true)
         {
             ListEncoders = true,
             ListDisplays = true,
+            ListCameras = true,
+            ListCameraSizes = true,
         });
 
         scrcpy.Control.OnClipboardReceived += Control_OnClipboardReceived;

@@ -16,6 +16,7 @@ namespace TqkLibrary.Scrcpy.Configs
         /// 
         /// </summary>
         public AndroidConfig AndroidConfig { get; set; } = new AndroidConfig();
+
         /// <summary>
         /// 
         /// </summary>
@@ -26,9 +27,16 @@ namespace TqkLibrary.Scrcpy.Configs
         /// </summary>
         public AudioConfig AudioConfig { get; set; } = new AudioConfig();
 
+        /// <summary>
+        /// 
+        /// </summary>
+        public CameraConfig CameraConfig { get; set; } = new CameraConfig();
 
-
-
+        /// <summary>
+        /// 
+        /// </summary>
+        [OptionName("video_source")]
+        public VideoSource VideoSource { get; set; } = VideoSource.Display;
 
         /// <summary>
         /// Turn on for use <see cref="Scrcpy.Control"/><br>
@@ -93,6 +101,7 @@ namespace TqkLibrary.Scrcpy.Configs
             yield return this._GetArgument(x => x.Cleanup, !Cleanup);
             yield return this._GetArgument(x => x.TunnelForward, TunnelForward);
             yield return this._GetArgument(x => x.MaxSize, x => x > 0);
+            yield return this._GetArgument(x => x.VideoSource, x => x != VideoSource.Display, x => x.ToString().ToLower());
         }
         /// <summary>
         /// 
@@ -101,13 +110,28 @@ namespace TqkLibrary.Scrcpy.Configs
         public IEnumerable<string> GetArguments()
         {
             if (AndroidConfig is null) AndroidConfig = new AndroidConfig();
-            if (VideoConfig is null) VideoConfig = new VideoConfig();
             if (AudioConfig is null) AudioConfig = new AudioConfig();
-            return _GetArguments()
+
+            IEnumerable<string> result = _GetArguments()
                 .Concat(AndroidConfig.GetArguments())
-                .Concat(VideoConfig.GetArguments())
-                .Concat(AudioConfig.GetArguments())
-                .Where(x => !string.IsNullOrWhiteSpace(x));
+                .Concat(AudioConfig.GetArguments());
+
+            switch (VideoSource)
+            {
+                case VideoSource.Camera:
+                    if (CameraConfig is null) CameraConfig = new CameraConfig();
+                    result = result.Concat(CameraConfig.GetArguments());
+                    break;
+
+                case VideoSource.Display:
+                    if (VideoConfig is null) VideoConfig = new VideoConfig();
+                    result = result.Concat(VideoConfig.GetArguments());
+                    break;
+
+                default:
+                    throw new System.NotSupportedException(VideoSource.ToString());
+            }
+            return result.Where(x => !string.IsNullOrWhiteSpace(x));
         }
     }
 }

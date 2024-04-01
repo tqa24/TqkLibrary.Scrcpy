@@ -32,6 +32,20 @@ namespace TestRenderWpf
         Adb adb;
         string deviceId;
         readonly MainWindowVM mainWindowVM;
+        readonly ScrcpyConfig scrcpyConfig = new ScrcpyConfig()
+        {
+            HwType = FFmpegAVHWDeviceType.AV_HWDEVICE_TYPE_D3D11VA,
+            IsUseD3D11ForUiRender = true,
+            ConnectionTimeout = 10000,
+            ServerConfig = new ScrcpyServerConfig()
+            {
+                IsControl = true,
+                VideoConfig = new VideoConfig()
+                {
+                    MaxFps = 24
+                }
+            }
+        };
         public MainWindow()
         {
             InitializeComponent();
@@ -47,27 +61,26 @@ namespace TestRenderWpf
             mainWindowVM.Control = new ControlChain(scrcpy.Control);
             mainWindowVM.ScrcpyUiView = scrcpy.InitScrcpyUiView();
 
-            var support = await scrcpy.ListSupportAsync(new ListSupportQuery()
+            var s = await scrcpy.ListSupportAsync(new ListSupportQuery()
             {
-                ListDisplays = true,
                 ListEncoders = true,
+                ListDisplays = true,
+                ListCameras = true,
+                ListCameraSizes = true,
             });
 
-            if (!scrcpy.Connect(new ScrcpyConfig()
-            {
-                //HwType = FFmpegAVHWDeviceType.AV_HWDEVICE_TYPE_D3D11VA,
-                HwType = FFmpegAVHWDeviceType.AV_HWDEVICE_TYPE_NONE,
-                IsUseD3D11ForUiRender = true,
-                ConnectionTimeout = 10000,
-                ServerConfig = new ScrcpyServerConfig()
-                {
-                    IsControl = true,
-                    VideoConfig = new VideoConfig()
-                    {
-                        MaxFps = 24
-                    }
-                },
-            }))
+            //scrcpyConfig.ServerConfig.VideoSource = VideoSource.Camera;
+            //var cam = s.CameraInfos.First(x => !x.IsHighSpeed && x.Size.Width < 1600 && x.CameraFacing == CameraFacing.Back);
+            //scrcpyConfig.ServerConfig.CameraConfig = new CameraConfig()
+            //{
+            //    CameraId = cam.CameraId,
+            //    CameraSize = cam.Size,
+            //    Camerafps = cam.FpsMin,
+            //    CameraHighSpeed = false,
+            //    CameraFacing = cam.CameraFacing,                
+            //};
+
+            if (!scrcpy.Connect(scrcpyConfig))
             {
                 MessageBox.Show("Connect Failed");
             }
@@ -77,21 +90,7 @@ namespace TestRenderWpf
         {
             if (windowClosed) return;
             await adb.WaitFor(WaitForType.Device).ExecuteAsync();
-            scrcpy.Connect(new ScrcpyConfig()
-            {
-                //HwType = FFmpegAVHWDeviceType.AV_HWDEVICE_TYPE_D3D11VA,
-                HwType = FFmpegAVHWDeviceType.AV_HWDEVICE_TYPE_NONE,
-                IsUseD3D11ForUiRender = true,
-                ConnectionTimeout = 3000,
-                ServerConfig = new ScrcpyServerConfig()
-                {
-                    IsControl = true,
-                    VideoConfig = new VideoConfig()
-                    {
-                        MaxFps = 24
-                    }
-                },
-            });
+            scrcpy.Connect(scrcpyConfig);
         }
 
         private void Window_Unloaded(object sender, RoutedEventArgs e)
