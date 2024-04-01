@@ -69,16 +69,23 @@ namespace TestRenderWpf
                 ListCameraSizes = true,
             });
 
-            //scrcpyConfig.ServerConfig.VideoSource = VideoSource.Camera;
-            //var cam = s.CameraInfos.First(x => x.IsHighSpeed && x.Size.Width < 1600 && x.CameraFacing == CameraFacing.Back);
-            //scrcpyConfig.ServerConfig.CameraConfig = new CameraConfig()
-            //{
-            //    CameraId = cam.CameraId,
-            //    CameraSize = cam.Size,
-            //    Camerafps = cam.FpsMin,
-            //    CameraHighSpeed = cam.IsHighSpeed,
-            //    CameraFacing = cam.CameraFacing,
-            //};
+#if CameraTest
+            scrcpyConfig.ServerConfig.VideoSource = VideoSource.Camera;
+            var cam = s.CameraInfos
+                .First(x => 
+                    x.IsHighSpeed && 
+                    x.Size.Width < 1600 && 
+                    x.CameraFacing == CameraFacing.Back
+                    );
+            scrcpyConfig.ServerConfig.CameraConfig = new CameraConfig()
+            {
+                CameraId = cam.CameraId,
+                CameraSize = cam.Size,
+                Camerafps = cam.FpsMin,
+                CameraHighSpeed = cam.IsHighSpeed,
+                CameraFacing = cam.CameraFacing,
+            };
+#endif
 
             if (!scrcpy.Connect(scrcpyConfig))
             {
