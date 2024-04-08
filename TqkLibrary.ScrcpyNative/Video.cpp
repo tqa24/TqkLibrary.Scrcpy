@@ -113,10 +113,6 @@ void Video::threadStart() {
 			return;
 		}
 
-#if _DEBUG
-		printf(std::string("Video pts:").append(std::to_string(packet.pts)).append("  ,len:").append(std::to_string(packet.size)).append("\r\n").c_str());
-#endif
-
 		if (must_merge_config_packet)
 		{
 			this->_parsePacket->ParserPushPacket(&packet);
@@ -125,6 +121,10 @@ void Video::threadStart() {
 		bool is_config = packet.pts == AV_NOPTS_VALUE;
 		if (!is_config)
 		{
+#if _DEBUG
+			printf(std::string("Video pts:").append(std::to_string(packet.pts)).append("  ,len:").append(std::to_string(packet.size)).append("\r\n").c_str());
+#endif
+
 			if (this->_videoDecoder->Decode(&packet))
 			{
 				if (!this->_ishaveFrame)
