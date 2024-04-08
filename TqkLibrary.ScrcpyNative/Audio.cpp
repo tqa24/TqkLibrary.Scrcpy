@@ -7,6 +7,8 @@ Audio::Audio(Scrcpy* scrcpy, SOCKET sock, const ScrcpyNativeConfig& nativeConfig
 	this->_nativeConfig = nativeConfig;
 }
 Audio::~Audio() {
+	if (this->_audioDecoder)
+		delete this->_audioDecoder;
 	delete this->_audioSock;
 	CloseHandle(this->_threadHandle);
 }
