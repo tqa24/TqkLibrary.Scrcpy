@@ -60,27 +60,27 @@ namespace TqkLibrary.Scrcpy.Wpf
         public event OnDataReceived<long> OnSetClipboardAcknowledgement;
 
         public bool BackOrScreenOn(AndroidKeyEventAction KeyEventAction)
-            => this.FixAll(x => x.BackOrScreenOn(KeyEventAction));
+            => this.Foreach(x => x.BackOrScreenOn(KeyEventAction));
         public bool CollapsePanel()
-            => this.FixAll(x => x.CollapsePanel());
+            => this.Foreach(x => x.CollapsePanel());
 
         public bool ExpandNotificationPanel()
-            => this.FixAll(x => x.ExpandNotificationPanel());
+            => this.Foreach(x => x.ExpandNotificationPanel());
 
         public bool ExpandSettingsPanel()
-             => this.FixAll(x => x.ExpandSettingsPanel());
+             => this.Foreach(x => x.ExpandSettingsPanel());
 
         public bool GetClipboard(CopyKey copyKey = CopyKey.None)
             => this.First().GetClipboard(copyKey);
 
         public bool InjectKeycode(AndroidKeyEventAction action, AndroidKeyCode keycode, uint repeat = 0, AndroidKeyEventMeta metaState = AndroidKeyEventMeta.META_NONE)
-            => this.FixAll(x => x.InjectKeycode(action, keycode, repeat, metaState));
+            => this.Foreach(x => x.InjectKeycode(action, keycode, repeat, metaState));
 
         public bool InjectScrollEvent(Rectangle position, float vScroll, float hScroll = 0, AndroidMotionEventButton button = AndroidMotionEventButton.BUTTON_PRIMARY)
-            => this.FixAll(x => x.InjectScrollEvent(new Rectangle(position.Location, x.Scrcpy.ScreenSize), vScroll, hScroll, button));
+            => this.Foreach(x => x.InjectScrollEvent(new Rectangle(position.Location, x.Scrcpy.ScreenSize), vScroll, hScroll, button));
 
         public bool InjectText(string text)
-            => this.FixAll(x => x.InjectText(text));
+            => this.Foreach(x => x.InjectText(text));
 
         public bool InjectTouchEvent(
             AndroidMotionEventAction action,
@@ -89,26 +89,26 @@ namespace TqkLibrary.Scrcpy.Wpf
             float pressure = 1,
             AndroidMotionEventButton buttons = AndroidMotionEventButton.BUTTON_PRIMARY,
             AndroidMotionEventButton actionButton = AndroidMotionEventButton.BUTTON_PRIMARY)
-            => this.FixAll(x => x.InjectTouchEvent(action, pointerId, new Rectangle(position.Location, x.Scrcpy.ScreenSize), pressure, buttons, actionButton));
+            => this.Foreach(x => x.InjectTouchEvent(action, pointerId, new Rectangle(position.Location, x.Scrcpy.ScreenSize), pressure, buttons, actionButton));
 
         public bool RotateDevice()
-            => this.FixAll(x => x.RotateDevice());
+            => this.Foreach(x => x.RotateDevice());
 
         public bool SetClipboard(string text, bool paste)
-            => this.FixAll(x => x.SetClipboard(text, paste));
+            => this.Foreach(x => x.SetClipboard(text, paste));
 
         public bool SetClipboard(string text, bool paste, long sequence)
-            => this.FixAll(x => x.SetClipboard(text, paste, sequence));
+            => this.Foreach(x => x.SetClipboard(text, paste, sequence));
 
         public bool SetScreenPowerMode(ScrcpyScreenPowerMode powerMode)
-            => this.FixAll(x => x.SetScreenPowerMode(powerMode));
+            => this.Foreach(x => x.SetScreenPowerMode(powerMode));
         #endregion
     }
 
 
     internal static class ControlChainExtension
     {
-        internal static bool FixAll<TIn>(this IEnumerable<TIn> list, Func<TIn, bool> func)
+        internal static bool Foreach<TIn>(this IEnumerable<TIn> list, Func<TIn, bool> func)
         {
             var result = true;
             foreach (var item in list)
