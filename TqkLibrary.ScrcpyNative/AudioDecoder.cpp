@@ -71,7 +71,7 @@ bool AudioDecoder::Decode(const AVPacket* packet) {
 
 INT64 AudioDecoder::ReadAudioFrame(AVFrame* pFrame, INT64 last_pts)
 {
-	if (this->_decoding_frame == nullptr)
+	if (this->_decoding_frame == nullptr || pFrame == nullptr)
 		return -1;
 
 	INT64 result = -1;
