@@ -30,6 +30,7 @@ bool AudioDecoder::Init() {
 	if (!avcheck(avcodec_open2(this->_codec_ctx, this->_codec, nullptr))) {
 		return FALSE;
 	}
+	return TRUE;
 }
 
 bool AudioDecoder::Decode(const AVPacket* packet) {
