@@ -8,6 +8,7 @@ public:
 	bool Init();
 
 	bool Decode(const AVPacket* packet);
+	INT64 ReadAudioFrame(AVFrame* pFrame, INT64 last_pts);
 private:
 	//const
 	const AVCodec* _codec = nullptr;

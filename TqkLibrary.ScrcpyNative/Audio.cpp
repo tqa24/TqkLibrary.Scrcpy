@@ -32,6 +32,11 @@ void Audio::Stop() {
 bool Audio::Init() {
 	return this->_audioSock->ChangeBlockMode(true);
 }
+INT64 Audio::ReadAudioFrame(AVFrame* pFrame, INT64 last_pts)
+{
+	if (this->_audioDecoder == nullptr) return -1;
+	return this->_audioDecoder->ReadAudioFrame(pFrame, last_pts);
+}
 
 DWORD Audio::MyThreadFunction(LPVOID lpParam) {
 	Audio* audio = (Audio*)lpParam;

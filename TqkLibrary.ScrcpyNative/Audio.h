@@ -9,6 +9,7 @@ public:
 	void Stop();
 	bool Init();
 
+	INT64 ReadAudioFrame(AVFrame* pFrame, INT64 last_pts);
 private:
 	ScrcpyNativeConfig _nativeConfig{};
 	Scrcpy* _scrcpy;

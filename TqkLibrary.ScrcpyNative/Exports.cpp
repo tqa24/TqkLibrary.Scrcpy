@@ -50,6 +50,10 @@ bool ScrcpyGetDeviceName(Scrcpy* scrcpy, BYTE* buffer, const int sizeInByte) {
 	if (scrcpy == nullptr || buffer == nullptr) return false;
 	return scrcpy->GetDeviceName(buffer, sizeInByte);
 }
+INT64 ScrcpyReadAudioFrame(Scrcpy* scrcpy, AVFrame* pFrame, INT64 last_pts) {
+	if (scrcpy == nullptr || pFrame == nullptr) return -1;
+	return scrcpy->ReadAudioFrame(pFrame, last_pts);
+}
 
 RenderTextureSurfaceClass* D3DImageViewAlloc() {
 	return new RenderTextureSurfaceClass();

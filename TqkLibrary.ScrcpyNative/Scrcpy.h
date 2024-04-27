@@ -23,6 +23,7 @@ public:
 	void ControlClipboardCallback(BYTE* buffer, int length);
 	void ControlClipboardAcknowledgementCallback(UINT64 sequence);
 	LPCWSTR GetDeviceId();
+	INT64 ReadAudioFrame(AVFrame* pFrame, INT64 last_pts);
 private:
 	//const
 	std::wstring _deviceId;

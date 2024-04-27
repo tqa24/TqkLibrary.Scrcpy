@@ -34,13 +34,14 @@ bool AudioDecoder::Init() {
 }
 
 bool AudioDecoder::Decode(const AVPacket* packet) {
-	if (packet == nullptr)
+	if (packet == nullptr || this->_decoding_frame == nullptr)
 		return false;
 
 	bool result = false;
 
 #if _DEBUG
 	auto start(std::chrono::high_resolution_clock::now());
+	INT64 pts = 0;
 #endif
 	if (avcheck(avcodec_send_packet(_codec_ctx, packet)))
 	{
@@ -49,6 +50,9 @@ bool AudioDecoder::Decode(const AVPacket* packet) {
 		av_frame_unref(_decoding_frame);
 		result = avcheck(avcodec_receive_frame(_codec_ctx, _decoding_frame));
 
+#if _DEBUG
+		pts = _decoding_frame->pts;
+#endif
 		_mtx_frame.unlock();
 	}
 #if _DEBUG
@@ -56,10 +60,28 @@ bool AudioDecoder::Decode(const AVPacket* packet) {
 	auto r = std::chrono::duration_cast<std::chrono::microseconds>(finish - start);
 	std::wstring text(L"AudioDecoder: ");
 	text.append(std::to_wstring(r.count()));
-	text.append(L"us");
+	text.append(L"us, pts: ");
+	text.append(std::to_wstring(pts));
 	text.append(L"\r");
 	OutputDebugString(text.c_str());
 #endif
 
+	return result;
+}
+
+INT64 AudioDecoder::ReadAudioFrame(AVFrame* pFrame, INT64 last_pts)
+{
+	if (this->_decoding_frame == nullptr)
+		return -1;
+
+	INT64 result = -1;
+	_mtx_frame.lock();//lock read frame
+	if (_decoding_frame->pts > last_pts)
+	{
+		av_frame_copy_props(pFrame, _decoding_frame);
+		av_frame_ref(pFrame, _decoding_frame);
+		result = _decoding_frame->pts;
+	}
+	_mtx_frame.unlock();
 	return result;
 }

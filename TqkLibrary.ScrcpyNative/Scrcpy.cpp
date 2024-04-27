@@ -177,3 +177,16 @@ void Scrcpy::ControlClipboardAcknowledgementCallback(UINT64 sequence) {
 LPCWSTR Scrcpy::GetDeviceId() {
 	return this->_deviceId.c_str();
 }
+INT64 Scrcpy::ReadAudioFrame(AVFrame* pFrame, INT64 last_pts)
+{
+	INT64 result = -1;
+
+	_mutex.lock();
+	if (this->_scrcpyInstance != nullptr)
+	{
+		result = this->_scrcpyInstance->_audio->ReadAudioFrame(pFrame, last_pts);
+	}
+	_mutex.unlock();
+
+	return result;
+}

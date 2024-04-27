@@ -270,8 +270,34 @@ namespace TqkLibrary.Scrcpy
             return ScrcpyServerListSupport.Parse(result.StdOut);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="aVFrame"></param>
+        /// <param name="last_pts"></param>
+        /// <returns></returns>
+        public long ReadAudioFrame(AVFrame aVFrame, long last_pts)
+        {
+            if (aVFrame is null) throw new ArgumentNullException(nameof(aVFrame));
+            return ReadAudioFrame(aVFrame.Handle, last_pts);
+        }
 
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="pAVFrame"></param>
+        /// <param name="last_pts"></param>
+        /// <returns></returns>
+        public long ReadAudioFrame(IntPtr pAVFrame, long last_pts)
+        {
+            long result = -1;
+            if (countdownEvent.SafeTryAddCount())
+            {
+                result = NativeWrapper.ScrcpyReadAudioFrame(this._handle, pAVFrame, last_pts);
+                countdownEvent.Signal();
+            }
+            return result;
+        }
 
 
         readonly NativeOnDisconnectDelegate NativeOnDisconnectDelegate;
