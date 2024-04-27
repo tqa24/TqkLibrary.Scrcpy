@@ -152,11 +152,11 @@ namespace TqkLibrary.Scrcpy.Wpf
 
             // determine DPI
             // (as of .NET 4.6.1, this returns the DPI of the primary monitor, if you have several different DPIs)
-            var hwndTarget = PresentationSource.FromVisual(this)?.CompositionTarget as HwndTarget;
-            if (hwndTarget != null)
-            {
-                dpiScale = hwndTarget.TransformToDevice.M11;
-            }
+            //var hwndTarget = PresentationSource.FromVisual(this)?.CompositionTarget as HwndTarget;
+            //if (hwndTarget != null)
+            //{
+            //    dpiScale = hwndTarget.TransformToDevice.M11;
+            //}
 
             double base_surfWidth = host.ActualWidth < 0 ? 0 : Math.Ceiling(host.ActualWidth * dpiScale);
             double base_surfHeight = host.ActualHeight < 0 ? 0 : Math.Ceiling(host.ActualHeight * dpiScale);
