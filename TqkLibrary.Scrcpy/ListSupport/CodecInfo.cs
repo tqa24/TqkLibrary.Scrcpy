@@ -8,11 +8,11 @@
         /// <summary>
         /// 
         /// </summary>
-        public string Codec { get; set; }
+        public string? Codec { get; set; }
         /// <summary>
         /// 
         /// </summary>
-        public string Encoder { get; set; }
+        public string? Encoder { get; set; }
 
         /// <summary>
         /// 

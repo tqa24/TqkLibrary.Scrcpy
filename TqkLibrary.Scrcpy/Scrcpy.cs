@@ -98,7 +98,7 @@ namespace TqkLibrary.Scrcpy
             GC.SuppressFinalize(this);
         }
 
-        private void TerminationHandler(object sender, EventArgs e)
+        private void TerminationHandler(object? sender, EventArgs e)
         {
             //fix crash on forgot dispose
             //when native disconnect, it will callback to NativeOnDisconnectDelegate. But domain was unload -> crash
@@ -151,7 +151,7 @@ namespace TqkLibrary.Scrcpy
         /// 
         /// </summary>
 
-        public event Action OnDisconnect;
+        public event Action? OnDisconnect;
 
 
         readonly NativeOnDisconnectDelegate NativeOnDisconnectDelegate;
@@ -201,7 +201,7 @@ namespace TqkLibrary.Scrcpy
         /// 
         /// </summary>
         /// <param name="config"></param>
-        public bool Connect(ScrcpyConfig config = null)
+        public bool Connect(ScrcpyConfig? config = null)
         {
             bool result = false;
             if (countdownEvent.TryAddCount())
@@ -232,7 +232,7 @@ namespace TqkLibrary.Scrcpy
         /// </summary>
         /// <returns><see cref="Bitmap"/></returns>
         /// <exception cref="ObjectDisposedException"></exception>
-        public Bitmap GetScreenShot()
+        public Bitmap? GetScreenShot()
         {
             if (countdownEvent.TryAddCount())
             {

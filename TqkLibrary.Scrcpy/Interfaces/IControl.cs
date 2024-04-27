@@ -30,11 +30,11 @@ namespace TqkLibrary.Scrcpy.Interfaces
         /// <summary>
         /// 
         /// </summary>
-        event OnDataReceived<string> OnClipboardReceived;
+        event OnDataReceived<string>? OnClipboardReceived;
         /// <summary>
         /// 
         /// </summary>
-        event OnDataReceived<long> OnSetClipboardAcknowledgement;
+        event OnDataReceived<long>? OnSetClipboardAcknowledgement;
 
 
         /// <summary>

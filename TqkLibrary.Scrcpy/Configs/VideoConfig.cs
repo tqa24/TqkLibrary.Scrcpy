@@ -43,19 +43,19 @@ namespace TqkLibrary.Scrcpy.Configs
         /// Support: h264, h265, av1, opus, aac, raw
         /// </summary>
         [OptionName("video_codec")]
-        public string VideoCodec { get; set; }
+        public string? VideoCodec { get; set; }
         /// <summary>
         /// VideoCodecOption<br></br>
         /// Default: null (ignore)
         /// </summary>
         [OptionName("video_codec_options")]
-        public string VideoCodecOption { get; set; }
+        public string? VideoCodecOption { get; set; }
         /// <summary>
         /// VideoEncoder<br></br>
         /// Default: null (ignore)
         /// </summary>
         [OptionName("video_encoder")]
-        public string VideoEncoder { get; set; }
+        public string? VideoEncoder { get; set; }
         /// <summary>
         /// Crop a region in base android screen<br></br>
         /// Default: null

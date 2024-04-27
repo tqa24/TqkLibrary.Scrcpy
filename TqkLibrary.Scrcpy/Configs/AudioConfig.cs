@@ -31,19 +31,19 @@ namespace TqkLibrary.Scrcpy.Configs
         /// Support: h264, h265, av1, opus, aac, raw
         /// </summary>
         [OptionName("audio_codec")]
-        public string AudioCodec { get; set; }
+        public string? AudioCodec { get; set; }
         /// <summary>
         /// AudioCodecOption<br></br>
         /// Default: null (ignore)
         /// </summary>
         [OptionName("audio_codec_options")]
-        public string AudioCodecOption { get; set; }
+        public string? AudioCodecOption { get; set; }
         /// <summary>
         /// AudioEncoder<br></br>
         /// Default: null (ignore)
         /// </summary>
         [OptionName("audio_encoder")]
-        public string AudioEncoder { get; set; }
+        public string? AudioEncoder { get; set; }
 
 
 

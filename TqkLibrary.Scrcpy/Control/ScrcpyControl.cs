@@ -64,8 +64,8 @@ namespace TqkLibrary.Scrcpy.Control
         #endregion
 
         #region Event
-        public event OnDataReceived<string> OnClipboardReceived;
-        public event OnDataReceived<long> OnSetClipboardAcknowledgement;
+        public event OnDataReceived<string>? OnClipboardReceived;
+        public event OnDataReceived<long>? OnSetClipboardAcknowledgement;
         #endregion
 
         #region Native Event

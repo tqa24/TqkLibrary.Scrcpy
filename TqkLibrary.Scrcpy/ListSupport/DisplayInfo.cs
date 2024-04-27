@@ -10,7 +10,7 @@ namespace TqkLibrary.Scrcpy.ListSupport
         /// <summary>
         /// 
         /// </summary>
-        public string Display { get; set; }
+        public string? Display { get; set; }
         /// <summary>
         /// 
         /// </summary>

@@ -15,22 +15,22 @@ namespace TqkLibrary.Scrcpy.Configs
         /// <summary>
         /// 
         /// </summary>
-        public AndroidConfig AndroidConfig { get; set; } = new AndroidConfig();
+        public AndroidConfig? AndroidConfig { get; set; } = new AndroidConfig();
 
         /// <summary>
         /// 
         /// </summary>
-        public VideoConfig VideoConfig { get; set; } = new VideoConfig();
+        public VideoConfig? VideoConfig { get; set; } = new VideoConfig();
 
         /// <summary>
         /// 
         /// </summary>
-        public AudioConfig AudioConfig { get; set; } = new AudioConfig();
+        public AudioConfig? AudioConfig { get; set; } = new AudioConfig();
 
         /// <summary>
         /// 
         /// </summary>
-        public CameraConfig CameraConfig { get; set; } = new CameraConfig();
+        public CameraConfig? CameraConfig { get; set; } = new CameraConfig();
 
         /// <summary>
         /// 

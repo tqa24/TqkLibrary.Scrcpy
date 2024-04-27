@@ -9,6 +9,7 @@
 		<GenerateDocumentationFile>True</GenerateDocumentationFile>
 		<PathMap>$(MSBuildProjectDirectory)=$(MSBuildProjectName)</PathMap>
 		<Configurations>Debug;Release</Configurations>
+		<Nullable>enable</Nullable>
 		<Platforms>AnyCPU;x86;x64</Platforms>
 		<Version>2.3.0</Version>
 	</PropertyGroup>	
@@ -41,5 +42,5 @@
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</None>
 	</ItemGroup>
-
+	
 </Project>

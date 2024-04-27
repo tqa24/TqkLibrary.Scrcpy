@@ -14,7 +14,7 @@ namespace TqkLibrary.Scrcpy.Control
     internal sealed class ScrcpyControlMessage
     {
         private ScrcpyControlType ControlType { get; set; }
-        private string Text { get; set; }
+        private string? Text { get; set; }
         private AndroidKeyEventMeta MetaState { get; set; } // KeyEvent.META_*
         private AndroidMotionEventAction MotionEventAction { get; set; }//MotionEvent.ACTION_
         private AndroidKeyEventAction KeyEventAction { get; set; }//KeyEvent.ACTION_*
@@ -185,7 +185,7 @@ namespace TqkLibrary.Scrcpy.Control
         /// <returns></returns>
         internal byte[] GetCommand()
         {
-            byte[] buffer = null;
+            byte[]? buffer = null;
             switch (ControlType)
             {
                 case ScrcpyControlType.TYPE_INJECT_KEYCODE:
@@ -201,6 +201,8 @@ namespace TqkLibrary.Scrcpy.Control
 
                 case ScrcpyControlType.TYPE_INJECT_TEXT:
                     {
+                        if (Text is null)
+                            throw new InvalidOperationException($"{nameof(Text)} is null");
                         byte[] utf8_text = Encoding.UTF8.GetBytes(Text);
                         buffer = new byte[5 + utf8_text.Length];
                         buffer[0] = (byte)ControlType;
@@ -241,6 +243,8 @@ namespace TqkLibrary.Scrcpy.Control
 
                 case ScrcpyControlType.TYPE_SET_CLIPBOARD:
                     {
+                        if (Text is null)
+                            throw new InvalidOperationException($"{nameof(Text)} is null");
                         byte[] utf8_text = Encoding.UTF8.GetBytes(Text);
                         buffer = new byte[1 + 8 + 1 + 4 + utf8_text.Length];
 

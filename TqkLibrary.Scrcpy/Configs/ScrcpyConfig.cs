@@ -35,7 +35,7 @@ namespace TqkLibrary.Scrcpy.Configs
         /// <summary>
         /// Config for scrcpy server
         /// </summary>
-        public ScrcpyServerConfig ServerConfig { get; set; } = new ScrcpyServerConfig();
+        public ScrcpyServerConfig? ServerConfig { get; set; } = new ScrcpyServerConfig();
 
         /// <summary>
         /// Use directx 11 for convert image.<br>
@@ -92,10 +92,10 @@ namespace TqkLibrary.Scrcpy.Configs
             return new ScrcpyNativeConfig
             {
                 HwType = HwType,
-                ForceAdbForward = ServerConfig.TunnelForward,
+                ForceAdbForward = ServerConfig!.TunnelForward,
                 IsControl = ServerConfig.IsControl,
                 IsUseD3D11ForUiRender = IsUseD3D11ForUiRender,
-                IsAudio = ServerConfig.AudioConfig.IsAudio,
+                IsAudio = ServerConfig.AudioConfig!.IsAudio,
                 ScrcpyServerPath = ScrcpyServerPath,
                 AdbPath = AdbPath,
                 ConfigureArguments = ConfigureArguments,

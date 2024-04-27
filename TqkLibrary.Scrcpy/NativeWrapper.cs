@@ -16,7 +16,7 @@ namespace TqkLibrary.Scrcpy
         static NativeWrapper()
         {
             string path = Path.Combine(
-                Path.GetDirectoryName(Assembly.GetEntryAssembly().Location),
+                Path.GetDirectoryName(Assembly.GetEntryAssembly()!.Location!)!,
                 Environment.Is64BitProcess ? "x64" : "x86");
 
             bool r = SetDllDirectory(path);

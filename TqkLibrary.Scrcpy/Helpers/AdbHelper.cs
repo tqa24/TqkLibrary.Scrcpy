@@ -50,14 +50,17 @@ namespace TqkLibrary.Scrcpy.Helpers
             processStartInfo.RedirectStandardError = true;
             processStartInfo.CreateNoWindow = true;
             processStartInfo.WorkingDirectory = Directory.GetCurrentDirectory();
-            return Process.Start(processStartInfo);
+            Process? process = Process.Start(processStartInfo);
+            if (process is null)
+                throw new ApplicationException($"Can't start process, FileName:'{file}', Arguments:'{query}', WorkingDirectory:'{processStartInfo.WorkingDirectory}'");
+            return process;
         }
 
 #if !NET5_0_OR_GREATER
         static async Task WaitForExitAsync(this Process process, CancellationToken cancellationToken = default)
         {
             process.EnableRaisingEvents = true;
-            TaskCompletionSource<object> tcs = new TaskCompletionSource<object>();
+            TaskCompletionSource<object?> tcs = new TaskCompletionSource<object?>();
             process.Exited += (object sender, EventArgs e) => tcs.TrySetResult(null);
             using var register = cancellationToken.Register(() => tcs.TrySetCanceled());
             if (process.HasExited) return;

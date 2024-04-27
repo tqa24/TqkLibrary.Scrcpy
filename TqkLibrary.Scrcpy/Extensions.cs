@@ -28,14 +28,14 @@ namespace TqkLibrary.Scrcpy
 
 
 
-        public static TAttribute GetAttribute<TAttribute>(this Enum value) where TAttribute : Attribute
+        public static TAttribute? GetAttribute<TAttribute>(this Enum value) where TAttribute : Attribute
         {
-            var enumType = value.GetType();
-            var name = Enum.GetName(enumType, value);
+            Type enumType = value.GetType();
+            string name = Enum.GetName(enumType, value)!;
             return enumType.GetField(name)?.GetCustomAttributes(false).OfType<TAttribute>().SingleOrDefault();
         }
 
-        public static TAttribute GetAttribute<TAttribute, TObject>(this TObject prop, Expression<Func<TObject, object>> expression)
+        public static TAttribute? GetAttribute<TAttribute, TObject>(this TObject prop, Expression<Func<TObject, object>> expression)
             where TAttribute : Attribute
         {
             if (expression.Body is MemberExpression memberExpression &&
@@ -45,14 +45,14 @@ namespace TqkLibrary.Scrcpy
             }
             return default(TAttribute);
         }
-        public static string GetOptionName<T>(this T obj, Expression<Func<T, object>> expression)
+        public static string? GetOptionName<T>(this T obj, Expression<Func<T, object>> expression)
         {
             if (expression.Body is MemberExpression memberExpression &&
                 memberExpression.Member is PropertyInfo propertyInfo)
             {
-                OptionNameAttribute optionNameAttribute = propertyInfo
+                OptionNameAttribute? optionNameAttribute = propertyInfo
                     .GetCustomAttributes(typeof(OptionNameAttribute), true).FirstOrDefault() as OptionNameAttribute;
-                return optionNameAttribute.Name;
+                return optionNameAttribute?.Name;
             }
             return string.Empty;
         }
@@ -78,8 +78,8 @@ namespace TqkLibrary.Scrcpy
         public static string _GetArgument<T, TSelect>(
             this T obj,
             Expression<Func<T, TSelect>> expression,
-            Func<TSelect, bool> validate,
-            Func<TSelect, string> convert)
+            Func<TSelect, bool>? validate,
+            Func<TSelect, string>? convert)
         {
             if (obj is null) throw new ArgumentNullException(nameof(obj));
             if (expression is null) throw new ArgumentNullException(nameof(expression));
@@ -88,11 +88,15 @@ namespace TqkLibrary.Scrcpy
             if ((validate is null || validate.Invoke(select)) &&
                 expression.Body is MemberExpression memberExpression && memberExpression.Member is PropertyInfo propertyInfo)
             {
-                OptionNameAttribute optionNameAttribute = propertyInfo
+                OptionNameAttribute? optionNameAttribute = propertyInfo
                     .GetCustomAttributes(typeof(OptionNameAttribute), true).FirstOrDefault() as OptionNameAttribute;
+                if(optionNameAttribute is null)
+                    throw new InvalidOperationException();
+
+
                 if (convert is not null)
                 {
-                    return $"{optionNameAttribute.Name}={convert(select)}";
+                    return $"{optionNameAttribute?.Name}={convert(select)}";
                 }
                 else
                 {
@@ -102,10 +106,10 @@ namespace TqkLibrary.Scrcpy
                     }
                     else if (select is Enum @enum)
                     {
-                        OptionNameAttribute enumOptionName = @enum.GetAttribute<OptionNameAttribute>();
+                        OptionNameAttribute? enumOptionName = @enum.GetAttribute<OptionNameAttribute>();
                         if (enumOptionName is not null)
                         {
-                            return $"{optionNameAttribute.Name}={@enum.GetAttribute<OptionNameAttribute>().Name}";
+                            return $"{optionNameAttribute.Name}={enumOptionName.Name}";
                         }
                         else
                         {

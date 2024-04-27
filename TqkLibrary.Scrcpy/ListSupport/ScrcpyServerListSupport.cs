@@ -71,7 +71,7 @@ namespace TqkLibrary.Scrcpy.ListSupport
             ScrcpyServerListSupport result = new ScrcpyServerListSupport();
             string l_current = string.Empty;
             bool isCameraHighSpeed = false;
-            CameraInfo cameraInfoCurrent = null;
+            CameraInfo? cameraInfoCurrent = null;
 
             foreach (var d in datas)
             {
@@ -152,6 +152,8 @@ namespace TqkLibrary.Scrcpy.ListSupport
                             {
                                 string w = match.Groups[1].Value;
                                 string h = match.Groups[2].Value;
+                                if (cameraInfoCurrent is null)
+                                    throw new InvalidOperationException();
                                 CameraInfo cameraInfo = new CameraInfo()
                                 {
                                     CameraId = cameraInfoCurrent.CameraId,

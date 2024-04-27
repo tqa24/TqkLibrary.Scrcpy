@@ -33,7 +33,7 @@ namespace TqkLibrary.Scrcpy.Configs
         /// default: null
         /// </summary>
         [OptionName("camera_ar")]
-        public string CameraAr { get; set; } = null;
+        public string? CameraAr { get; set; } = null;
         /// <summary>
         /// default: 0
         /// </summary>
