@@ -83,7 +83,7 @@ namespace TqkLibrary.Scrcpy.Wpf
              => this.ForEach(x => x.ExpandSettingsPanel());
 
         public bool GetClipboard(CopyKey copyKey = CopyKey.None)
-            => this.First().GetClipboard(copyKey);
+             => this.ForEach(x => x.GetClipboard(copyKey));
 
         public bool InjectKeycode(AndroidKeyEventAction action, AndroidKeyCode keycode, uint repeat = 0, AndroidKeyEventMeta metaState = AndroidKeyEventMeta.META_NONE)
             => this.ForEach(x => x.InjectKeycode(action, keycode, repeat, metaState));
