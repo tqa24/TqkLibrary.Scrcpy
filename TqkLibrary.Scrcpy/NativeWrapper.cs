@@ -71,6 +71,7 @@ namespace TqkLibrary.Scrcpy
         internal static extern long ScrcpyReadAudioFrame(IntPtr scrcpy, IntPtr pFrame, long last_pts);//return current pts if > 0
 
 
+        #region Callback
 
 
         [DllImport("TqkLibrary.ScrcpyNative.dll", CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
@@ -81,10 +82,12 @@ namespace TqkLibrary.Scrcpy
 
         [DllImport("TqkLibrary.ScrcpyNative.dll", CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
         internal static extern bool RegisterDisconnectEvent(IntPtr scrcpy, IntPtr delegateHandle);
+        #endregion
 
 
 
 
+        #region D3D
 
         [DllImport("TqkLibrary.ScrcpyNative.dll", CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
         internal static extern IntPtr D3DImageViewAlloc();
@@ -95,14 +98,19 @@ namespace TqkLibrary.Scrcpy
         [DllImport("TqkLibrary.ScrcpyNative.dll", CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
         internal static extern bool D3DImageViewRender(IntPtr d3dView, IntPtr scrcpy, IntPtr surface, bool isNewSurface, ref bool isNewtargetView);
 
+        #endregion
 
 
 
 
+
+        #region LibAV
 
         [DllImport("avutil-57.dll", CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
         public static extern IntPtr av_frame_alloc();
         [DllImport("avutil-57.dll", CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
         public static extern void av_frame_free(ref IntPtr pAVFrame);
+
+        #endregion
     }
 }
