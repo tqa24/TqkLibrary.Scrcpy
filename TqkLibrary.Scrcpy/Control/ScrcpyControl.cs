@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Win32;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
@@ -61,6 +62,8 @@ namespace TqkLibrary.Scrcpy.Control
             => SendControl(ScrcpyControlHelper.SetClipboard(text, paste, sequence));
         public bool SetScreenPowerMode(ScrcpyScreenPowerMode powerMode)
             => SendControl(ScrcpyControlHelper.SetScreenPowerMode(powerMode));
+        public bool OpenHardKeyboardSetting()
+            => SendControl(ScrcpyControlHelper.OpenHardKeyboardSetting());
         #endregion
 
         #region Event

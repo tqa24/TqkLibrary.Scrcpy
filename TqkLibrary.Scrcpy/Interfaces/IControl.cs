@@ -154,5 +154,11 @@ namespace TqkLibrary.Scrcpy.Interfaces
         /// </summary>
         /// <returns></returns>
         bool RotateDevice();
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        bool OpenHardKeyboardSetting();
     }
 }
