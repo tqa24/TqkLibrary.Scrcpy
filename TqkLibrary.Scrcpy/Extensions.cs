@@ -19,6 +19,8 @@ namespace TqkLibrary.Scrcpy
     {
         public static bool SafeTryAddCount(this CountdownEvent countdownEvent)
         {
+            if (countdownEvent.IsSet) 
+                return false;
             try
             {
                 return countdownEvent.TryAddCount();
@@ -93,7 +95,7 @@ namespace TqkLibrary.Scrcpy
             {
                 OptionNameAttribute? optionNameAttribute = propertyInfo
                     .GetCustomAttributes(typeof(OptionNameAttribute), true).FirstOrDefault() as OptionNameAttribute;
-                if(optionNameAttribute is null)
+                if (optionNameAttribute is null)
                     throw new InvalidOperationException();
 
 
