@@ -320,13 +320,12 @@ namespace TqkLibrary.Scrcpy
 
 
         #region Function Control
-        internal bool SendControl(ScrcpyControlMessage scrcpyControlMessage)
+        internal bool SendControl(byte[] command)
         {
             bool result = false;
 
             if (countdownEvent.TryAddCount())
             {
-                byte[] command = scrcpyControlMessage.GetCommand();
                 result = NativeWrapper.ScrcpyControlCommand(_handle, command, command.Length);
                 countdownEvent.Signal();
             }

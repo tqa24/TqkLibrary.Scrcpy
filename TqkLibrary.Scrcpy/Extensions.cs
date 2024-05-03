@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Net;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -141,6 +144,74 @@ namespace TqkLibrary.Scrcpy
                 }
             }
             return string.Empty;
+        }
+
+
+        internal static void WriteHostToNetworkOrder(this MemoryStream memoryStream, params object[] values)
+        {
+            foreach (object value in values)
+            {
+                WriteHostToNetworkOrder(memoryStream, value);
+            }
+        }
+        static void WriteHostToNetworkOrder(MemoryStream memoryStream, object value)
+        {
+            Type type = value.GetType();
+            if (type == typeof(byte[]))
+            {
+                byte[] buffer = (byte[])value;
+                memoryStream.Write(buffer, 0, buffer.Length);
+            }
+            else if (type == typeof(bool))
+            {
+                byte[] buffer = BitConverter.GetBytes((bool)value);
+                memoryStream.Write(buffer, 0, 1);
+            }
+            else if (type == typeof(Rectangle))
+            {
+                Rectangle rectangle = (Rectangle)value;
+                memoryStream.WriteHostToNetworkOrder(rectangle.X, rectangle.Y, (UInt16)rectangle.Width, (UInt16)rectangle.Height);
+            }
+            else if (type.IsValueType)
+            {
+                if (type.IsEnum)
+                {
+                    type = Enum.GetUnderlyingType(type);
+                }
+
+                int size = Marshal.SizeOf(type);
+                byte[]? buffer = null;
+                switch (size)
+                {
+                    case 1:
+                        memoryStream.WriteByte((byte)value);
+                        return;
+
+                    case 2:
+                        if (type == typeof(UInt16))
+                            buffer = BitConverter.GetBytes(IPAddress.HostToNetworkOrder(unchecked((Int16)(UInt16)value)));
+                        else if (type == typeof(Int16))
+                            buffer = BitConverter.GetBytes(IPAddress.HostToNetworkOrder((Int16)value));
+                        break;
+                    case 4:
+                        if (type == typeof(UInt32))
+                            buffer = BitConverter.GetBytes(IPAddress.HostToNetworkOrder(unchecked((Int32)(UInt32)value)));
+                        else if (type == typeof(Int32))
+                            buffer = BitConverter.GetBytes(IPAddress.HostToNetworkOrder((Int32)value));
+                        break;
+                    case 8:
+                        if (type == typeof(UInt64))
+                            buffer = BitConverter.GetBytes(IPAddress.HostToNetworkOrder(unchecked((Int64)(UInt64)value)));
+                        else if (type == typeof(Int64))
+                            buffer = BitConverter.GetBytes(IPAddress.HostToNetworkOrder((Int64)value));
+                        break;
+                }
+                if (buffer == null)
+                    throw new NotSupportedException(type.FullName);
+
+                memoryStream.Write(buffer, 0, buffer.Length);
+            }
+            else throw new InvalidOperationException("value must be struct/enum");
         }
     }
 }

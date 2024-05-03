@@ -28,39 +28,39 @@ namespace TqkLibrary.Scrcpy.Control
         }
         public Scrcpy Scrcpy { get; }
 
-        bool SendControl(ScrcpyControlMessage scrcpyControlMessage) => this.Scrcpy.SendControl(scrcpyControlMessage);
+        bool SendControl(byte[] command) => this.Scrcpy.SendControl(command);
 
         #region BasicCommand
         public bool BackOrScreenOn(AndroidKeyEventAction KeyEventAction)
-            => SendControl(ScrcpyControlMessage.BackOrScreenOn(KeyEventAction));
+            => SendControl(ScrcpyControlHelper.BackOrScreenOn(KeyEventAction));
         public bool CollapsePanel()
-            => SendControl(ScrcpyControlMessage.CollapsePanel());
+            => SendControl(ScrcpyControlHelper.CollapsePanel());
         public bool ExpandNotificationPanel()
-            => SendControl(ScrcpyControlMessage.ExpandNotificationPanel());
+            => SendControl(ScrcpyControlHelper.ExpandNotificationPanel());
         public bool ExpandSettingsPanel()
-            => SendControl(ScrcpyControlMessage.ExpandSettingsPanel());
+            => SendControl(ScrcpyControlHelper.ExpandSettingsPanel());
         public bool GetClipboard(CopyKey copyKey)
-            => SendControl(ScrcpyControlMessage.CreateGetClipboard(copyKey));
+            => SendControl(ScrcpyControlHelper.CreateGetClipboard(copyKey));
         public bool InjectKeycode(
             AndroidKeyEventAction action,
             AndroidKeyCode keycode,
             uint repeat = 1,
             AndroidKeyEventMeta metaState = AndroidKeyEventMeta.META_NONE)
-            => SendControl(ScrcpyControlMessage.CreateInjectKeycode(action, keycode, repeat, metaState));
+            => SendControl(ScrcpyControlHelper.CreateInjectKeycode(action, keycode, repeat, metaState));
         public bool InjectScrollEvent(Rectangle position, float vScroll, float hScroll = 0, AndroidMotionEventButton button = AndroidMotionEventButton.BUTTON_PRIMARY)
-            => SendControl(ScrcpyControlMessage.CreateInjectScrollEvent(position, vScroll, hScroll, button));
+            => SendControl(ScrcpyControlHelper.CreateInjectScrollEvent(position, vScroll, hScroll, button));
         public bool InjectText(string text)
-            => SendControl(ScrcpyControlMessage.CreateInjectText(text));
+            => SendControl(ScrcpyControlHelper.CreateInjectText(text));
         public bool InjectTouchEvent(AndroidMotionEventAction action, long pointerId, Rectangle position, float pressure, AndroidMotionEventButton buttons, AndroidMotionEventButton actionButton)
-            => SendControl(ScrcpyControlMessage.CreateInjectTouchEvent(action, pointerId, position, pressure, buttons, actionButton));
+            => SendControl(ScrcpyControlHelper.CreateInjectTouchEvent(action, pointerId, position, pressure, buttons, actionButton));
         public bool RotateDevice()
-            => SendControl(ScrcpyControlMessage.RotateDevice());
+            => SendControl(ScrcpyControlHelper.RotateDevice());
         public bool SetClipboard(string text, bool paste)
-            => SendControl(ScrcpyControlMessage.CreateSetClipboard(text, paste, random.Next()));
+            => SendControl(ScrcpyControlHelper.CreateSetClipboard(text, paste, random.Next()));
         public bool SetClipboard(string text, bool paste, long sequence)
-            => SendControl(ScrcpyControlMessage.CreateSetClipboard(text, paste, sequence));
+            => SendControl(ScrcpyControlHelper.CreateSetClipboard(text, paste, sequence));
         public bool SetScreenPowerMode(ScrcpyScreenPowerMode powerMode)
-            => SendControl(ScrcpyControlMessage.CreateSetScreenPowerMode(powerMode));
+            => SendControl(ScrcpyControlHelper.CreateSetScreenPowerMode(powerMode));
         #endregion
 
         #region Event
