@@ -17,5 +17,7 @@
         TYPE_SET_CLIPBOARD = 9,
         TYPE_SET_SCREEN_POWER_MODE = 10,
         TYPE_ROTATE_DEVICE = 11,
+        TYPE_UHID_CREATE = 12,
+        TYPE_UHID_INPUT = 13,
     }
 }
