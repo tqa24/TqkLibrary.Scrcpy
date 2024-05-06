@@ -312,7 +312,7 @@ bool VideoDecoder::Draw(RenderTextureSurfaceClass* renderSurface, IUnknown* surf
 					this->m_d3d11_inputNv12->GetChrominanceView());
 
 				renderSurface->SetRenderTarget(device_ctx.Get(), nullptr);
-				renderSurface->SetViewPort(device_ctx.Get());
+				renderSurface->SetViewPort(device_ctx.Get(), renderSurface->Width(), renderSurface->Height());
 
 				D3D_FEATURE_LEVEL feature_level = device->GetFeatureLevel();
 				if (feature_level >= D3D_FEATURE_LEVEL::D3D_FEATURE_LEVEL_10_0)
