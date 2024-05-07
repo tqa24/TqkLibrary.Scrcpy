@@ -33,7 +33,7 @@ private:
 	std::mutex _mutex;
 	std::mutex _mutex_instance;
 
-	AVFrame cache;
+	AVFrame cache{ 0 };
 	//need release
 	ScrcpyInstance* _scrcpyInstance{ nullptr };
 	ClipboardReceivedDelegate clipboardCallback{ nullptr };
