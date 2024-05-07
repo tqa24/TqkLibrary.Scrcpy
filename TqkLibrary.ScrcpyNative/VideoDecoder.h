@@ -20,25 +20,25 @@ private:
 	bool Nv12Convert(AVFrame* frame);
 
 	ScrcpyNativeConfig _nativeConfig{};
-	AVFrame* _decoding_frame = nullptr;
-	AVCodecContext* _codec_ctx = nullptr;
-	const AVCodec* _codec = nullptr;
-	AVHWDeviceType _hwType;
+	AVFrame* _decoding_frame{ nullptr };
+	AVCodecContext* _codec_ctx{ nullptr };
+	const AVCodec* _codec{ nullptr };
+	AVHWDeviceType _hwType{ AV_HWDEVICE_TYPE_NONE };
 
 
 
 
 
-	D3DClass* m_d3d11;
-	VertexShaderClass* m_vertex;
+	D3DClass* m_d3d11{ nullptr };
+	VertexShaderClass* m_vertex{ nullptr };
 
-	InputTextureNv12Class* m_d3d11_inputNv12;
+	InputTextureNv12Class* m_d3d11_inputNv12{ nullptr };
 
-	PixelShaderNv12ToRgbaClass* m_d3d11_pixel_Nv12ToRgba;//get screen shot
+	PixelShaderNv12ToRgbaClass* m_d3d11_pixel_Nv12ToRgba{ nullptr };//get screen shot
 
-	PixelShaderNv12ToBgraClass* m_d3d11_pixel_Nv12ToBgra;//video render
+	PixelShaderNv12ToBgraClass* m_d3d11_pixel_Nv12ToBgra{ nullptr };//video render
 
-	RenderTextureClass* m_d3d11_renderTexture;
+	RenderTextureClass* m_d3d11_renderTexture{ nullptr };
 
 	std::mutex _mtx_frame;
 };
