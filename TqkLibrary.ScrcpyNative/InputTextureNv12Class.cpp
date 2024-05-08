@@ -190,7 +190,12 @@ bool InputTextureNv12Class::Copy(ID3D11DeviceContext* device_ctx, const AVFrame*
 			if (sourceFrame->linesize[0] == map.RowPitch)
 			{
 				memcpy(map.pData, sourceFrame->data[0], y_size);
-				planar_to_interleave((UINT32)uv_size, (uint8_t*)((UINT64)map.pData + y_size), sourceFrame->data[1], sourceFrame->data[2]);
+				planar_to_interleave(
+					(UINT32)uv_size, 
+					(uint8_t*)((UINT64)map.pData + y_size), 
+					sourceFrame->data[1], 
+					sourceFrame->data[2]
+				);
 			}
 			else
 			{
@@ -210,7 +215,8 @@ bool InputTextureNv12Class::Copy(ID3D11DeviceContext* device_ctx, const AVFrame*
 						uv_rowSizeCopy,
 						start_uv + map.RowPitch * row,
 						sourceFrame->data[1] + (sourceFrame->linesize[1] * row),
-						sourceFrame->data[2] + (sourceFrame->linesize[2] * row));
+						sourceFrame->data[2] + (sourceFrame->linesize[2] * row)
+					);
 				}
 			}
 			result = true;
