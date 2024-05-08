@@ -122,7 +122,7 @@ DWORD ScrcpyInstance::RunAdbProcess(LPCWSTR argument)
 		argument
 	};
 	std::wstring args(this->_nativeConfig.AdbPath);
-	for (int i = 0; i < 3; i++)
+	for (int i = 0; i < sizeof(cmds) / sizeof(LPCWSTR); i++)
 	{
 		args.append(L" ");
 		args.append(cmds[i]);
@@ -198,7 +198,7 @@ bool ScrcpyInstance::Start() {
 
 
 	//run main process
-	LPCWSTR cmds[5]
+	LPCWSTR cmds[]
 	{
 		L"-s",
 		this->_scrcpy->GetDeviceId(),
@@ -207,7 +207,7 @@ bool ScrcpyInstance::Start() {
 		this->_nativeConfig.ConfigureArguments,
 	};
 	arg = this->_nativeConfig.AdbPath;
-	for (int i = 0; i < 5; i++)
+	for (int i = 0; i < sizeof(cmds) / sizeof(LPCWSTR); i++)
 	{
 		arg.append(L" ");
 		arg.append(cmds[i]);
@@ -217,7 +217,7 @@ bool ScrcpyInstance::Start() {
 	wprintf(L"\r\n");
 #endif
 	this->_process = new ProcessWrapper((LPWSTR)arg.c_str());
-	              
+
 
 
 	SOCKET video_sock = AcceptConnection(this->_listenSock, this->_nativeConfig.ConnectionTimeout);
