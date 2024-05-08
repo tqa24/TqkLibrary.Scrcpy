@@ -18,6 +18,7 @@ extern "C" {
 		{
 			for (i = 0; i < u_size; i += 16)//16 byte step
 			{
+				//https://www.intel.com/content/www/us/en/docs/intrinsics-guide/index.html
 				__m128i s0 = _mm_loadu_epi8(&u[i]);//load 16 byte vào thanh ghi 128 bit
 				__m128i s1 = _mm_loadu_epi8(&v[i]);
 				__m128i s2 = _mm_unpacklo_epi8(s0, s1);//xen kẽ lo
