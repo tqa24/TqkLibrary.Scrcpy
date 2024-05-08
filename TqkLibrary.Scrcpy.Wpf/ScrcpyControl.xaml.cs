@@ -361,7 +361,7 @@ namespace TqkLibrary.Scrcpy.Wpf
             double real_y = y * videoSize.Height;
             var outpoint = new System.Drawing.Point((int)real_x, (int)real_y);
 #if DEBUG
-            Debug.WriteLine($"drawRect: {drawRect}, videoSize: {videoSize}, inPoint: {point}, outPoint: {outpoint}, image_w: {InteropImage.Width}, image_h: {InteropImage.Height}");
+            //Debug.WriteLine($"drawRect: {drawRect}, videoSize: {videoSize}, inPoint: {point}, outPoint: {outpoint}, image_w: {InteropImage.Width}, image_h: {InteropImage.Height}");
 #endif
             return outpoint;
         }
