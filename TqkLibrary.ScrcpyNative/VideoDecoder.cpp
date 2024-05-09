@@ -226,10 +226,7 @@ bool VideoDecoder::Nv12Convert(AVFrame* frame) {
 		D3D_FEATURE_LEVEL feature_level = device->GetFeatureLevel();
 		if (feature_level >= D3D_FEATURE_LEVEL::D3D_FEATURE_LEVEL_10_0)
 		{
-			UINT x = (UINT)ceil(static_cast<FLOAT>(this->m_d3d11_inputNv12->Width()) / 8);
-			UINT y = (UINT)ceil(static_cast<FLOAT>(this->m_d3d11_inputNv12->Height()) / 8);
-			UINT z = 1;
-			device_ctx->Dispatch(x, y, z);
+			device_ctx->Dispatch(this->_nativeConfig.GpuThreadX, this->_nativeConfig.GpuThreadY, 1);
 		}
 
 		this->m_d3d11_renderTexture->ClearRenderTarget(device_ctx.Get(), nullptr, 0, 0, 0, 0);
@@ -317,10 +314,7 @@ bool VideoDecoder::Draw(RenderTextureSurfaceClass* renderSurface, IUnknown* surf
 				D3D_FEATURE_LEVEL feature_level = device->GetFeatureLevel();
 				if (feature_level >= D3D_FEATURE_LEVEL::D3D_FEATURE_LEVEL_10_0)
 				{
-					UINT x = (UINT)ceil(static_cast<FLOAT>(renderSurface->Width()) / 8);
-					UINT y = (UINT)ceil(static_cast<FLOAT>(renderSurface->Height()) / 8);
-					UINT z = 1;
-					device_ctx->Dispatch(x, y, z);
+					device_ctx->Dispatch(this->_nativeConfig.GpuThreadX, this->_nativeConfig.GpuThreadY, 1);
 				}
 
 				//view->m_renderTextureSurface.ClearRenderTarget(device_ctx.Get(), nullptr, 0, 0, 0, 0);

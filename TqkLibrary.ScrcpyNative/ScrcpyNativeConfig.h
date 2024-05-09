@@ -13,6 +13,8 @@ struct ScrcpyNativeConfig {
 	INT32 ConnectionTimeout;
 	D3D11_FILTER Filter;
 	INT32 SCID;
+	UINT32 GpuThreadX;
+	UINT32 GpuThreadY;
 };
 #endif // !ScrcpyNativeConfig_H
 

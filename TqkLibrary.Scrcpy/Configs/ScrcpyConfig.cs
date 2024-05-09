@@ -62,6 +62,17 @@ namespace TqkLibrary.Scrcpy.Configs
         public FFmpegAVHWDeviceType HwType { get; set; } = FFmpegAVHWDeviceType.AV_HWDEVICE_TYPE_NONE;
 
         /// <summary>
+        /// To use this feature, please set <see cref="IsUseD3D11ForUiRender"/> to true, only support directx 10 or 11<br></br>
+        /// Range 1-32
+        /// </summary>
+        public uint GpuThreadX { get; set; } = 1;
+        /// <summary>
+        /// To use this feature, please set <see cref="IsUseD3D11ForUiRender"/> to true, only support directx 10 or 11<br></br>
+        /// Range 1-32
+        /// </summary>
+        public uint GpuThreadY { get; set; } = 4;
+
+        /// <summary>
         /// Default: 3000
         /// </summary>
         public int ConnectionTimeout { get; set; } = 3000;
@@ -89,6 +100,10 @@ namespace TqkLibrary.Scrcpy.Configs
         internal ScrcpyNativeConfig NativeConfig()
         {
             var ConfigureArguments = ToString();
+            if (GpuThreadX < 1) GpuThreadX = 1;
+            if (GpuThreadY < 1) GpuThreadY = 1;
+            if (GpuThreadX > 32) GpuThreadX = 32;
+            if (GpuThreadY > 32) GpuThreadY = 32;
             return new ScrcpyNativeConfig
             {
                 HwType = HwType,
@@ -101,7 +116,9 @@ namespace TqkLibrary.Scrcpy.Configs
                 ConfigureArguments = ConfigureArguments,
                 ConnectionTimeout = ConnectionTimeout,
                 Filter = Filter,
-                SCID = ServerConfig.SCID
+                SCID = ServerConfig.SCID,
+                GpuThreadX = GpuThreadX,
+                GpuThreadY = GpuThreadY,
             };
         }
 

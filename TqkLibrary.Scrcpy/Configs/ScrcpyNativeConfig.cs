@@ -39,5 +39,7 @@ namespace TqkLibrary.Scrcpy.Configs
         public D3D11Filter Filter;
 
         public int SCID;
+        public uint GpuThreadX;
+        public uint GpuThreadY;
     }
 }
