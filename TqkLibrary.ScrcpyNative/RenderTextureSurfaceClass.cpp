@@ -53,7 +53,7 @@ bool RenderTextureSurfaceClass::Initialize(ID3D11Device* device, IUnknown* surfa
 		rtDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
 		rtDesc.Texture2D.MipSlice = 0;
 
-		hr = device->CreateRenderTargetView(pOutputResource.Get(), &rtDesc, m_pRenderTargetView.GetAddressOf());
+		hr = device->CreateRenderTargetView(pOutputResource.Get(), &rtDesc, m_pRenderTargetView.ReleaseAndGetAddressOf());
 		if (FAILED(hr))
 			return false;
 
