@@ -34,11 +34,7 @@ bool ScrcpyControlCommand(Scrcpy* scrcpy, const BYTE* command, const int sizeInB
 }
 bool ScrcpyGetScreenShot(Scrcpy* scrcpy, BYTE* buffer, const int sizeInByte, const int w, const int h, const int lineSize) {
 	if (scrcpy == nullptr || buffer == nullptr) return false;
-#ifdef Scrcpy_ScreenShot
 	return scrcpy->GetScreenShot(buffer, sizeInByte, w, h, lineSize);
-#else 
-	return false;
-#endif // Scrcpy_ScreenShot
 }
 bool ScrcpyGetDeviceName(Scrcpy* scrcpy, BYTE* buffer, const int sizeInByte) {
 	if (scrcpy == nullptr || buffer == nullptr) return false;
