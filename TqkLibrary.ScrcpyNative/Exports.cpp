@@ -32,7 +32,7 @@ bool ScrcpyControlCommand(Scrcpy* scrcpy, const BYTE* command, const int sizeInB
 	if (scrcpy == nullptr || command == nullptr) return false;
 	return scrcpy->ControlCommand(command, sizeInByte);
 }
-bool ScrcpyGetScreenShot(Scrcpy* scrcpy, BYTE* buffer, const int sizeInByte, const int w, const int h, const int lineSize, const UINT32 swsFlag) {
+bool ScrcpyGetScreenShot(Scrcpy* scrcpy, BYTE* buffer, const int sizeInByte, const int w, const int h, const int lineSize, const INT32 swsFlag) {
 	if (scrcpy == nullptr || buffer == nullptr) return false;
 	return scrcpy->GetScreenShot(buffer, sizeInByte, w, h, lineSize, swsFlag);
 }

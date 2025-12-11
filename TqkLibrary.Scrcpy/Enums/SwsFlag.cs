@@ -5,7 +5,7 @@ using System.Text;
 namespace TqkLibrary.Scrcpy.Enums
 {
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
-    public enum SwsFlag : uint
+    public enum SwsFlag : int
     {
         SWS_FAST_BILINEAR = 1,
         SWS_BILINEAR = 2,

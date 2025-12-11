@@ -63,7 +63,7 @@ bool Scrcpy::ControlCommand(const BYTE* command, const int sizeInByte) {
 	return result;
 }
 
-bool Scrcpy::GetScreenShot(BYTE* buffer, const int sizeInByte, const int w, const int h, const int lineSize, const UINT32 swsFlag) {
+bool Scrcpy::GetScreenShot(BYTE* buffer, const int sizeInByte, const int w, const int h, const int lineSize, const INT32 swsFlag) {
 	//init class convert img here
 	//copy lock and ref frame then unlock (for mini time lock)
 	//convert frame

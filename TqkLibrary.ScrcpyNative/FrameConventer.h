@@ -10,7 +10,7 @@ public:
 		const int w, 
 		const int h, 
 		const int lineSize,
-		const UINT32 swsFlag
+		const INT32 swsFlag
 	);
 
 private:

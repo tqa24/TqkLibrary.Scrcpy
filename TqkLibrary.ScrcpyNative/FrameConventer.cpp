@@ -9,7 +9,7 @@ bool FrameConventer::Convert(
 	const int w, 
 	const int h, 
 	const int lineSize,
-	const UINT32 swsFlag
+	const INT32 swsFlag
 ) {
 	//test
 	//buff[sizeInByte - 1] = 0;//success
