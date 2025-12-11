@@ -63,7 +63,7 @@ bool Scrcpy::ControlCommand(const BYTE* command, const int sizeInByte) {
 	return result;
 }
 
-bool Scrcpy::GetScreenShot(BYTE* buffer, const int sizeInByte, const int w, const int h, const int lineSize) {
+bool Scrcpy::GetScreenShot(BYTE* buffer, const int sizeInByte, const int w, const int h, const int lineSize, const UINT32 swsFlag) {
 	//init class convert img here
 	//copy lock and ref frame then unlock (for mini time lock)
 	//convert frame
@@ -88,7 +88,7 @@ bool Scrcpy::GetScreenShot(BYTE* buffer, const int sizeInByte, const int w, cons
 	_mutex.unlock();
 
 	if (result) {
-		result = FrameConventer::Convert(&temp, buffer, sizeInByte, w, h, lineSize);
+		result = FrameConventer::Convert(&temp, buffer, sizeInByte, w, h, lineSize, swsFlag);
 	}
 	av_frame_unref(&temp);
 	return result;

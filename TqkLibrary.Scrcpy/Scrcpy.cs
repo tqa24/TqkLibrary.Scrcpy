@@ -12,6 +12,7 @@ using TqkLibrary.Scrcpy.Interfaces;
 using TqkLibrary.Scrcpy.Configs;
 using TqkLibrary.Scrcpy.ListSupport;
 using TqkLibrary.Scrcpy.Helpers;
+using TqkLibrary.Scrcpy.Enums;
 
 namespace TqkLibrary.Scrcpy
 {
@@ -189,9 +190,10 @@ namespace TqkLibrary.Scrcpy
         /// <summary>
         /// 
         /// </summary>
+        /// <param name="swsFlag"></param>
         /// <returns><see cref="Bitmap"/></returns>
         /// <exception cref="ObjectDisposedException"></exception>
-        public Bitmap? GetScreenShot()
+        public Bitmap? GetScreenShot(SwsFlag swsFlag = SwsFlag.SWS_FAST_BILINEAR)
         {
             if (countdownEvent.TryAddCount())
             {
@@ -213,7 +215,9 @@ namespace TqkLibrary.Scrcpy
                         fix_size.Width * fix_size.Height * 4,
                         size.Width,
                         size.Height,
-                        fix_size.Width * 4);
+                        fix_size.Width * 4,
+                        swsFlag
+                        );
 
                     bitmap.UnlockBits(bitmapData);
 

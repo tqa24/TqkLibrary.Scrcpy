@@ -2,7 +2,15 @@
 #include "Scrcpy_pch.h"
 #define Align 16
 
-bool FrameConventer::Convert(AVFrame* src_frame, BYTE* buff, const int sizeInByte, const int w, const int h, const int lineSize) {
+bool FrameConventer::Convert(
+	AVFrame* src_frame, 
+	BYTE* buff, 
+	const int sizeInByte, 
+	const int w, 
+	const int h, 
+	const int lineSize,
+	const UINT32 swsFlag
+) {
 	//test
 	//buff[sizeInByte - 1] = 0;//success
 	//buff[sizeInByte] = 0;//access violon
@@ -64,7 +72,7 @@ bool FrameConventer::Convert(AVFrame* src_frame, BYTE* buff, const int sizeInByt
 		SwsContext* sws = sws_getContext(
 			src_frame->width, src_frame->height, (AVPixelFormat)src_frame->format,
 			w, h, AV_PIX_FMT_BGRA,
-			SWS_FAST_BILINEAR, nullptr, nullptr, nullptr);
+			swsFlag, nullptr, nullptr, nullptr);
 
 		if (sws == nullptr)
 			return false;

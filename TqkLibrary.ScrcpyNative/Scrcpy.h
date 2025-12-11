@@ -9,7 +9,7 @@ public:
 	void Stop();
 
 	bool ControlCommand(const BYTE* command, const int sizeInByte);
-	bool GetScreenShot(BYTE* buffer, const int sizeInByte, const int w, const int h, const int lineSize);
+	bool GetScreenShot(BYTE* buffer, const int sizeInByte, const int w, const int h, const int lineSize, const UINT32 swsFlag);
 	bool GetScreenSize(int& w, int& h);
 	bool GetDeviceName(BYTE* buffer, int sizeInByte);
 	bool IsHaveScrcpyInstance();
