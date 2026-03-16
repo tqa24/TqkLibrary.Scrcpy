@@ -78,6 +78,10 @@ namespace TqkLibrary.Scrcpy
         /// <summary>
         /// 
         /// </summary>
+        public bool IsClipboardAutoSync { get; private set; } = false;
+        /// <summary>
+        /// 
+        /// </summary>
 
         public event Action? OnDisconnect;
 
@@ -169,6 +173,7 @@ namespace TqkLibrary.Scrcpy
                 if (config == null) config = new ScrcpyConfig();
                 ScrcpyNativeConfig nativeConfig = config.NativeConfig();
                 result = NativeWrapper.ScrcpyConnect(_handle, ref nativeConfig);
+                this.IsClipboardAutoSync = config.ServerConfig?.ClipboardAutosync ?? false;
                 countdownEvent.Signal();
             }
             return result;
