@@ -378,6 +378,18 @@ namespace TqkLibrary.Scrcpy
             return new Size(w, h);
         }
 
+        /// <summary>
+        /// Force re-query screen size from ADB and update the cache.<br/>
+        /// Only use this when <c>IsVideo = false</c> (control-only mode),
+        /// for example after a screen rotation event.
+        /// </summary>
+        /// <returns>The updated screen size, or <see cref="Size.Empty"/> if the query failed.</returns>
+        public Size RefreshScreenSizeFromAdb()
+        {
+            _physicalScreenSizeCache = QueryScreenSizeViaAdb();
+            return _physicalScreenSizeCache ?? Size.Empty;
+        }
+
         Size QueryScreenSizeViaAdb()
         {
             try
