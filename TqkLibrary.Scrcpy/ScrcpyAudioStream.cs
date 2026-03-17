@@ -1,5 +1,7 @@
 using System;
 using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
 using TqkLibrary.Scrcpy.Enums;
 
 namespace TqkLibrary.Scrcpy
@@ -12,6 +14,7 @@ namespace TqkLibrary.Scrcpy
     {
         private readonly Scrcpy _scrcpy;
         private readonly byte[] _internalBuffer;
+        private readonly object _readLock = new();
         private int _bufferOffset;
         private int _bufferCount;
         private long _lastPts;
@@ -72,39 +75,112 @@ namespace TqkLibrary.Scrcpy
             if (offset < 0 || count < 0 || offset + count > buffer.Length)
                 throw new ArgumentOutOfRangeException();
 
-            while (true)
+            lock (_readLock)
             {
-                if (_bufferCount > 0)
+                while (true)
                 {
-                    int toCopy = Math.Min(count, _bufferCount);
-                    Array.Copy(_internalBuffer, _bufferOffset, buffer, offset, toCopy);
-                    _bufferOffset += toCopy;
-                    _bufferCount -= toCopy;
-                    return toCopy;
-                }
+                    if (_bufferCount > 0)
+                    {
+                        int toCopy = Math.Min(count, _bufferCount);
+                        Array.Copy(_internalBuffer, _bufferOffset, buffer, offset, toCopy);
+                        _bufferOffset += toCopy;
+                        _bufferCount -= toCopy;
+                        return toCopy;
+                    }
 
-                if (!_scrcpy.IsConnected)
-                    return 0;
+                    if (!_scrcpy.IsConnected)
+                        return 0;
 
-                int bytesWritten = 0;
-                long newPts = NativeWrapper.ScrcpyReadAudioRaw(
-                    _scrcpy.Handle,
-                    _internalBuffer,
-                    _internalBuffer.Length,
-                    Channels,
-                    SampleRate,
-                    (int)Format,
-                    _lastPts,
-                    100,
-                    ref bytesWritten);
+                    int bytesWritten = 0;
+                    long newPts = NativeWrapper.ScrcpyReadAudioRaw(
+                        _scrcpy.Handle,
+                        _internalBuffer,
+                        _internalBuffer.Length,
+                        Channels,
+                        SampleRate,
+                        (int)Format,
+                        _lastPts,
+                        100,
+                        ref bytesWritten);
 
-                if (newPts >= 0 && bytesWritten > 0)
-                {
-                    _lastPts = newPts;
-                    _bufferOffset = 0;
-                    _bufferCount = bytesWritten;
+                    if (newPts >= 0 && bytesWritten > 0)
+                    {
+                        _lastPts = newPts;
+                        _bufferOffset = 0;
+                        _bufferCount = bytesWritten;
+                    }
                 }
             }
+        }
+
+        /// <inheritdoc/>
+        public override ValueTask<int> ReadAsync(Memory<byte> buffer, CancellationToken cancellationToken = default)
+        {
+            if (System.Runtime.InteropServices.MemoryMarshal.TryGetArray<byte>(buffer, out var segment))
+                return new ValueTask<int>(ReadAsync(segment.Array!, segment.Offset, segment.Count, cancellationToken));
+
+            byte[] temp = new byte[buffer.Length];
+            return new ValueTask<int>(
+                ReadAsync(temp, 0, temp.Length, cancellationToken)
+                    .ContinueWith(t =>
+                    {
+                        if (t.IsCompletedSuccessfully && t.Result > 0)
+                            temp.AsSpan(0, t.Result).CopyTo(buffer.Span);
+                        return t.Result;
+                    }, CancellationToken.None, TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Default));
+        }
+
+        /// <summary>
+        /// Reads decoded audio bytes asynchronously. Respects <paramref name="cancellationToken"/>.
+        /// Returns 0 when the scrcpy session is disconnected or the token is cancelled.
+        /// </summary>
+        public override Task<int> ReadAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken)
+        {
+            if (buffer is null) throw new ArgumentNullException(nameof(buffer));
+            if (offset < 0 || count < 0 || offset + count > buffer.Length)
+                throw new ArgumentOutOfRangeException();
+
+            return Task.Run(() =>
+            {
+                lock (_readLock)
+                {
+                    while (true)
+                    {
+                        cancellationToken.ThrowIfCancellationRequested();
+
+                        if (_bufferCount > 0)
+                        {
+                            int toCopy = Math.Min(count, _bufferCount);
+                            Array.Copy(_internalBuffer, _bufferOffset, buffer, offset, toCopy);
+                            _bufferOffset += toCopy;
+                            _bufferCount -= toCopy;
+                            return toCopy;
+                        }
+
+                        if (!_scrcpy.IsConnected)
+                            return 0;
+
+                        int bytesWritten = 0;
+                        long newPts = NativeWrapper.ScrcpyReadAudioRaw(
+                            _scrcpy.Handle,
+                            _internalBuffer,
+                            _internalBuffer.Length,
+                            Channels,
+                            SampleRate,
+                            (int)Format,
+                            _lastPts,
+                            100,
+                            ref bytesWritten);
+
+                        if (newPts >= 0 && bytesWritten > 0)
+                        {
+                            _lastPts = newPts;
+                            _bufferOffset = 0;
+                            _bufferCount = bytesWritten;
+                        }
+                    }
+                }
+            }, cancellationToken);
         }
 
         private static int GetBytesPerSample(AVSampleFormat fmt)
