@@ -412,7 +412,7 @@ namespace TqkLibrary.Scrcpy
                     return new Size(int.Parse(m.Groups[1].Value), int.Parse(m.Groups[2].Value));
                 }
             }
-            catch { }
+            catch (Exception ex) { Debug.WriteLine(ex); }
             return null;
         }
 
