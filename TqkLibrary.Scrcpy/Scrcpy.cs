@@ -423,12 +423,14 @@ namespace TqkLibrary.Scrcpy
         readonly NativeUhdiOutputDelegate _uhdiOutputDelegate;
         void UhdiOutputCallback(UInt16 id, UInt16 size, IntPtr buff)
         {
+#if DEBUG
             byte[] clone_buff = new byte[size];
             Marshal.Copy(buff, clone_buff, 0, size);
             ThreadPool.QueueUserWorkItem((o) =>
             {
 
             }, null);
+#endif
         }
 
     }

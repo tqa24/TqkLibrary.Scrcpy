@@ -321,6 +321,7 @@ namespace TqkLibrary.Scrcpy
             await Task.Delay(delayStep, cancellationToken);
 
             int times = duration / delayStep;
+            if (times == 0) times = 1;
             int x = (x2 - x1) / times;
             int y = (y2 - y1) / times;
             for (int i = 1; i < times; i++)

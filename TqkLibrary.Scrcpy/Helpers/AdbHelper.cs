@@ -63,10 +63,18 @@ namespace TqkLibrary.Scrcpy.Helpers
         {
             process.EnableRaisingEvents = true;
             TaskCompletionSource<object?> tcs = new TaskCompletionSource<object?>();
-            process.Exited += (object sender, EventArgs e) => tcs.TrySetResult(null);
-            using var register = cancellationToken.Register(() => tcs.TrySetCanceled());
-            if (process.HasExited) return;
-            await tcs.Task;
+            EventHandler handler = (object sender, EventArgs e) => tcs.TrySetResult(null);
+            process.Exited += handler;
+            try
+            {
+                using var register = cancellationToken.Register(() => tcs.TrySetCanceled());
+                if (process.HasExited) return;
+                await tcs.Task;
+            }
+            finally
+            {
+                process.Exited -= handler;
+            }
         }
 #endif
         public class ProcessStd

@@ -14,6 +14,7 @@ namespace TqkLibrary.Scrcpy
     public class ScrcpyUiView : IDisposable
     {
         private readonly CountdownEvent countdownEvent = new CountdownEvent(1);
+        private int _isDisposed = 0;
 
         IntPtr d3dView;
 
@@ -50,6 +51,7 @@ namespace TqkLibrary.Scrcpy
 
         void Dispose(bool disposing)
         {
+            if (Interlocked.CompareExchange(ref _isDisposed, 1, 0) != 0) return;
             countdownEvent.Signal();
             countdownEvent.Wait();
             if (d3dView != IntPtr.Zero)
