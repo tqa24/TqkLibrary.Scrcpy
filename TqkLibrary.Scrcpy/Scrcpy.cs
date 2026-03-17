@@ -175,7 +175,8 @@ namespace TqkLibrary.Scrcpy
             {
                 if (config == null) config = new ScrcpyConfig();
                 _adbPath = config.AdbPath;
-                _physicalScreenSizeCache = null;
+                lock (_physicalScreenSizeLock)
+                    _physicalScreenSizeCache = null;
                 ScrcpyNativeConfig nativeConfig = config.NativeConfig();
                 result = NativeWrapper.ScrcpyConnect(_handle, ref nativeConfig);
                 this.IsClipboardAutoSync = config.ServerConfig?.ClipboardAutosync ?? false;
@@ -185,6 +186,7 @@ namespace TqkLibrary.Scrcpy
         }
 
         private string _adbPath = "adb.exe";
+        private readonly object _physicalScreenSizeLock = new();
         private Size? _physicalScreenSizeCache;
 
         /// <summary>
@@ -359,7 +361,10 @@ namespace TqkLibrary.Scrcpy
                 countdownEvent.Signal();
             }
             if (w == -1 || h == -1)
-                return _physicalScreenSizeCache ?? Size.Empty;
+            {
+                lock (_physicalScreenSizeLock)
+                    return _physicalScreenSizeCache ?? Size.Empty;
+            }
             return new Size(w, h);
         }
 
@@ -371,8 +376,10 @@ namespace TqkLibrary.Scrcpy
         /// <returns>The updated screen size, or <see cref="Size.Empty"/> if the query failed.</returns>
         public async Task<Size> RefreshScreenSizeFromAdbAsync(CancellationToken cancellationToken = default)
         {
-            _physicalScreenSizeCache = await QueryScreenSizeViaAdbAsync(cancellationToken).ConfigureAwait(false);
-            return _physicalScreenSizeCache ?? Size.Empty;
+            var result = await QueryScreenSizeViaAdbAsync(cancellationToken).ConfigureAwait(false);
+            lock (_physicalScreenSizeLock)
+                _physicalScreenSizeCache = result;
+            return result ?? Size.Empty;
         }
 
         async Task<Size?> QueryScreenSizeViaAdbAsync(CancellationToken cancellationToken = default)
