@@ -129,10 +129,22 @@ namespace TqkLibrary.Scrcpy.Control
 
         internal static byte[] RotateDevice() => CreateEmpty(ScrcpyControlType.TYPE_ROTATE_DEVICE);
 
-        internal static byte[] UhdiCreate(UInt16 id, byte[] data)
+        internal static byte[] UhdiCreate(UInt16 id, UInt16 vendorId, UInt16 productId, string name, byte[] data)
+        {
+            byte[] nameBytes = Encoding.UTF8.GetBytes(name ?? string.Empty);
+            if (nameBytes.Length > 127) nameBytes = nameBytes[..127];
+            using MemoryStream memoryStream = new MemoryStream();
+            memoryStream.WriteHostToNetworkOrder(ScrcpyControlType.TYPE_UHID_CREATE, id, vendorId, productId);
+            memoryStream.WriteByte((byte)nameBytes.Length);
+            memoryStream.Write(nameBytes, 0, nameBytes.Length);
+            memoryStream.WriteHostToNetworkOrder((UInt16)data.Length, data);
+            return memoryStream.ToArray();
+        }
+
+        internal static byte[] UhidDestroy(UInt16 id)
         {
             using MemoryStream memoryStream = new MemoryStream();
-            memoryStream.WriteHostToNetworkOrder(ScrcpyControlType.TYPE_UHID_CREATE, id, (UInt16)data.Length, data);
+            memoryStream.WriteHostToNetworkOrder(ScrcpyControlType.TYPE_UHID_DESTROY, id);
             return memoryStream.ToArray();
         }
 

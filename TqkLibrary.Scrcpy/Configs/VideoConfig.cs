@@ -30,7 +30,7 @@ namespace TqkLibrary.Scrcpy.Configs
         /// Default: 0 or null (unlimit)
         /// </summary>
         [OptionName("max_fps")]
-        public int MaxFps { get; set; } = 0;
+        public float MaxFps { get; set; } = 0;
         /// <summary>
         /// Max bitrate of video stream<br></br>
         /// Default: 0 or null (ignore)
@@ -79,7 +79,7 @@ namespace TqkLibrary.Scrcpy.Configs
         {
             yield return this._GetArgument(x => x.DisplayId, x => x.HasValue);
             yield return this._GetArgument(x => x.Orientation, x => x != Orientations.Auto);
-            yield return this._GetArgument(x => x.MaxFps, x => x > 0);
+            yield return this._GetArgument(x => x.MaxFps, x => x > 0, x => x.ToString(System.Globalization.CultureInfo.InvariantCulture));
             yield return this._GetArgument(x => x.VideoBitrate, x => x > 0);
             yield return this._GetArgument(x => x.VideoCodec, string.IsNullOrWhiteSpace);
             yield return this._GetArgument(x => x.VideoCodecOption, string.IsNullOrWhiteSpace);
