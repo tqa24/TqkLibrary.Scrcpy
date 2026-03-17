@@ -73,7 +73,8 @@ namespace TqkLibrary.Scrcpy
               AndroidMotionEventButton.BUTTON_PRIMARY,
               AndroidMotionEventButton.BUTTON_PRIMARY);
 
-            Task.Delay(releaseDelay, cancellationToken).Wait();
+            cancellationToken.ThrowIfCancellationRequested();
+            Thread.Sleep(releaseDelay);
 
             control.InjectTouchEvent(
               AndroidMotionEventAction.ACTION_UP,
@@ -177,7 +178,8 @@ namespace TqkLibrary.Scrcpy
         public static void Key(this IControl control, AndroidKeyCode androidKeyCode, uint repeat = 0, int releaseDelay = 100, CancellationToken cancellationToken = default)
         {
             control.InjectKeycode(AndroidKeyEventAction.ACTION_DOWN, androidKeyCode, repeat, AndroidKeyEventMeta.META_NONE);
-            Task.Delay(releaseDelay, cancellationToken).Wait();
+            cancellationToken.ThrowIfCancellationRequested();
+            Thread.Sleep(releaseDelay);
             control.InjectKeycode(AndroidKeyEventAction.ACTION_UP, androidKeyCode, repeat, AndroidKeyEventMeta.META_NONE);
         }
         /// <summary>
@@ -260,9 +262,11 @@ namespace TqkLibrary.Scrcpy
               AndroidMotionEventButton.BUTTON_PRIMARY,
               AndroidMotionEventButton.BUTTON_PRIMARY);
 
-            Task.Delay(delayStep, cancellationToken).Wait();
+            cancellationToken.ThrowIfCancellationRequested();
+            Thread.Sleep(delayStep);
 
             int times = duration / delayStep;
+            if (times == 0) times = 1;
             int x = (x2 - x1) / times;
             int y = (y2 - y1) / times;
             for (int i = 1; i < times; i++)
@@ -274,7 +278,8 @@ namespace TqkLibrary.Scrcpy
                   1f,
                   AndroidMotionEventButton.BUTTON_PRIMARY,
                   AndroidMotionEventButton.None);
-                Task.Delay(delayStep, cancellationToken).Wait();
+                cancellationToken.ThrowIfCancellationRequested();
+                Thread.Sleep(delayStep);
             }
 
             control.InjectTouchEvent(
@@ -420,7 +425,8 @@ namespace TqkLibrary.Scrcpy
                 1f,
                 AndroidMotionEventButton.BUTTON_PRIMARY,
                 AndroidMotionEventButton.BUTTON_PRIMARY);
-            Task.Delay(delayStep, cancellationToken).Wait();
+            cancellationToken.ThrowIfCancellationRequested();
+            Thread.Sleep(delayStep);
 
             int x = x2 - x1;
             int y = y2 - y1;
@@ -441,7 +447,8 @@ namespace TqkLibrary.Scrcpy
                     1f,
                     AndroidMotionEventButton.BUTTON_PRIMARY,
                     AndroidMotionEventButton.None);
-                Task.Delay(delayStep, cancellationToken).Wait();
+                cancellationToken.ThrowIfCancellationRequested();
+                Thread.Sleep(delayStep);
             }
 
             control.InjectTouchEvent(
