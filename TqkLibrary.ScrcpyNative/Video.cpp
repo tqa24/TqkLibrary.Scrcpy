@@ -156,7 +156,9 @@ bool Video::GetDeviceName(BYTE* buffer, int sizeInByte) {
 		return false;
 
 	auto name = this->_deviceName.c_str();
-	memcpy(buffer, name, min(sizeInByte, this->_deviceName.size()));
+	int len = min(sizeInByte - 1, (int)this->_deviceName.size());
+	memcpy(buffer, name, len);
+	buffer[len] = 0;
 
 	return true;
 }
