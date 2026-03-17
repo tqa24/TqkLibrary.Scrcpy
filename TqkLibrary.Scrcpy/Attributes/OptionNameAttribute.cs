@@ -9,7 +9,7 @@ namespace TqkLibrary.Scrcpy.Attributes
     /// <summary>
     /// 
     /// </summary>
-    [AttributeUsage(AttributeTargets.Property | AttributeTargets.Enum, AllowMultiple = false)]
+    [AttributeUsage(AttributeTargets.Property | AttributeTargets.Enum | AttributeTargets.Field, AllowMultiple = false)]
     public class OptionNameAttribute : Attribute
     {
         /// <summary>

@@ -4,7 +4,7 @@
     /// https://github.com/Genymobile/scrcpy/blob/ce43fad645d4eb30f322dbeb50d5197601564931/server/src/main/java/com/genymobile/scrcpy/Device.java#L25
     /// https://android.googlesource.com/platform/frameworks/base.git/+/pie-release-2/core/java/android/view/SurfaceControl.java#305
     /// </summary>
-    /// <remarks>Obsolete since scrcpy v3.0. Use <see cref="IControl.SetDisplayPower(bool)"/> instead.</remarks>
+    /// <remarks>Obsolete since scrcpy v3.0. Use SetDisplayPower(bool) on IControl instead.</remarks>
     [System.Obsolete("ScrcpyScreenPowerMode is obsolete since scrcpy v3.0. Use SetDisplayPower(bool) instead.")]
     public enum ScrcpyScreenPowerMode : byte
     {
