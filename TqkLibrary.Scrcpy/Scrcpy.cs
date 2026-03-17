@@ -142,11 +142,10 @@ namespace TqkLibrary.Scrcpy
             this.Dispose();
         }
 
-        bool isDisposed = false;
+        int _isDisposed = 0;
         private void Dispose(bool disposing)
         {
-            if (isDisposed) return;
-            isDisposed = true;
+            if (Interlocked.CompareExchange(ref _isDisposed, 1, 0) != 0) return;
 
             if (AppDomain.CurrentDomain.IsDefaultAppDomain())
                 AppDomain.CurrentDomain.ProcessExit -= TerminationHandler;
