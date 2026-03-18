@@ -27,6 +27,8 @@ namespace TestRenderWpf
             RotateDeviceCommand = new BaseCommand(_RotateDeviceCommand);
             OpenHardKeyboardSettingCommand = new BaseCommand(_OpenHardKeyboardSettingCommand);
             ResetVideoCommand = new BaseCommand(() => Control?.ResetVideo());
+            StartAppCommand = new BaseCommand(() => Control?.StartApp(AppPackageName));
+            ForceStopAppCommand = new BaseCommand(() => Control?.StartApp("+" + AppPackageName));
         }
 
         IControl? _control;
@@ -130,5 +132,14 @@ namespace TestRenderWpf
         }
 
         public BaseCommand ResetVideoCommand { get; }
+
+        string _AppPackageName = string.Empty;
+        public string AppPackageName
+        {
+            get { return _AppPackageName; }
+            set { _AppPackageName = value; NotifyPropertyChange(); }
+        }
+        public BaseCommand StartAppCommand { get; }
+        public BaseCommand ForceStopAppCommand { get; }
     }
 }
