@@ -30,7 +30,7 @@ namespace TqkLibrary.Scrcpy.Configs
         /// Default: 0 or null (unlimit)
         /// </summary>
         [OptionName("max_fps")]
-        public int MaxFps { get; set; } = 0;
+        public float MaxFps { get; set; } = 0;
         /// <summary>
         /// Max bitrate of video stream<br></br>
         /// Default: 0 or null (ignore)
