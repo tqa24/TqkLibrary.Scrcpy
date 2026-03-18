@@ -270,6 +270,7 @@ namespace TqkLibrary.Scrcpy
         private static IntPtr GetSocketHandle(System.Net.Sockets.Socket? socket)
         {
             if (socket is null) return new IntPtr(-1); // INVALID_SOCKET
+            socket.ReceiveTimeout = 0;
             return socket.Handle; // C# retains ownership; C++ reads only
         }
 
