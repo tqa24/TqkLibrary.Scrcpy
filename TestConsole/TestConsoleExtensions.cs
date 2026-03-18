@@ -62,7 +62,7 @@ namespace TestConsole
                     VideoConfig = new VideoConfig()
                     {
                         MaxFps = 24,
-                        Orientation = Orientations.Natural,
+                        CaptureOrientation = CaptureOrientations.Orient0,
                     },
                     SCID = new Random(DateTime.Now.Millisecond).Next()
                 },
