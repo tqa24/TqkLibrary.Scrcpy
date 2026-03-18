@@ -93,6 +93,30 @@ namespace TqkLibrary.Scrcpy.Configs
         [OptionName("max_size")]
         public int MaxSize { get; } = 0;
 
+        /// <summary>
+        /// Turn the screen off after this delay (in milliseconds). -1 means no timeout (default).<br></br>
+        /// scrcpy 3.0 (--screen-off-timeout)
+        /// </summary>
+        [OptionName("screen_off_timeout")]
+        public int ScreenOffTimeout { get; set; } = -1;
+
+        /// <summary>
+        /// Create a new virtual display with the specified resolution and optional DPI.<br></br>
+        /// Format: [&lt;width&gt;x&lt;height&gt;][/&lt;dpi&gt;] e.g. "1920x1080/320" or "" for device default.<br></br>
+        /// Default: null (omit — use physical display)<br></br>
+        /// scrcpy 3.0 (--new-display)
+        /// </summary>
+        [OptionName("new_display")]
+        public string? NewDisplay { get; set; }
+
+        /// <summary>
+        /// Show system decorations on the virtual display.<br></br>
+        /// Set to false to pass vd_system_decorations=false (--no-vd-system-decorations).<br></br>
+        /// Default: true (omit)<br></br>
+        /// scrcpy 3.0
+        /// </summary>
+        public bool VdSystemDecorations { get; set; } = true;
+
 
         /// <summary>
         /// 2.0
@@ -109,6 +133,10 @@ namespace TqkLibrary.Scrcpy.Configs
             yield return this._GetArgument(x => x.Cleanup, !Cleanup);
             yield return this._GetArgument(x => x.TunnelForward, TunnelForward);
             yield return this._GetArgument(x => x.MaxSize, x => x > 0);
+            yield return this._GetArgument(x => x.ScreenOffTimeout, x => x != -1);
+            yield return this._GetArgument(x => x.NewDisplay, x => !string.IsNullOrWhiteSpace(x));
+            if (!VdSystemDecorations)
+                yield return "vd_system_decorations=false";
             if (IsVideo) yield return this._GetArgument(x => x.VideoSource, x => x != VideoSource.Display, x => x.ToString().ToLower());
         }
         /// <summary>
