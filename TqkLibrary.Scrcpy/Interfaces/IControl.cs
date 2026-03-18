@@ -156,9 +156,22 @@ namespace TqkLibrary.Scrcpy.Interfaces
         bool RotateDevice();
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <returns></returns>
         bool OpenHardKeyboardSetting();
+
+        /// <summary>
+        /// Start an app by name on the device (scrcpy 3.0+)
+        /// </summary>
+        /// <param name="name">App name (max 255 bytes UTF-8)</param>
+        /// <returns></returns>
+        bool StartApp(string name);
+
+        /// <summary>
+        /// Reset/refresh the video stream (scrcpy 3.0+)
+        /// </summary>
+        /// <returns></returns>
+        bool ResetVideo();
     }
 }

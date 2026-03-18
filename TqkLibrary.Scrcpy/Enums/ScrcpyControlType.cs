@@ -21,5 +21,7 @@
         TYPE_UHID_INPUT = 13,
         TYPE_UHID_DESTROY = 14,
         OPEN_HARD_KEYBOARD_SETTINGS = 15,
+        TYPE_START_APP = 16,
+        TYPE_RESET_VIDEO = 17,
     }
 }

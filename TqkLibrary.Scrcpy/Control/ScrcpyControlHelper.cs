@@ -158,6 +158,20 @@ namespace TqkLibrary.Scrcpy.Control
 
         internal static byte[] OpenHardKeyboardSetting() => CreateEmpty(ScrcpyControlType.OPEN_HARD_KEYBOARD_SETTINGS);
 
+        internal static byte[] StartApp(string name)
+        {
+            if (string.IsNullOrEmpty(name)) throw new ArgumentNullException(nameof(name));
+            byte[] nameBytes = Encoding.UTF8.GetBytes(name);
+            if (nameBytes.Length > 255) Array.Resize(ref nameBytes, 255);
+            using MemoryStream memoryStream = new MemoryStream();
+            memoryStream.WriteHostToNetworkOrder(ScrcpyControlType.TYPE_START_APP);
+            memoryStream.WriteByte((byte)nameBytes.Length);
+            memoryStream.Write(nameBytes, 0, nameBytes.Length);
+            return memoryStream.ToArray();
+        }
+
+        internal static byte[] ResetVideo() => CreateEmpty(ScrcpyControlType.TYPE_RESET_VIDEO);
+
 
 
         static byte[] CreateEmpty(ScrcpyControlType type)

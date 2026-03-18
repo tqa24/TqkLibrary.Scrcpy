@@ -120,6 +120,10 @@ namespace TqkLibrary.Scrcpy.Wpf
 
         public bool OpenHardKeyboardSetting()
             => this.ForEach(x => x.OpenHardKeyboardSetting());
+        public bool StartApp(string name)
+            => this.ForEach(x => x.StartApp(name));
+        public bool ResetVideo()
+            => this.ForEach(x => x.ResetVideo());
         #endregion
     }
 
