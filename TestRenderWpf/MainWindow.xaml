@@ -5,38 +5,34 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:TestRenderWpf" WindowStartupLocation="CenterScreen"
         xmlns:scrcpy="clr-namespace:TqkLibrary.Scrcpy.Wpf;assembly=TqkLibrary.Scrcpy.Wpf"
+        xmlns:st="http://schemas.spicytaco.io/"
         mc:Ignorable="d" Loaded="Window_Loaded" Unloaded="Window_Unloaded" Closed="Window_Closed"
         Title="MainWindow" Height="600" Width="1000">
     <Window.DataContext>
         <local:MainWindowVM/>
     </Window.DataContext>
-    <Grid Background="Black">
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="Auto"/>
-            <ColumnDefinition/>
-        </Grid.ColumnDefinitions>
-        <StackPanel Grid.Column="0" Orientation="Vertical">
+    <st:StackPanel Background="Black" Orientation="Horizontal" MarginBetweenChildren="5">
+        <st:StackPanel Grid.Column="0" Orientation="Vertical" MarginBetweenChildren="5" Margin="5,0,0,0">
             <Button Content="InjectText Clipboard" Command="{Binding InjectTextCommand}"/>
             <StackPanel Grid.Column="0" Orientation="Horizontal">
-                <Button Content="SetScreenPowerMode" Command="{Binding SetScreenPowerModeCommand}"/>
-                <ComboBox ItemsSource="{Binding ScreenPowerModes}" SelectedItem="{Binding ScreenPowerModeSelected}"/>
+                <CheckBox Content="DisplayPower" IsChecked="{Binding DisplayPower}" VerticalAlignment="Center" Foreground="White"/>
             </StackPanel>
-            <StackPanel Grid.Column="0" Orientation="Horizontal">
+            <st:StackPanel Grid.Column="0" Orientation="Horizontal" MarginBetweenChildren="5">
                 <Button Content="BackOrScreenOn" Command="{Binding BackOrScreenOnCommand}"/>
                 <ComboBox ItemsSource="{Binding AndroidKeyEventActions}" SelectedItem="{Binding AndroidKeyEventActionSelected}"/>
-            </StackPanel>
+            </st:StackPanel>
             <Button Content="ExpandNotificationPanel" Command="{Binding ExpandNotificationPanelCommand}"/>
             <Button Content="ExpandSettingsPanel" Command="{Binding ExpandSettingsPanelCommand}"/>
             <Button Content="CollapsePanel" Command="{Binding CollapsePanelCommand}"/>
             <Button Content="RotateDevice" Command="{Binding RotateDeviceCommand}"/>
             <Button Content="OpenHardKeyboardSetting" Command="{Binding OpenHardKeyboardSettingCommand}"/>
-        </StackPanel>
-        <scrcpy:ScrcpyControl Grid.Column="1"
+        </st:StackPanel>
+        <scrcpy:ScrcpyControl st:StackPanel.Fill="Fill"
                               IsControl="{Binding IsControl}" 
                               Control="{Binding Control}" 
                               ScrcpyUiView="{Binding ScrcpyUiView}"
                               IsMouseHandler="True"
                               IsKeyHandler="True"
                               />
-    </Grid>
+    </st:StackPanel>
 </Window>

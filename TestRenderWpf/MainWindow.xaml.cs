@@ -22,6 +22,7 @@ using TqkLibrary.AudioPlayer.XAudio2;
 using TqkLibrary.Scrcpy;
 using TqkLibrary.Scrcpy.Configs;
 using TqkLibrary.Scrcpy.Enums;
+using TqkLibrary.Scrcpy.Interfaces;
 using TqkLibrary.Scrcpy.ListSupport;
 using TqkLibrary.Scrcpy.Wpf;
 namespace TestRenderWpf
@@ -47,6 +48,7 @@ namespace TestRenderWpf
             ServerConfig = new ScrcpyServerConfig()
             {
                 IsControl = true,
+                ClipboardAutosync = true,
                 VideoConfig = new VideoConfig()
                 {
                     MaxFps = 24
@@ -82,6 +84,7 @@ namespace TestRenderWpf
             }
             adb = new Adb(deviceId);
             scrcpy = new Scrcpy(deviceId);
+            scrcpy.Control.OnClipboardReceived += Control_OnClipboardReceived;
             scrcpy.OnDisconnect += Scrcpy_OnDisconnect;
             mainWindowVM.Control = new ControlChain(scrcpy.Control);
             mainWindowVM.ScrcpyUiView = scrcpy.InitScrcpyUiView();
@@ -121,6 +124,21 @@ namespace TestRenderWpf
                 _audioStream = scrcpy.GetAudioStream();
                 _ = Task.Factory.StartNew(RunReadAudio, TaskCreationOptions.LongRunning);
             }
+        }
+
+        private void Control_OnClipboardReceived(IControl control, string data)
+        {
+            this.Dispatcher.InvokeAsync(() =>
+            {
+                try
+                {
+                    Clipboard.SetText(data);
+                }
+                catch
+                {
+
+                }
+            });
         }
 
         private async void Scrcpy_OnDisconnect()
