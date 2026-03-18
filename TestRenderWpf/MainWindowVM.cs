@@ -17,8 +17,6 @@ namespace TestRenderWpf
         {
             InjectTextCommand = new BaseCommand(_InjectTextCommand);
 
-            ScreenPowerModes = Enum.GetValues<ScrcpyScreenPowerMode>();
-            SetScreenPowerModeCommand = new BaseCommand(_SetScreenPowerModeCommand);
 
             AndroidKeyEventActions = Enum.GetValues<AndroidKeyEventAction>();
             BackOrScreenOnCommand = new BaseCommand(_BackOrScreenOnCommand);
@@ -61,17 +59,23 @@ namespace TestRenderWpf
         }
 
 
-        public IEnumerable<ScrcpyScreenPowerMode> ScreenPowerModes { get; }
-        ScrcpyScreenPowerMode _ScreenPowerModeSelected = ScrcpyScreenPowerMode.POWER_MODE_NORMAL;
-        public ScrcpyScreenPowerMode ScreenPowerModeSelected
+        bool _DisplayPower = true;
+        public bool DisplayPower
         {
-            get { return _ScreenPowerModeSelected; }
-            set { _ScreenPowerModeSelected = value; NotifyPropertyChange(); }
-        }
-        public BaseCommand SetScreenPowerModeCommand { get; }
-        void _SetScreenPowerModeCommand()
-        {
-            Control?.SetScreenPowerMode(ScreenPowerModeSelected);
+            get { return _DisplayPower; }
+            set
+            {
+                if (Control != null)
+                {
+                    _DisplayPower = value;
+                    Control.SetDisplayPower(value);
+                }
+                else
+                {
+                    _DisplayPower = true;
+                }
+                NotifyPropertyChange();
+            }
         }
 
 

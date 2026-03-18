@@ -17,10 +17,7 @@
         </Grid.ColumnDefinitions>
         <StackPanel Grid.Column="0" Orientation="Vertical">
             <Button Content="InjectText Clipboard" Command="{Binding InjectTextCommand}"/>
-            <StackPanel Grid.Column="0" Orientation="Horizontal">
-                <Button Content="SetScreenPowerMode" Command="{Binding SetScreenPowerModeCommand}"/>
-                <ComboBox ItemsSource="{Binding ScreenPowerModes}" SelectedItem="{Binding ScreenPowerModeSelected}"/>
-            </StackPanel>
+            <CheckBox Content="DisplayPower" IsChecked="{Binding DisplayPower}"/>
             <StackPanel Grid.Column="0" Orientation="Horizontal">
                 <Button Content="BackOrScreenOn" Command="{Binding BackOrScreenOnCommand}"/>
                 <ComboBox ItemsSource="{Binding AndroidKeyEventActions}" SelectedItem="{Binding AndroidKeyEventActionSelected}"/>

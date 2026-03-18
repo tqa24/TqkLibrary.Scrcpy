@@ -115,8 +115,8 @@ namespace TqkLibrary.Scrcpy.Wpf
         public bool SetClipboard(string text, bool paste, long sequence)
             => this.ForEach(x => x.SetClipboard(text, paste, sequence));
 
-        public bool SetScreenPowerMode(ScrcpyScreenPowerMode powerMode)
-            => this.ForEach(x => x.SetScreenPowerMode(powerMode));
+        public bool SetDisplayPower(bool on)
+            => this.ForEach(x => x.SetDisplayPower(on));
 
         public bool OpenHardKeyboardSetting()
             => this.ForEach(x => x.OpenHardKeyboardSetting());

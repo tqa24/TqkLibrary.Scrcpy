@@ -118,11 +118,11 @@ namespace TqkLibrary.Scrcpy.Interfaces
         bool GetClipboard(CopyKey copyKey);
 
         /// <summary>
-        /// 
+        /// Turn display on or off (scrcpy 3.0+)
         /// </summary>
-        /// <param name="powerMode"></param>
+        /// <param name="on">true to turn on, false to turn off</param>
         /// <returns></returns>
-        bool SetScreenPowerMode(ScrcpyScreenPowerMode powerMode);
+        bool SetDisplayPower(bool on);
 
         /// <summary>
         /// Action for Back button in android

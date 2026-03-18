@@ -60,8 +60,8 @@ namespace TqkLibrary.Scrcpy.Control
             => SendControl(ScrcpyControlHelper.SetClipboard(text, paste, random.Next()));
         public bool SetClipboard(string text, bool paste, long sequence)
             => SendControl(ScrcpyControlHelper.SetClipboard(text, paste, sequence));
-        public bool SetScreenPowerMode(ScrcpyScreenPowerMode powerMode)
-            => SendControl(ScrcpyControlHelper.SetScreenPowerMode(powerMode));
+        public bool SetDisplayPower(bool on)
+            => SendControl(ScrcpyControlHelper.SetDisplayPower(on));
         public bool OpenHardKeyboardSetting()
             => SendControl(ScrcpyControlHelper.OpenHardKeyboardSetting());
         #endregion
