@@ -56,8 +56,8 @@ namespace TqkLibrary.Scrcpy.Control
                 pointerId,
                 position,
                 ToUnsignedFixedPoint16(pressure),
-                actionButton,
-                buttons
+                buttons,
+                actionButton
                 );
             return stream.ToArray();
         }
